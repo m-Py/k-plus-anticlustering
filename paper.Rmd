@@ -40,10 +40,198 @@ output            : papaja::apa6_pdf
 
 ```{r setup, include = FALSE}
 library("papaja")
+options(digits = 2)
 ```
 
-This is my new paper.
+- It is often important to divide a set of elements into similar 
+subgroups
+- This task can be automized and open source solutions exist 
+- Anticlustering = opposite of clustering, does that
+- Objectives based on pairwise distances exist, but k-means also exists 
+- k-means = optimizes similarity wrt to mean, but not other distribution
+parameters, in particular not wrt to the variance
+- here, I present an improved objective function for k-means 
+anticlustering, which optimizes similarity wrt to means and variance / 
+standard deviation at the same time
 
+## A Motivating Example
+
+```{r}
+
+# set.seed(26178) # uncomment later
+
+library(anticlust)
+
+N <- 14
+K <- 2
+partitions <- generate_partitions(N, K)
+length(partitions) # number of possible partitions
+features <- rnorm(N)
+
+## Create an objective function that takes the partition
+## as first argument (then, we can use sapply to compute
+## the objective for each partition)
+diff_mean <- function(clusters, features) {
+  abs(diff(tapply(features, clusters, mean)))
+}
+
+diff_vars <- function(clusters, features) {
+  abs(diff(tapply(features, clusters, var)))
+}
+
+all_objectives_mean <- sapply(
+  partitions,
+  FUN = diff_mean,
+  features = features
+)
+
+all_objectives_var <- sapply(
+  partitions,
+  FUN = diff_vars,
+  features = features
+)
+
+df <- data.frame(
+  diff_mean = all_objectives_mean,
+  diff_var  = all_objectives_var
+)
+
+plot(df, pch = 4, col = "darkgrey", las = 1)
+# Illustrate best partition wrt simililarity in means
+points(
+  all_objectives_mean[which.min(all_objectives_mean)],
+  all_objectives_var[which.min(all_objectives_mean)],
+  cex = 2, col = "#DF536B", pch = 16
+)
+
+df$sum <- rowSums(df)
+
+points(
+  all_objectives_mean[which.min(df$sum)],
+  all_objectives_var[which.min(df$sum)],
+  cex = 2, col = "#2297E6", pch = 16
+)
+
+points(
+  all_objectives_mean[which.min(df$diff_var)],
+  all_objectives_var[which.min(df$diff_var)],
+  cex = 2, col = "#61D04F", pch = 16
+)
+
+```
+
+The plot illustrates all possible ways to partition a data set of $N = 
+14$ into two parts. Red point: maximum similarity in means; green point 
+= maximum similarity in variance. Blue point: Almost no difference to 
+red point wrt similarity in means, but variance is much more similar. 
+This blue partition is certainly preferable to the red one when maximal 
+overall similarity is required; the red one just optimizes similarity in 
+means (which is what maximizing the k-means objective does). 
+
+Unfortunately, improving algorithmic procedures will not help to find 
+better partitions -- the objective function has to change. I will show 
+an objective function that captures both similarity in means and 
+variance.
+
+## K-Means criterion
+
+
+The popular k-means clustering method aims at minimizing the 
+within-group variance, i.e., the sum of the squared Euclidean distances 
+between each data point and its cluster center:
+
+More specifically:
+
+$$
+\mathit{Var}_{\mathrm{within}} = \sum\limits_{j=1}^{K} 
+\sum\limits_{x_i \in c_j} \vert \vert x_i - \mu_j \vert \vert^2
+$$
+
+The squared distance between an element $x$ and the average of all 
+elements $\overline{\mathrm{\boldsymbol{x}}}$ is:
+
+$$
+\vert \vert x - \overline{\mathrm{\boldsymbol{x}}} \vert \vert^2 = 
+  \sum\limits_{m = 1}^{M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2
+$$
+
+Now define new data points representing the squared distances between 
+data points and the grand mean:
+
+$$ 
+y_i = (x_i - \mathrm{\boldsymbol{x}})^2, \forall i \in N
+$$
+
+where $\mathrm{\boldsymbol{x}}$ is a vector of length $M$ containing 
+the average for each feature.
+
+Now:
+
+$$
+\sum\limits_{m = 1}^{M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2 + 
+  \sum\limits_{m = 1}^{M}(y_{m} - \overline{\mathrm{\boldsymbol{y_m}}})^2 =
+  \sum\limits_{m = 1}^{M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2 + 
+    (y_{m} - \overline{\mathrm{\boldsymbol{y_m}}})^2
+$$
+
+If we define $x_{m + 1} = y_1$, $x_{m + 2} = y_2$, ..., $x_{2M} = y_M$.
+this is the same as:
+
+$$
+\sum\limits_{m = 1}^{2M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2 
+$$
+
+Thus, we redefine the data points and include an additional $M$ features 
+for each element. Then, we maximize $\mathit{Var}_{\mathrm{within}}$, 
+which corresponds to a tradeoff between minimizing differences in mean 
+features between clusters, and the average squared distance to the grand 
+mean, i.e., the within-cluster variance. That is: We try to maximize the 
+within-cluster variance, but to a certain degree we also strive to 
+obtain similar within-cluster variance in each cluster.
+
+Important to note: We solve the same optimization problem, we just 
+change the input a bit (we double the number of "columns"). 
+
+**Example table!!**
+
+# Stuff
+
+New objective seems to work best when N is high relative to K; 
+optimizing two objectives at the same time is hard when N is low. Easier 
+when only optimizing one objective (i.e., the mean, as done by normal
+k-means anticlustering).
+
+# Test equivalence of objectives
+
+Check that I can actually just append the squared difference data as 
+additional columns to the original data frame:
+
+```{r}
+
+squared_from_mean <- function(data) {
+  apply(data, 2, function(x) (x - mean(x))^2)
+}
+
+
+N <- 500
+M <- 20
+data <- matrix(rnorm(N * M), ncol = M)
+var_data <- squared_from_mean(data)
+
+K <- 10
+clusters <- sample(rep_len(1:K, N))
+
+obj1 <- variance_objective(data, clusters) + variance_objective(var_data, clusters)
+obj2 <- variance_objective(cbind(data, var_data), clusters)
+
+tolerance <- 1e-10
+
+obj1 - obj2 < tolerance
+
+obj1
+obj2
+
+```
 
 \newpage
 
