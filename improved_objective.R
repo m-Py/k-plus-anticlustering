@@ -49,17 +49,17 @@ improved_exchange <- function(x, K, objective, obj_function,
 }
 
 
-N <- 200
+N <- 500
 M <- 2
-K <- 3
-features <- matrix(rnorm(N * M), ncol = M)
-features <- schaper2019[, 3:6]
+K <- 10 
+features <- matrix(rchisq(N * M, 2), ncol = M)
+#features <- scale(schaper2019[, 3:6])
 
-nrep <- 50
-preclustering <- TRUE
+nrep <- 20
+preclustering <- FALSE
 
 ac_kmeans <- improved_exchange(
-  scale(cbind(features)),
+  features,
   K = K,
   objective = "variance",
   obj_function = variance_objective, 
@@ -68,7 +68,7 @@ ac_kmeans <- improved_exchange(
 )
 
 ac_distance <- improved_exchange(
-  scale(cbind(features)),
+  features,
   K = K,
   objective = "distance",
   obj_function = variance_objective, 
@@ -86,7 +86,7 @@ ac_kmeans_var_only <- improved_exchange(
 )
 
 ac_kmeans_var <- improved_exchange(
-  scale(cbind(features, squared_from_mean(features))),
+  cbind(features, squared_from_mean(features)),
   K = K,
   objective = "variance",
   obj_function = variance_objective,
@@ -100,5 +100,8 @@ cat("K-Means + Squared Diff\n")
 print(mean_sd_tab(features, ac_kmeans_var, return_diff = TRUE))
 cat("Anticluster Editing \n")
 print(mean_sd_tab(features, ac_distance, return_diff = TRUE))
-cat("Only Squared Diff\n")
-print(mean_sd_tab(features, ac_kmeans_var_only, return_diff = TRUE))
+#cat("Only Squared Diff\n")
+#print(mean_sd_tab(features, ac_kmeans_var_only, return_diff = TRUE))
+
+
+
