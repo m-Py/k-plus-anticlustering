@@ -1,0 +1,57 @@
+---
+title             : "An improved k-means criterion for optimizing between-group similarity"
+shorttitle        : "K-means anticlustering extended"
+
+author:
+  - name          : "Martin Papenberg"
+    affiliation   : "1"
+    corresponding : yes
+    address       : "Heinrich Heine Universität Düsseldorf,  Institut für Experimentelle Psychologie, Universitätsstraße 1, 40225 Düsseldorf, Germany"
+    email         : "martin.papenberg@hhu.de"
+
+affiliation:
+  - id            : "1"
+    institution   : "Heinrich Heine University Düsseldorf"
+
+authornote: |
+
+  Martin Papenberg, Department of Experimental Psychology, Heinrich 
+  Heine University Düsseldorf.  
+
+
+abstract: |
+  This is the abstract.
+  
+keywords          : "K-Means, Anticlustering, Variance"
+wordcount         : "X"
+
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+```
+
+This is my new paper.
+
+
+\newpage
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
