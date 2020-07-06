@@ -65,7 +65,6 @@ library(anticlust)
 N <- 14
 K <- 2
 partitions <- generate_partitions(N, K)
-length(partitions) # number of possible partitions
 features <- rnorm(N)
 
 ## Create an objective function that takes the partition
@@ -121,7 +120,8 @@ points(
 ```
 
 The plot illustrates all possible ways to partition a data set of $N = 
-14$ into two parts. Red point: maximum similarity in means; green point 
+14$ into two parts (there are `r length(partitions)` possible 
+partitions). Red point: maximum similarity in means; green point 
 = maximum similarity in variance. Blue point: Almost no difference to 
 red point wrt similarity in means, but variance is much more similar. 
 This blue partition is certainly preferable to the red one when maximal 
@@ -135,20 +135,49 @@ variance.
 
 ## K-Means criterion
 
+In my treatment of k-means clustering, I adopt the notation Steinley 
+(2006) provided in his thorough synthesis of the k-means literature. In 
+clustering---or anticlustering---, an item pool $X$ = $\{x_1, \ldots, 
+x_N\}$ has to be partitioned into $K$ groups $\{C_1, \ldots, C_K\}$. We 
+will refer to the groups $C_j$, $j = 1, \ldots, K$, as anticlusters, 
+clusters, or groups, and to the collection of anticlusters $C$ as the 
+partitioning of the data set. We assume that each element $x_i$ ($i = 1, 
+\ldots, N$), is a vector of length $P$, and each entry describes one of 
+its numeric measurements. Generally hence, $X$ can be interpreted as an 
+$N \times M$ matrix where each row represents an data point $x_i$ (e.g., 
+representing a stimulus or a person) and each column is a numeric 
+attribute (e.g., the number of syllables in a word, or the 
+attractiveness rating of a face). 
 
-The popular k-means clustering method aims at minimizing the 
-within-group variance, i.e., the sum of the squared Euclidean distances 
-between each data point and its cluster center:
-
-More specifically:
+K-Means anticlustering aims to maximize the error sum of squares (SSE), 
+also known as the within-group variance, which is the sum of the 
+squared Euclidean distances between each data point and its cluster 
+centroid. The cluster centroid is given by averaging the values on each 
+variable over the elements within that cluster. The centroid of the 
+*j*th variable in the *k*th cluster, consisting of $n_k$ elements, is 
+given as: 
 
 $$
-\mathit{Var}_{\mathrm{within}} = \sum\limits_{j=1}^{K} 
-\sum\limits_{x_i \in c_j} \vert \vert x_i - \mu_j \vert \vert^2
+\overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits {i \in C_k} x_{ij}
 $$
 
-The squared distance between an element $x$ and the average of all 
-elements $\overline{\mathrm{\boldsymbol{x}}}$ is:
+The k-means objective function, the error sum of squares, is then given 
+as:
+
+$$
+\mathit{SSE} = 
+  \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (x_{ij} - \overline{x}_j ^{(k)})^2
+$$
+
+---
+  
+**This is old, adjust to Steinley (2006):**
+
+The squared distance between an element $x = (x_1, \ldots, x_M)$ and the 
+average of all elements $\overline{\mathrm{\boldsymbol{x}}}$ is:
 
 $$
 \vert \vert x - \overline{\mathrm{\boldsymbol{x}}} \vert \vert^2 = 
