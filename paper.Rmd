@@ -135,27 +135,23 @@ variance.
 
 ## K-Means criterion
 
-In my treatment of k-means clustering, I adopt the notation Steinley 
-(2006) provided in his thorough synthesis of the k-means literature. In 
-clustering---or anticlustering---, an item pool $X$ = $\{x_1, \ldots, 
-x_N\}$ has to be partitioned into $K$ groups $\{C_1, \ldots, C_K\}$. We 
-will refer to the groups $C_j$, $j = 1, \ldots, K$, as anticlusters, 
-clusters, or groups, and to the collection of anticlusters $C$ as the 
-partitioning of the data set. We assume that each element $x_i$ ($i = 1, 
-\ldots, N$), is a vector of length $P$, and each entry describes one of 
-its numeric measurements. Generally hence, $X$ can be interpreted as an 
-$N \times M$ matrix where each row represents an data point $x_i$ (e.g., 
-representing a stimulus or a person) and each column is a numeric 
-attribute (e.g., the number of syllables in a word, or the 
-attractiveness rating of a face). 
+In this treatment of k-means, I adopt the notation Steinley (2006) 
+provided in his synthesis of the k-means literature. In clustering---or 
+anticlustering---, an item pool $X$ = $\{x_1, \ldots, x_N\}$ has to be 
+partitioned into $K$ groups $\{C_1, \ldots, C_K\}$. We assume that each 
+element $x_i$ ($i = 1, \ldots, N$), is a vector of length $P$, and each 
+entry describes one of its numeric measurements. Generally, $X$ 
+can is interpreted as an $N \times M$ matrix where each row represents 
+an data point $x_i$ (e.g., representing a stimulus or a person) and each 
+column is a numeric attribute (e.g., the number of syllables in a word, 
+or the attractiveness rating of a face). 
 
 K-Means anticlustering aims to maximize the error sum of squares (SSE), 
-also known as the within-group variance, which is the sum of the 
-squared Euclidean distances between each data point and its cluster 
-centroid. The cluster centroid is given by averaging the values on each 
-variable over the elements within that cluster. The centroid of the 
-*j*th variable in the *k*th cluster, consisting of $n_k$ elements, is 
-given as: 
+the within-group variance, which is the sum of the squared Euclidean 
+distances between each data point and its cluster centroid. The cluster 
+centroid is given by averaging the values on each variable over the 
+elements within that cluster. The centroid of the *j*th variable in the 
+*k*th cluster, consisting of $n_k$ elements, is given as: 
 
 $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits {i \in C_k} x_{ij}
@@ -170,6 +166,13 @@ $$
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
   (x_{ij} - \overline{x}_j ^{(k)})^2
+$$
+
+In anticlustering applications, we usually assume that all cluster are 
+of equal size. Hence 
+
+$$
+n_k = \frac{N}{K}, \forall k \in \{1, \ldots, K\}
 $$
 
 ---
@@ -229,6 +232,28 @@ New objective seems to work best when N is high relative to K;
 optimizing two objectives at the same time is hard when N is low. Easier 
 when only optimizing one objective (i.e., the mean, as done by normal
 k-means anticlustering).
+
+- Two examples: $K = 2$, $N = 20$ vs. $N = 100$, using classical
+k-means: only mean; using k-variance: only variance; combination:
+both, but works better for larger $N$
+
+# Weighted k-means
+
+Using variable weighting (see Steinley, 2006, p. 13), we can 
+adjust the relative importance of minimizing differences in means
+and variances. Standard in `anticlust`: Equal weight, this is 
+achieved by first creating the new variables, representing 
+the squared differences from the mean, and then standardizing
+the entire feature matrix. If $N$ is large enough (relative to $K$),
+there is usually no need for weighting.
+
+# Simulation 
+
+- show that k-variance anticlustering outperforms other objectives
+
+# Examples
+
+- use some examples (e.g., OASIS data set)
 
 # Test equivalence of objectives
 
