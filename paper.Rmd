@@ -22,6 +22,8 @@ authornote: |
 abstract: |
   This is the abstract.
   
+bibliography      : ["lit.bib"]
+  
 keywords          : "K-Means, Anticlustering, Variance"
 wordcount         : "X"
 
@@ -43,16 +45,56 @@ library("papaja")
 options(digits = 2)
 ```
 
-- It is often important to divide a set of elements into similar 
-subgroups
-- This task can be automized and open source solutions exist 
-- Anticlustering = opposite of clustering, does that
-- Objectives based on pairwise distances exist, but k-means also exists 
-- k-means = optimizes similarity wrt to mean, but not other distribution
-parameters, in particular not wrt to the variance
+Oftentimes researchers have to divide a set of elements different, but 
+equivalent groups. For example, this problem arises when 
+splitting a test into parts of equal difficulty [@gierl2017], when 
+assigning students to work groups [@baker2002], or when assigning 
+stimuli to experimental conditions [@lahl2006]. Solving such problems 
+manually is a tedious and time-consuming task and the similarity of 
+manually established groups is usually improvable. Fortunately, these 
+problems can be formalized mathematically [e.g., @brusco2019; 
+@spath1986] and by now, accessible open source solutions for tackling 
+this automatically exist [@papenberg2020].
+
+Forming similar groups is also known as the *anticlustering* problem. 
+Anticlustering reverses the logic of its better known twin, cluster 
+analysis [@rokach2005]. In cluster analysis, groups are sought that are 
+internally homogenous, whereas there is heterogeneity between groups 
+[@steinley2006]. Anticlustering instead strives for high between-group 
+similarity high within-group heterogeneity. Usually, cluster analysis 
+aims to uncover "true" latent structure contained in a data set, whereas 
+anticlustering imposes an "unnatural" division of the data.
+
+One well-known criterion for anticlustering reverses the k-means 
+clustering method by maximizing the within-group variation, or 
+*variance* [@jain2010; @steinley2006; @spath1986; @valev1998; 
+@valev1983]. Späth and Valev independently coined the term 
+anticlustering specifically to denote the reversal of classical 
+k-means. 
+
+
+--- k-means
+
+--- dissimilarity data vs. rectangular data
+
+Although forming groups with high between-group similarity is often 
+equivalent to establishing high within-group diversity, researchers 
+usually only wish to obtain one of these goals. In experimental 
+psychology, sets of stimuli should be as similar as possible; within-set 
+heterogeneity is only an unimportant side-product. In this paper, I 
+address such problems that require high between-group similarity. I 
+present a novel extension to the k-means objective function, 
+within-group sum-of-squares that improves its capacity to form similar 
+groups [@steinley2006], but is no longer aims to maximize heterogeneity.
+
+Ironically, even though maximizing the k-means objective maximizes 
+similarity with regard to the means of the 
+
 - here, I present an improved objective function for k-means 
 anticlustering, which optimizes similarity wrt to means and variance / 
 standard deviation at the same time
+
+
 
 ## A Motivating Example
 
@@ -95,7 +137,7 @@ df <- data.frame(
   diff_var  = all_objectives_var
 )
 
-plot(df, pch = 4, col = "darkgrey", las = 1)
+plot(df, pch = 4, col = rainbow(length(partitions)), las = 1)
 # Illustrate best partition wrt simililarity in means
 points(
   all_objectives_mean[which.min(all_objectives_mean)],
@@ -254,6 +296,13 @@ there is usually no need for weighting.
 # Examples
 
 - use some examples (e.g., OASIS data set)
+
+# Combined approach better than k-variance alone
+
+- Often, maximizing k-means-variance yields more similar variances 
+than k-variance alone. Why is that? I guess: structure in the solution 
+space, local maxima are real. When also considering means, you more 
+often escape bad local maxima?
 
 # Test equivalence of objectives
 

@@ -16,9 +16,10 @@ oasis$ac <- anticlustering(
   K = 10,
   categories = oasis$Category, 
   objective = "variance",
-  method = "local-maximum"
+  method = "local-maximum",
+  preclustering = FALSE
 )
 
 mean_sd_tab(features, oasis$ac)
 
-table(ac, oasis$Category)
+table(oasis$ac, oasis$Category)
