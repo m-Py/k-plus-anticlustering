@@ -1,5 +1,5 @@
 ---
-title             : "An improved k-means criterion for optimizing between-group similarity"
+title             : "An extension of k-means anticlustering to optimize between-group similarity"
 shorttitle        : "K-means anticlustering extended"
 
 author:
@@ -20,7 +20,10 @@ authornote: |
 
 
 abstract: |
-  This is the abstract.
+  Anticlustering is an automated method to divide a data set into groups
+  in such a way that high between-group similarity and high within-group 
+  heterogeneity is obtained. Anticlustering is accomplished by maximizing 
+  instead of minimizing a clustering objective. 
   
 bibliography      : ["lit.bib"]
   
@@ -42,72 +45,104 @@ output            : papaja::apa6_pdf
 
 ```{r setup, include = FALSE}
 library("papaja")
+library("anticlust")
+library("knitr")
 options(digits = 2)
+knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE) 
 ```
 
-Oftentimes researchers have to divide a set of elements different, but 
-equivalent groups. For example, this problem arises when 
-splitting a test into parts of equal difficulty [@gierl2017], when 
+Anticlustering is a method to partition a set of elements into different 
+groups with the focus of obtaining high between-group similarity and 
+within-group heterogeneity. Anticlustering reverses the logic of its 
+better known twin, cluster analysis that seeks homogeneity within 
+clusters and heterogeneity between clusters [@rokach2005; 
+@steinley2006]. The method of anticlustering is useful in many 
+tasks surrounding the work of researchers in psychology, for example, 
+when splitting a test into parts of equal difficulty [@gierl2017], when 
 assigning students to work groups [@baker2002], or when assigning 
 stimuli to experimental conditions [@lahl2006]. Solving such problems 
-manually is a tedious and time-consuming task and the similarity of 
+"by hand" is a tedious and time-consuming task and the quality of 
 manually established groups is usually improvable. Fortunately, these 
-problems can be formalized mathematically [e.g., @brusco2019; 
-@spath1986] and by now, accessible open source solutions for tackling 
-this automatically exist [@papenberg2020].
+problems can be formalized mathematically via several anticlustering 
+objective functions [e.g., @brusco2019; @spath1986; @baker2002; 
+@fernandez2013], and accessible open source software solutions exist 
+[@papenberg2020].
 
-Forming similar groups is also known as the *anticlustering* problem. 
-Anticlustering reverses the logic of its better known twin, cluster 
-analysis [@rokach2005]. In cluster analysis, groups are sought that are 
-internally homogenous, whereas there is heterogeneity between groups 
-[@steinley2006]. Anticlustering instead strives for high between-group 
-similarity high within-group heterogeneity. Usually, cluster analysis 
-aims to uncover "true" latent structure contained in a data set, whereas 
-anticlustering imposes an "unnatural" division of the data.
+Several anticlustering objectives are available to assess between-group 
+similarity or within-group heterogeneity. In many cases, both objectives 
+are directly related, that is, maximizing heterogeneity within groups 
+simultaneously maximizes between-group similarity. Several 
+anticlustering objectives are based pairwise dissimilarity ratings; the 
+most prominent criterion of this kind is the *diversity*, which is the 
+total sum of dissimilarities between any elements within the same group. 
+Note that maximizing the diversity is equivalent to minimizing 
+the sum of dissimilarities between elements in different clusters, 
+directly illustrating the correspondence between within-group 
+heterogeneity and between-group similarity. Another important criterion 
+based on pairwise dissimilarities is the dispersion, which is the 
+minimum dissimilarity between any two items in the same group 
+[@fernandez2013; @brusco2019]. Maximizing the dispersion increases the 
+within-group heterogeneity by ensuring that any two elements as 
+dissimilar as possible from each other. Note that maximizing the 
+dispersion no longer simultaneously maximize between-group similarity. 
+In this case, these two potential aims of anticlustering diverge.
 
-One well-known criterion for anticlustering reverses the k-means 
-clustering method by maximizing the within-group variation, or 
-*variance* [@jain2010; @steinley2006; @spath1986; @valev1998; 
-@valev1983]. Späth and Valev independently coined the term 
-anticlustering specifically to denote the reversal of classical 
-k-means. 
+Oftentimes, the available data does not represent pairwise 
+similarity, but rather numeric, categorical or binary attributes 
+[@dry2009]. That is, the data is a two-way table where rows represent 
+elements and columns represent variables describing the elements. For 
+example, numeric ratings may describe the attributes of word stimuli for 
+psycholinguistic experiments. Such data may include Norms for imagery, 
+concreteness and orthographic variables [@friendly1982]. In other cases, 
+attributes are binary and may represent the presence or absence of 
+a feature [@tversky1977]. Attribute data can be converted to pairwise 
+dissimilarities for example by computing an appropriate dissimilarity 
+measure, such as the pairwise Euclidean or squared Euclidean distance 
+across a set of numeric attributes [@brusco2019]. Then, anticlustering 
+criteria based on pairwise dissimilarity can be applied to partition the 
+elements. 
 
+A different approach to anticlustering directly works with feature based 
+data and does not require a transformation into pairwise 
+dissimilarities: k-means anticlustering. Späth [-@spath1986] and Valev 
+[-@valev1998; -@valev1983] independently recognized that by optimizing 
+the reversed objective function of the popular k-means algorithm 
+[@jain2010; @steinley2006], a data set is partitioned into similar 
+groups. They originally---and independently from each other---coined the 
+term anticlustering for this purpose. K-means anticlustering maximizes the 
+sum of squared Euclidean distances from each element to the center of 
+the cluster to which it belongs [cf. @aloise2009np]. As @spath1986 
+noted, k-means anticlustering thereby directly minimizes differences 
+with regard to the means of the numeric variables between groups. Hence, 
+groups only become similar with regard to the mean of the distribution 
+of the numeric attributes, which may perform poorly as a measure of 
+overall similarity; the spread of the data is not targeted and may 
+differ between sets. @papenberg2020 showed that maximizing the 
+diversity (based on the pairwise Euclidean distances) is better suited 
+to minimize difference with regard to both the mean and the variance of 
+the data; it was shown that even an entirely random split usually 
+resulted in more similar standard deviations as k-means solely focuses 
+on the mean. When requiring that groups are overall similar to each 
+other, this focus may be detrimental as similar means can be obtained 
+even when the underlying distributions are very different 
+[@anscombe1973]. 
 
---- k-means
-
---- dissimilarity data vs. rectangular data
-
-Although forming groups with high between-group similarity is often 
-equivalent to establishing high within-group diversity, researchers 
-usually only wish to obtain one of these goals. In experimental 
-psychology, sets of stimuli should be as similar as possible; within-set 
-heterogeneity is only an unimportant side-product. In this paper, I 
-address such problems that require high between-group similarity. I 
-present a novel extension to the k-means objective function, 
-within-group sum-of-squares that improves its capacity to form similar 
-groups [@steinley2006], but is no longer aims to maximize heterogeneity.
-
-Ironically, even though maximizing the k-means objective maximizes 
-similarity with regard to the means of the 
-
-- here, I present an improved objective function for k-means 
-anticlustering, which optimizes similarity wrt to means and variance / 
-standard deviation at the same time
-
-
+In this paper, I present a simple extension of the k-means objective 
+function that ensures when maximizing the criterion, not only the means
+but also the variances become similar between groups. Hence, this paper 
+is more concerned with the goal of forming similar groups, rather than 
+maximizing within-group heterogeneity. 
 
 ## A Motivating Example
 
 ```{r}
 
-# set.seed(26178) # uncomment later
-
-library(anticlust)
+set.seed(4318) # 4318
 
 N <- 14
 K <- 2
 partitions <- generate_partitions(N, K)
-features <- rnorm(N)
+features <- round(rnorm(N, 15, 3), 1)
 
 ## Create an objective function that takes the partition
 ## as first argument (then, we can use sapply to compute
@@ -137,7 +172,7 @@ df <- data.frame(
   diff_var  = all_objectives_var
 )
 
-plot(df, pch = 4, col = rainbow(length(partitions)), las = 1)
+plot(df, pch = 4, col = "darkgrey", las = 1)
 # Illustrate best partition wrt simililarity in means
 points(
   all_objectives_mean[which.min(all_objectives_mean)],
@@ -161,14 +196,48 @@ points(
 
 ```
 
-The plot illustrates all possible ways to partition a data set of $N = 
-14$ into two parts (there are `r length(partitions)` possible 
-partitions). Red point: maximum similarity in means; green point 
+An example will show that aiming not only for similarity in attribute 
+means is not only useful, but also possible. I created 14 data points 
+from a normal distribution ($M = 15$, $SD = 3$, see Table 1). The data 
+points in Figure 1 illustrate all `r length(partitions)`  ways to 
+partition a data set of $N = 14$ into two parts (the Appendix contains 
+an explanation how to compute the number of partitions and how to 
+generate them). Red point: maximum similarity in means; green point 
 = maximum similarity in variance. Blue point: Almost no difference to 
 red point wrt similarity in means, but variance is much more similar. 
 This blue partition is certainly preferable to the red one when maximal 
 overall similarity is required; the red one just optimizes similarity in 
 means (which is what maximizing the k-means objective does). 
+
+
+```{r datatables}
+
+best_partition_mean <- partitions[[which.min(df$diff_mean)]]
+best_partition_var  <- partitions[[which.min(df$diff_var)]]
+best_partition_combined <- partitions[[which.min(df$sum)]]
+
+data <- data.frame(
+  x = features,
+  best_mean = best_partition_mean,
+  best_var = best_partition_var,
+  best_combined = best_partition_combined
+  
+)
+
+descriptives <- cbind(
+  mean_sd_tab(as.matrix(features), best_partition_mean),
+  mean_sd_tab(as.matrix(features), best_partition_var),
+  mean_sd_tab(as.matrix(features), best_partition_combined)
+)
+
+descriptives <- paste("M =", gsub("[(]", "(SD = ", descriptives))
+dim(descriptives) <- c(2, 3)
+colnames(descriptives) <- colnames(data[,-1])
+apa_table(data, caption = "Illustrative data set")
+apa_table(descriptives)
+
+```
+
 
 Unfortunately, improving algorithmic procedures will not help to find 
 better partitions -- the objective function has to change. I will show 
