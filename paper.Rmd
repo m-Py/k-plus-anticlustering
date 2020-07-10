@@ -128,10 +128,8 @@ even when the underlying distributions are very different
 [@anscombe1973]. 
 
 In this paper, I present a simple extension of the k-means objective 
-function that ensures when maximizing the criterion, not only the means
-but also the variances become similar between groups. Hence, this paper 
-is more concerned with the goal of forming similar groups, rather than 
-maximizing within-group heterogeneity. 
+function to maximize simililarity with regard to means and variances 
+at the same time. 
 
 ## A Motivating Example
 
@@ -244,7 +242,7 @@ better partitions -- the objective function has to change. I will show
 an objective function that captures both similarity in means and 
 variance.
 
-## K-Means criterion
+## K-Means objective
 
 In this treatment of k-means, I adopt the notation Steinley (2006) 
 provided in his synthesis of the k-means literature. In clustering---or 
@@ -286,8 +284,8 @@ $$
 n_k = \frac{N}{K}, \forall k \in \{1, \ldots, K\}
 $$
 
----
-  
+## K-variances
+
 **This is old, adjust to Steinley (2006):**
 
 The squared distance between an element $x = (x_1, \ldots, x_M)$ and the 
@@ -337,9 +335,55 @@ change the input a bit (we double the number of "columns").
 
 **Example table!!**
 
-# Stuff
+## Bicriterion optimization model
 
-New objective seems to work best when N is high relative to K; 
+- formalize the weighted-sum objective and use the weighted-sum method.
+works well on this specific problem [although in general there are 
+caveats to the weighted-sum method, see @brusco2019]. is fast, good 
+results. in fact, the objectives seem to work well together (optimizing 
+k-means extended often yields more similar variances than just 
+k-variances!!!)
+
+- In this paper: Formalization of the objective function, recognition
+that this formulation does not change the basic structure of the k-means
+objective, because it reduces to augmentation of the data input
+
+- not interested in the Pareto efficient set! Because: Overall 
+similarity should be maximized, which requires that both criteria are 
+satisfied to a strong degree (not interested in just maximizing 
+similarity wrt variance; this may be interesting in other applications). 
+Instead: A tradeoff is possible, and in many cases, simultaneous 
+optimization will meet both criteria almost as well as optimizing just
+either criterion. To justify this approach: show the pareto front, which 
+is not a diagonal / circle [see @brusco2012] but a RIGHT TRIANGLE! (this 
+is probably because this is *anti*clustering!)
+
+- Evaluation will consist of a comparison of different objectives based 
+on the same (simple) exchange algorithm
+
+- Future research: Application of more sophisticated bicriterion 
+optimization algorithms are interesting
+
+- How to select weights? (Oftentimes: for equal weights, the results 
+are good)
+
+- Standardization of the extended data matrix to ensure that the two
+criterion functions do no differ markedly in scale [@brusco2019]
+
+- Using variable weighting (see Steinley, 2006, p. 13), we can 
+adjust the relative importance of minimizing differences in means
+and variances. Standard in `anticlust`: Equal weight, this is 
+achieved by first creating the new variables, representing 
+the squared differences from the mean, and then standardizing
+the entire feature matrix. If $N$ is large enough (relative to $K$),
+there is usually no need for weighting.
+
+# Evaluation 
+
+- Do simulations to show that k-variance anticlustering outperforms 
+other objectives with regard to similarity in means / variances
+
+- New objective seems to work best when N is high relative to K; 
 optimizing two objectives at the same time is hard when N is low. Easier 
 when only optimizing one objective (i.e., the mean, as done by normal
 k-means anticlustering).
@@ -348,30 +392,14 @@ k-means anticlustering).
 k-means: only mean; using k-variance: only variance; combination:
 both, but works better for larger $N$
 
-# Weighted k-means
-
-Using variable weighting (see Steinley, 2006, p. 13), we can 
-adjust the relative importance of minimizing differences in means
-and variances. Standard in `anticlust`: Equal weight, this is 
-achieved by first creating the new variables, representing 
-the squared differences from the mean, and then standardizing
-the entire feature matrix. If $N$ is large enough (relative to $K$),
-there is usually no need for weighting.
-
-# Simulation 
-
-- show that k-variance anticlustering outperforms other objectives
-
-# Examples
-
-- use some examples (e.g., OASIS data set)
-
-# Combined approach better than k-variance alone
-
 - Often, maximizing k-means-variance yields more similar variances 
 than k-variance alone. Why is that? I guess: structure in the solution 
 space, local maxima are real. When also considering means, you more 
 often escape bad local maxima?
+
+# Examples
+
+- use some examples (e.g., OASIS data set)
 
 # Test equivalence of objectives
 
