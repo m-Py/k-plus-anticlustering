@@ -2,6 +2,8 @@
 # Investigate why k-variance is worse than k-means-variance for 
 # optimizing between-group similarity in variance
 
+source("exchange_method.R")
+
 library(anticlust)
 
 N <- 16
@@ -39,25 +41,6 @@ df <- data.frame(
 
 # exchange method for finding all objectives
 
-local_maximum_exchange <- function(features, init) {
-  best_partition <- init
-  found_partitions <- list(best_partition)
-  new_obj <- variance_objective(features, best_partition)
-  old_obj <- -Inf
-  while (new_obj > old_obj) {
-    partitions <- anticlustering(
-      features,
-      K = best_partition, 
-      objective = variance_objective
-    )
-    best_partition <- partitions[[length(partitions)]]
-    old_obj <- new_obj
-    new_obj <- variance_objective(features, best_partition)
-    found_partitions <- c(found_partitions, partitions)
-  }
-  found_partitions[!duplicated(found_partitions)]
-} 
-
 squared_from_mean <- function(data) {
   apply(data, 2, function(x) (x - mean(x))^2)
 }
@@ -69,15 +52,18 @@ init <- anticlust:::order_cluster_vector(init)
 # Do local search for three objectives
 partitions_means <- local_maximum_exchange(
   features, 
-  init
+  init,
+  anticlust::variance_objective
 )
 partitions_variance <- local_maximum_exchange(
   squared_from_mean(features), 
-  init
+  init,
+  anticlust::variance_objective
 )
 partitions_means_variance <- local_maximum_exchange(
   cbind(features, squared_from_mean(features)), 
-  init
+  init,
+  anticlust::variance_objective
 )
 
 plot(df, col = "darkgrey", las = 1, pch = 4, cex = 0.8)
