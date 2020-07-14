@@ -380,58 +380,33 @@ there is usually no need for weighting.
 
 # Evaluation 
 
-- Do simulations to show that k-variance anticlustering outperforms 
-other objectives with regard to similarity in means / variances
-
-- New objective seems to work best when N is high relative to K; 
-optimizing two objectives at the same time is hard when N is low. Easier 
-when only optimizing one objective (i.e., the mean, as done by normal
-k-means anticlustering).
-
-- Two examples: $K = 2$, $N = 20$ vs. $N = 100$, using classical
+- Simulation 1: Show that k-means extended obtains 99.999% of the 
+k-means and k-variance objective, on average. 
+  + New objective seems to work best when N is high relative to K; optimizing 
+two objectives at the same time is hard when N is low. Easier when only 
+optimizing one objective (i.e., the mean, as done by normal k-means 
+anticlustering). What I can say: When N / K > X, the objective is 
+usually 99.99% of both objectives.
+  + Two examples: $K = 2$, $N = 20$ vs. $N = 100$, using classical
 k-means: only mean; using k-variance: only variance; combination:
 both, but works better for larger $N$
+
+- Simulation 2: show that k-variance anticlustering outperforms 
+other objectives with regard to similarity in means / variances 
+(in particular: anticluster editing)
 
 - Often, maximizing k-means-variance yields more similar variances 
 than k-variance alone. Why is that? I guess: structure in the solution 
 space, local maxima are real. When also considering means, you more 
-often escape bad local maxima?
+often escape bad local maxima? The finding is: k-means-extended better 
+minimizes the maximum difference between the variance across groups 
+than k-variance (for K > 2), which in the eye of the researcher, may 
+be a more intuitive criterion.
 
 # Examples
 
-- use some examples (e.g., OASIS data set)
-
-# Test equivalence of objectives
-
-Check that I can actually just append the squared difference data as 
-additional columns to the original data frame:
-
-```{r}
-
-squared_from_mean <- function(data) {
-  apply(data, 2, function(x) (x - mean(x))^2)
-}
-
-
-N <- 500
-M <- 20
-data <- matrix(rnorm(N * M), ncol = M)
-var_data <- squared_from_mean(data)
-
-K <- 10
-clusters <- sample(rep_len(1:K, N))
-
-obj1 <- variance_objective(data, clusters) + variance_objective(var_data, clusters)
-obj2 <- variance_objective(cbind(data, var_data), clusters)
-
-tolerance <- 1e-10
-
-obj1 - obj2 < tolerance
-
-obj1
-obj2
-
-```
+- use some examples (e.g., OASIS data set, 900 items allocated to 10 
+sets, same mean and variance across the 10 sets)
 
 \newpage
 
