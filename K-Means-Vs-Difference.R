@@ -57,7 +57,7 @@ df <- data.frame(
   kExt = all_objectives_kExtended
 )
 
-plot(df, col = "darkgrey", las = 1, pch = 4, cex = 0.8)
+#plot(df, col = "darkgrey", las = 1, pch = 4, cex = 0.8)
 
 
 # Initialize a partition

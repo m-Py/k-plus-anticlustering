@@ -23,18 +23,15 @@ init <- order_cluster_vector(init)
 # Do local search for three objectives
 partitions_means <- local_maximum_exchange(
   features, 
-  init,
-  anticlust::variance_objective
+  init
 )
 partitions_variance <- local_maximum_exchange(
   dist_features, 
-  init,
-  anticlust::variance_objective
+  init
 )
 partitions_means_variance <- local_maximum_exchange(
   combined_features, 
-  init,
-  anticlust::variance_objective
+  init
 )
 
 partitions <- list(
