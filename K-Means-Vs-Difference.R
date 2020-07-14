@@ -9,36 +9,12 @@
 
 library(anticlust)
 source("exchange_method.R")
+source("misc-functions.R")
 
 N <- 12
 K <- 3
 all_partitions <- generate_partitions(N, K)
 features <- as.matrix(rnorm(N))
-
-## Create an objective function that takes the partition
-## as first argument (then, we can use sapply to compute
-## the objective for each partition)
-
-sum_diff_vars <- function(clusters, features) {
-  features <- as.matrix(features) 
-  sum(apply(features, 2, diff_vars, features = features, clusters = clusters))
-}
-
-diff_vars <- function(clusters, features) {
-  abs(diff(range(tapply(features, clusters, var))))
-}
-
-diff_mean <- function(clusters, features) {
-  abs(diff(range(tapply(features, clusters, mean))))
-}
-
-squared_from_mean <- function(data) {
-  apply(data, 2, function(x) (x - mean(x))^2)
-}
-
-obj_fun <- function(clusters, features) {
-  variance_objective(features, clusters)
-}
 
 all_objectives_var <- sapply(
   all_partitions,
@@ -54,19 +30,19 @@ all_objectives_mean <- sapply(
 
 all_objectives_kVariances <- sapply(
   all_partitions,
-  FUN = obj_fun,
+  FUN = var_objective,
   features = squared_from_mean(features)
 )
 
-all_objectives_kMeans<- sapply(
+all_objectives_kMeans <- sapply(
   all_partitions,
-  FUN = obj_fun,
+  FUN = var_objective,
   features = features
 )
 
 all_objectives_kExtended <- sapply(
   all_partitions,
-  FUN = obj_fun,
+  FUN = var_objective,
   features = cbind(squared_from_mean(features), features)
 )
 
@@ -85,7 +61,6 @@ plot(
   pch = 4, 
   cex = 0.8
 )
-
 
 # Initialize a partition
 init <- sample(rep_len(1:K, N))
@@ -142,28 +117,10 @@ points(plot_df [match(list(init), all_partitions), , drop = FALSE], cex = 2, pch
 legend("topright", legend = c("k-means", "k-variance", "k-extended"),
        pch = c(19, 18, 17), col = c("#28E2E5", "#2297E6", "#CD0BBC"))
 
-nth <- function(x) {
-  x[[length(x)]]
-}
-
-# Check out similarity of item means (rounded on two decimals)
-fun_by_group <- function(features, clusters, fun) {
-  data.frame(lapply(by(features, clusters, function(x) apply(x, 2, fun)), c))
-}
-
-diff_min_max <- function(x) {
-  diff(range(x))
-}
-
-group_diff_min_max <- function(features, clusters, fun) {
-  apply(fun_by_group(features, clusters, fun), 1, diff_min_max)
-}
-
-
 # Difference between min/max variance or SD gives different results 
 # with regard to similarity of the groups!
 fun <- var
 
-group_diff_min_max(features, nth(partitions_means), fun)
-group_diff_min_max(features, nth(partitions_means_variance), fun)
-group_diff_min_max(features, nth(partitions_variance), fun)
+group_diff_min_max(last(partitions_means), features, fun)
+group_diff_min_max(last(partitions_means_variance), features, fun)
+group_diff_min_max(last(partitions_variance), features, fun)

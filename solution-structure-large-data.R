@@ -3,15 +3,13 @@
 # optimizing between-group similarity in variance
 
 source("exchange_method.R")
+source("misc-functions.R")
 
-squared_from_mean <- function(data) {
-  apply(data, 2, function(x) (x - mean(x))^2)
-}
 
 library(anticlust)
 library(tidyverse)
 
-N <- 200
+N <- 100
 M <- 4
 K <- 4
 features <- matrix(rnorm(N * M), ncol = M)
@@ -39,10 +37,6 @@ partitions_means_variance <- local_maximum_exchange(
   anticlust::variance_objective
 )
 
-var_objective <- function(clusters, data) {
-  anticlust::variance_objective(data, clusters)
-}
-
 partitions <- list(
   kMeans = partitions_means, 
   kVariance = partitions_variance, 
@@ -52,7 +46,6 @@ all_features <- list(
   kMeans = features, 
   kVariance = dist_features
 )
-
 
 results_list <- list()
 # iterate over data and objectives
@@ -89,6 +82,6 @@ best_mean <- partitions_means[[length(partitions_means)]]
 best_var <- partitions_variance[[length(partitions_variance)]]
 best_mean_var <- partitions_means_variance[[length(partitions_means_variance)]]
 
-mean_sd_tab(features, best_mean, return_diff = TRUE)
-mean_sd_tab(features, best_var, return_diff = TRUE)
-mean_sd_tab(features, best_mean_var, return_diff = TRUE)
+sum(group_diff_min_max(best_mean, features, var))
+sum(group_diff_min_max(best_var, features, var))
+sum(group_diff_min_max(best_mean_var, features, var))

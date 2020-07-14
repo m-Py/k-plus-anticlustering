@@ -1,14 +1,9 @@
 
 library(anticlust)
 
-squared_from_mean <- function(data) {
-  apply(data, 2, function(x) (x - mean(x))^2)
-}
-
-
 N <- 150
-M <- 1
-K <- 2
+M <- 2
+K <- 3
 features <- matrix(rnorm(N * M), ncol = M)
 #features <- schaper2019[, 3:6]
 
@@ -64,7 +59,7 @@ variance_objective(features, ac_kmeans_var) / variance_objective(features, ac_km
 # WHY IS K-MEANS EXTENDED BETTER AT MINIMIZING MAXIMUM DIFFERENCE IN 
 # VARIANCE THAN K-VARIANCE ALONE? NOT SURE YET. (and this is only the 
 # case for K > 2)
-sum(group_diff_min_max(features, ac_kmeans, var))
-sum(group_diff_min_max(features, ac_kmeans_var, var))
-sum(group_diff_min_max(features, ac_kmeans_var_only, var))
+sum(group_diff_min_max(ac_kmeans, features, var))
+sum(group_diff_min_max(ac_kmeans_var, features, var))
+sum(group_diff_min_max(ac_kmeans_var_only, features, var))
 
