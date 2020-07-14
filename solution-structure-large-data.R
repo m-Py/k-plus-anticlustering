@@ -49,7 +49,7 @@ results_list <- list()
 for (i in names(partitions)) {
   iteration <- 1:length(partitions[[i]])
   for (j in names(all_features)) {
-    objectives <- sapply(partitions[[i]], var_objective, data = all_features[[j]])
+    objectives <- sapply(partitions[[i]], var_objective, features = all_features[[j]])
     results_list[[paste0(i, "-", j)]] <- data.frame(
       objectives, method = i, objective = j, iteration = iteration
     )
@@ -69,16 +69,15 @@ ggplot(results, aes(x = kMeans, y = kVariance, group = method)) +
 
 options(pillar.sigfig = 6)
 
+# K-Variance better optimizes k-variance criterion ....
 results %>% 
   group_by(method) %>% 
   summarize(
     kVarianceObj = max(kVariance),
     kMeansObj = max(kMeans))
 
-best_mean <- partitions_means[[length(partitions_means)]]
-best_var <- partitions_variance[[length(partitions_variance)]]
-best_mean_var <- partitions_means_variance[[length(partitions_means_variance)]]
-
-sum(group_diff_min_max(best_mean, features, var))
-sum(group_diff_min_max(best_var, features, var))
-sum(group_diff_min_max(best_mean_var, features, var))
+# ... but is worse at minimizing the difference in range in variance,
+# compared to k-extended  
+sum(group_diff_min_max(last(partitions_means), features, var))
+sum(group_diff_min_max(last(partitions_variance), features, var))
+sum(group_diff_min_max(last(partitions_means_variance), features, var))

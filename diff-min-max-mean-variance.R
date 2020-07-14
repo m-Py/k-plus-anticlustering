@@ -11,7 +11,7 @@ library(anticlust)
 source("exchange_method.R")
 source("misc-functions.R")
 
-N <- 100
+N <- 200
 M <- 4
 K <- 4
 features <- matrix(rnorm(N * M), ncol = M)
@@ -73,7 +73,7 @@ sample_point <- function(clusters, features) {
   )
 }
 
-pts <- data.frame(t(replicate(10000, sample_point(init, features))))
+pts <- data.frame(t(replicate(1000, sample_point(init, features))))
 plot(
   pts, 
   col = "darkgrey", 
@@ -122,5 +122,8 @@ points(objectives[["diff_mean"]][[c(1, 1)]],
 legend("topright", legend = c("k-means", "k-variance", "k-extended"),
        pch = c(19, 18, 17), col = c("#28E2E5", "#2297E6", "#CD0BBC"))
 
+sum_group_diff_min_max(last(partitions_means), features, var)
+sum_group_diff_min_max(last(partitions_variance), features, var)
+sum_group_diff_min_max(last(partitions_means_variance), features, var)
 
 # randomly sample points to illustrate the solution space
