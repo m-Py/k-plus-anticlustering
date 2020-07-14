@@ -11,21 +11,24 @@ library(anticlust)
 source("exchange_method.R")
 source("misc-functions.R")
 
-N <- 12
+N <- 15
+M <- 3
 K <- 3
+features <- matrix(rnorm(N * M), ncol = M)
 all_partitions <- generate_partitions(N, K)
-features <- as.matrix(rnorm(N))
 
 all_objectives_var <- sapply(
   all_partitions,
-  FUN = diff_vars,
-  features = features
+  FUN = sum_group_diff_min_max,
+  features = features,
+  fun = var
 )
 
 all_objectives_mean <- sapply(
   all_partitions,
-  FUN = diff_mean,
-  features = features
+  FUN = sum_group_diff_min_max,
+  features = features,
+  fun = mean
 )
 
 all_objectives_kVariances <- sapply(
@@ -54,13 +57,8 @@ df <- data.frame(
   kExt = all_objectives_kExtended
 )
 
-plot(
-  df, 
-  col = "darkgrey", 
-  las = 1, 
-  pch = 4, 
-  cex = 0.8
-)
+plot(df, col = "darkgrey", las = 1, pch = 4, cex = 0.8)
+
 
 # Initialize a partition
 init <- sample(rep_len(1:K, N))
@@ -112,7 +110,7 @@ points(
   type = "b",
   lwd = 2
 )
-points(plot_df [match(list(init), all_partitions), , drop = FALSE], cex = 2, pch = 19)
+points(plot_df[match(list(init), all_partitions), , drop = FALSE], cex = 3, pch = 15)
 
 legend("topright", legend = c("k-means", "k-variance", "k-extended"),
        pch = c(19, 18, 17), col = c("#28E2E5", "#2297E6", "#CD0BBC"))
@@ -121,6 +119,10 @@ legend("topright", legend = c("k-means", "k-variance", "k-extended"),
 # with regard to similarity of the groups!
 fun <- var
 
-group_diff_min_max(last(partitions_means), features, fun)
-group_diff_min_max(last(partitions_means_variance), features, fun)
-group_diff_min_max(last(partitions_variance), features, fun)
+variance_objective(squared_from_mean(features), last(partitions_means_variance))
+variance_objective(squared_from_mean(features), last(partitions_variance))
+
+sum_group_diff_min_max(last(partitions_means_variance), features, fun)
+sum_group_diff_min_max(last(partitions_variance), features, fun)
+
+round(cor(plot_df), 2)

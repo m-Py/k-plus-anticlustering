@@ -3,6 +3,7 @@
 # optimizing between-group similarity in variance
 
 library(anticlust)
+source("misc-functions.R")
 
 N <- 14
 K <- 2
@@ -12,6 +13,10 @@ features <- matrix(rnorm(N * M), ncol = M)
 
 obj_fun <- function(partitions, features) {
   variance_objective(features, partitions)
+}
+
+squared_from_mean <- function(data) {
+  apply(data, 2, function(x) (x - mean(x))^2)
 }
 
 all_objectives_mean <- sapply(
@@ -30,12 +35,6 @@ df <- data.frame(
   kMeans = all_objectives_mean,
   kVariance  = all_objectives_var
 )
-
-# exchange method for finding all objectives
-
-squared_from_mean <- function(data) {
-  apply(data, 2, function(x) (x - mean(x))^2)
-}
 
 # Compute Pareto efficient set!
 

@@ -9,6 +9,13 @@ last <- function(x) {
   x[[length(x)]]
 }
 
+# Sum of difference between minimum and maximum value per feature of a 
+# data frame, by a group variable (i.e., total deviation in variances,
+# measured by difference between min/max variance, across several features)
+sum_group_diff_min_max <- function(clusters, features, fun) {
+  sum(group_diff_min_max(clusters, features, fun))
+}
+
 # Difference between minimum and maximum value per feature of a data frame,
 # by a group variable
 group_diff_min_max <- function(clusters, features, fun) {
