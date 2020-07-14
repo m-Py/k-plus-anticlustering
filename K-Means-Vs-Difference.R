@@ -147,8 +147,16 @@ nth <- function(x) {
 }
 
 # Check out similarity of item means (rounded on two decimals)
-fun_by_group <- function(features, anticlusters, fun) {
-  data.frame(lapply(by(features, anticlusters, function(x) apply(x, 2, fun)), c))
+fun_by_group <- function(features, clusters, fun) {
+  data.frame(lapply(by(features, clusters, function(x) apply(x, 2, fun)), c))
+}
+
+diff_min_max <- function(x) {
+  diff(range(x))
+}
+
+group_diff_min_max <- function(features, clusters, fun) {
+  apply(fun_by_group(features, clusters, fun), 1, diff_min_max)
 }
 
 
@@ -156,6 +164,6 @@ fun_by_group <- function(features, anticlusters, fun) {
 # with regard to similarity of the groups!
 fun <- var
 
-diff(range(fun_by_group(features, nth(partitions_means), fun)))
-diff(range(fun_by_group(features, nth(partitions_means_variance), fun)))
-diff(range(fun_by_group(features, nth(partitions_variance), fun)))
+group_diff_min_max(features, nth(partitions_means), fun)
+group_diff_min_max(features, nth(partitions_means_variance), fun)
+group_diff_min_max(features, nth(partitions_variance), fun)
