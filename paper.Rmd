@@ -1,5 +1,5 @@
 ---
-title             : "An extension of k-means anticlustering to optimize between-group similarity"
+title             : "A bicriterion extension of k-means anticlustering to optimize between-group similarity"
 shorttitle        : "K-means anticlustering extended"
 
 author:
@@ -39,7 +39,7 @@ mask              : no
 draft             : no
 
 documentclass     : "apa6"
-classoption       : "man"
+classoption       : "doc"
 output            : papaja::apa6_pdf
 ---
 
@@ -87,49 +87,68 @@ dissimilar as possible from each other. Note that maximizing the
 dispersion no longer simultaneously maximize between-group similarity. 
 In this case, these two potential aims of anticlustering diverge.
 
-Oftentimes, the available data does not represent pairwise 
-similarity, but rather numeric, categorical or binary attributes 
-[@dry2009]. That is, the data is a two-way table where rows represent 
-elements and columns represent variables describing the elements. For 
-example, numeric ratings may describe the attributes of word stimuli for 
-psycholinguistic experiments. Such data may include Norms for imagery, 
-concreteness and orthographic variables [@friendly1982]. In other cases, 
-attributes are binary and may represent the presence or absence of 
-a feature [@tversky1977]. Attribute data can be converted to pairwise 
-dissimilarities for example by computing an appropriate dissimilarity 
-measure, such as the pairwise Euclidean or squared Euclidean distance 
-across a set of numeric attributes [@brusco2019]. Then, anticlustering 
-criteria based on pairwise dissimilarity can be applied to partition the 
-elements. 
+Oftentimes, the available data does not represent pairwise similarity, 
+but rather numeric, categorical or binary attributes [@dry2009]. That 
+is, the data is a two-way two-mode [@arabie1992] table where rows 
+represent the entities of study, and columns represent variables 
+describing the elements. For example, numeric ratings may describe the 
+attributes of word stimuli for psycholinguistic experiments. Such data 
+may include Norms for imagery, concreteness and orthographic variables 
+[@friendly1982]. In other cases, attributes are binary and may represent 
+the presence or absence of a feature [@tversky1977]. Such data can be 
+converted to pairwise dissimilarities for example by computing an 
+appropriate dissimilarity measure, such as the pairwise Euclidean or 
+squared Euclidean distance across a set of numeric attributes 
+[@brusco2019]. Then, anticlustering criteria based on pairwise 
+dissimilarity can be applied to partition the elements. 
 
 A different approach to anticlustering directly works with feature based 
 data and does not require a transformation into pairwise 
-dissimilarities: k-means anticlustering. Späth [-@spath1986] and Valev 
-[-@valev1998; -@valev1983] independently recognized that by optimizing 
-the reversed objective function of the popular k-means algorithm 
-[@jain2010; @steinley2006], a data set is partitioned into similar 
-groups. They originally---and independently from each other---coined the 
-term anticlustering for this purpose. K-means anticlustering maximizes the 
-sum of squared Euclidean distances from each element to the center of 
-the cluster to which it belongs [cf. @aloise2009np]. As @spath1986 
-noted, k-means anticlustering thereby directly minimizes differences 
-with regard to the means of the numeric variables between groups. Hence, 
-groups only become similar with regard to the mean of the distribution 
-of the numeric attributes, which may perform poorly as a measure of 
-overall similarity; the spread of the data is not targeted and may 
-differ between sets. @papenberg2020 showed that maximizing the 
-diversity (based on the pairwise Euclidean distances) is better suited 
-to minimize difference with regard to both the mean and the variance of 
-the data; it was shown that even an entirely random split usually 
-resulted in more similar standard deviations as k-means solely focuses 
-on the mean. When requiring that groups are overall similar to each 
-other, this focus may be detrimental as similar means can be obtained 
-even when the underlying distributions are very different 
-[@anscombe1973]. 
+dissimilarities. Instead, the sum of the squared Euclidean distances 
+between elements and the cluster they are assigned to is minimized 
+[brusco2006branch], most prominently using the k-means heuristic 
+[@jain2010; @steinley2006]. K-means clustering maximizes between-cluster 
+separation and within-cluster homogeneity simultaneously 
+[@aloise2009np]. Späth [-@spath1986] and Valev [-@valev1998; 
+-@valev1983] independently recognized that by optimizing the reversed 
+k-means objective that is, maximizing the sum of distances between 
+elements and cluster centroids -- a data set is partitioned into similar 
+groups, thereby reversing the logic of classical clustering. They 
+independently from each other coined the term anticlustering for this 
+purpose. K-means anticlustering maximizes the sum of squared Euclidean 
+distances from each element to the center of the cluster to which it 
+belongs. As @spath1986 noted, k-means anticlustering thereby directly 
+minimizes differences with regard to the means of the numeric variables 
+between groups. Hence, groups only become similar with regard to the 
+mean of the distribution of the numeric attributes, which may perform 
+poorly as a measure of overall similarity; the spread of the data is not 
+targeted and may differ between sets. @papenberg2020 showed that 
+maximizing the diversity (based on the pairwise Euclidean distances) is 
+better suited to minimize difference with regard to both the mean and 
+the variance of the data; it was shown that even an entirely random 
+split usually resulted in more similar standard deviations as k-means 
+solely focuses on the mean. When requiring that groups are overall 
+similar to each other, this focus may be detrimental as similar means 
+can be obtained even when the underlying distributions are very 
+different [@anscombe1973]. 
 
 In this paper, I present a simple extension of the k-means objective 
-function to maximize simililarity with regard to means and variances 
-at the same time. 
+function to maximize simililarity with regard to means and variances at 
+the same time. The aim is to establish groups that are overall similar 
+to each other. It is shown that this is achieved by formulating a 
+bicriterion optimization objective for k-means anticlustering. 
+Interestingly, under specific---and important---circumstances, this 
+reformulation reduces to an augmentation of the original data matrix 
+while the optimization objective remains unchanged. This insight has 
+important consequences as it allows to adapt standard optimization 
+schemes for single criterion anticlustering. I show that the extended 
+k-means criterion outperforms other anticlustering criteria when the 
+goal is the minimize difference with regard to the mean and variance of 
+the different groups. In most cases, both objectives can be optimized
+satisfactorily at the same time without any loss on either; when the 
+data set is large enough (usually, when $N > XX$), the bicriterion 
+optimization leads to > 99.99% objective performance as compared to the 
+single optimization of either k-means or k-variance.
 
 ## A Motivating Example
 
@@ -194,18 +213,18 @@ points(
 
 ```
 
-An example will show that aiming not only for similarity in attribute 
-means is not only useful, but also possible. I created 14 data points 
-from a normal distribution ($M = 15$, $SD = 3$, see Table 1). The data 
-points in Figure 1 illustrate all `r length(partitions)`  ways to 
-partition a data set of $N = 14$ into two parts (the Appendix contains 
-an explanation how to compute the number of partitions and how to 
-generate them). Red point: maximum similarity in means; green point 
-= maximum similarity in variance. Blue point: Almost no difference to 
-red point wrt similarity in means, but variance is much more similar. 
-This blue partition is certainly preferable to the red one when maximal 
-overall similarity is required; the red one just optimizes similarity in 
-means (which is what maximizing the k-means objective does). 
+An motivating example illustrates that aiming to optimize similarity of 
+means of standard deviations in a data set is not only desirable, but 
+also expected to be feasible. To this end, I created 14 data points from 
+a normal distribution ($M = 15$, $SD = 3$, see Table 1). The data points 
+in Figure 1 illustrate all `r length(partitions)`  ways to partition a 
+data set of $N = 14$ into two parts. Red point: maximum similarity in 
+means; green point = maximum similarity in variance. Blue point: Almost 
+no difference to red point wrt similarity in means, but variance is much 
+more similar. This blue partition is certainly preferable to the red one 
+when maximal overall similarity is required; the red one just optimizes 
+similarity in means (which is what maximizing the k-means objective 
+does). 
 
 
 ```{r datatables}
