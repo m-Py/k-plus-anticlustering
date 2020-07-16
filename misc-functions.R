@@ -50,3 +50,32 @@ diff_mean <- function(clusters, features) {
 var_objective <- function(clusters, features) {
   anticlust::variance_objective(features, clusters)
 }
+
+
+# For a data frame (rows = partitions, columns = objectives), determine which 
+# elements are part of the Pareto efficient set. Output is a logical vector,
+# illustrating for each row if it is part of the Pareto efficient set.
+# `sense` can be "max" or "min", depending on whether high objective values
+# are good or low objective values. 
+pareto_set <- function(df, sense = "max") {
+  if (sense == "min") {
+    df <- -df
+  }
+  df <- data.frame(df)
+  ncrits <- ncol(df)
+  df$ID <- 1:nrow(df)
+  df <- df[order(rowSums(df[, 1:ncrits]), decreasing = TRUE), ]
+  
+  is_dominated <- rep(FALSE, nrow(df)) 
+  for (i in nrow(df):1) {
+    for (j in 1:nrow(df)) {
+      j_dominates_i <- all(df[i, 1:ncrits] <= df[j, 1:ncrits]) && 
+                       any(df[i, 1:ncrits] < df[j, 1:ncrits])
+      if (j_dominates_i) {
+        is_dominated[df$ID[i]] <- TRUE
+        break
+      }
+    }
+  }
+  !is_dominated
+}
