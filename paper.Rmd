@@ -338,16 +338,20 @@ $K = 2$ equal-sized groups. I computed the difference in the two means
 and two variances for each partition. This simple difference metric was 
 chosen for purposes of interpretability; in fact, there is a a 1-to-1 
 correspondence between these differences and $SSE$ and 
-$SSE_{\mathrm{VAR}}$, respectively (Figure 1). Figure 2 illustrates 
-similarity in means plotted against similarity in variances across all 
-partitions. Ideally, a partition is chosen that minimizes the 
-difference with regard to means and variances (see the triangular 
+$SSE_{\mathrm{VAR}}$, respectively (Figure 1).[^onlyonegroup] Figure 2 
+illustrates similarity in means plotted against similarity in variances 
+across all partitions. Ideally, a partition is chosen that minimizes 
+the difference with regard to means and variances (see the triangular 
 symbol). However, optimal k-means anticlustering would create two groups 
 that are not particularly similar with regard to their variance and 
 chose the partition that is represented by the squared symbol. The 
 diamond symbol represents that partition that where the two groups have 
 the least difference in variances. The black symbols illustrate the 
 other members of the optimal pareto set. 
+
+[^onlyonegroup]: Note that this such a correspondence no longer holds 
+when there are more than two groups or there is more than one 
+numeric attribute (i.e., if $K > 2$ or $P > 1$).
 
 ```{r, fig.cap = "Illustrates the 1-to-1 relationship between SSE and difference in means (Panel A) and variance (Panel B). Each data point illustrates a partition, i.e., a way to divide a data set ($N = 14$) into two groups.", fig.height = 3.5}
 
