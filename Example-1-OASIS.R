@@ -1,6 +1,5 @@
 
 library(anticlust)
-library(ggplot2)
 
 oasis <- read.csv("https://raw.githubusercontent.com/aenneb/OASIS-beauty/master/means_per_image.csv")
 
@@ -16,8 +15,7 @@ oasis$ac <- anticlustering(
   K = 10,
   categories = oasis$Category, 
   objective = "variance",
-  method = "local-maximum",
-  preclustering = FALSE
+  method = "local-maximum"
 )
 
 mean_sd_tab(features, oasis$ac)
