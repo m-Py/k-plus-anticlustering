@@ -21,3 +21,4 @@ anticlusters <- anticlustering(
 )
 
 mean_sd_tab(features, anticlusters)
+table(anticlusters)
