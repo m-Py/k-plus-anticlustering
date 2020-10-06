@@ -21,7 +21,7 @@ authornote: |
 
 abstract: |
     Anticlustering is an automated method to partition data sets into groups 
-    in such a way that high between-group similarity and high within-group 
+    in such a way that high between-group similarity and high within-group
     heterogeneity is obtained. Anticlustering has important applications in 
     psychological research, for example to partition stimulus sets into 
     equivalent sets, or to divide a group of students into heterogeneous 
@@ -70,6 +70,7 @@ options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE) 
 
 source("misc-functions.R")
+set.seed(2207) # 2207
 
 ```
 
@@ -175,7 +176,7 @@ single optimization of either k-means or k-variance.
 # Problem formalization
 
 For the purpose of problem formalization, I adopt the notation Steinley 
-(2006) provided in his thorough synthesis of a half-century literature 
+(2006) provided in his comprehensive synthesis of the literature 
 on k-means. K-means clustering is used to partition two-way, two-mode 
 data (that is, $N$ elements each having $P$ attributes) into $K$ groups 
 $(C_1., \ldots, C_K)$ where $C_k$ is the set of $n_k$ objects in group 
@@ -300,32 +301,57 @@ obtain similar within-cluster variance in each cluster.
 
 ```{r}
 
-# Generate data and all partitions
+# First rendering is slow because the data needs to be generated
+path <- "partition_objectives.csv"
 
-set.seed(2207) # 2207
+if (!file.exists(path)) {
+  # Generate data and all partitions
+  N <- 14
+  K <- 2
+  partitions <- generate_partitions(N, K)
+  features <- rnorm(N, 15, 3)
 
-N <- 14
-K <- 2
-partitions <- generate_partitions(N, K)
-features <- rnorm(N, 15, 3)
+  # Compute objectives for each partition
+  all_objectives_mean <- sapply(
+    partitions,
+    FUN = diff_mean,
+    features = features
+  )
 
-# Compute objectives for each partition
-all_objectives_mean <- sapply(
-  partitions,
-  FUN = diff_mean,
-  features = features
-)
+  all_objectives_var <- sapply(
+    partitions,
+    FUN = diff_vars,
+    features = features
+  )
+  
+  # For each partition: Compute SSE objective, and SSE(VAR)
+  # SSE
+  all_objectives_kMeans <- sapply(
+    partitions,
+    FUN = var_objective,
+    features = features
+  )
 
-all_objectives_var <- sapply(
-  partitions,
-  FUN = diff_vars,
-  features = features
-)
+  # SSE(VAR)
+  all_objectives_kVar <- sapply(
+    partitions,
+    FUN = var_objective,
+    features = squared_from_mean(as.matrix(features))
+  )  
+  
+  df <- data.frame(
+    diff_mean = all_objectives_mean,
+    diff_var  = all_objectives_var,
+    kmeans = all_objectives_kMeans,
+    kvar = all_objectives_kVar
+  )
 
-df <- data.frame(
-  diff_mean = all_objectives_mean,
-  diff_var  = all_objectives_var
-)
+  write.table(
+    df, path, row.names = FALSE, sep = ","
+  )
+} else {
+  df <- read.csv(path)
+}
 
 ```
 
@@ -333,7 +359,7 @@ A motivating example illustrates that aiming to simultaneously optimize
 similarity of means and variances at the same time is not only 
 desirable, but may also be feasible. I created 14 data points from a 
 univariate normal distribution ($M = 15$, $SD = 3$) and generated all `r 
-length(partitions)` possible ways to partition the 14 data points into 
+n_partitions(14, 2)` possible ways to partition the 14 data points into 
 $K = 2$ equal-sized groups. I computed the difference in the two means 
 and two variances for each partition. This simple difference metric was 
 chosen for purposes of interpretability; in fact, there is a a 1-to-1 
@@ -355,26 +381,10 @@ numeric attribute (i.e., if $K > 2$ or $P > 1$).
 
 ```{r, fig.cap = "Illustrates the 1-to-1 relationship between SSE and difference in means (Panel A) and variance (Panel B). Each data point illustrates a partition, i.e., a way to divide a data set ($N = 14$) into two groups. In Panel C, the relationship between the two criteria across partitions is plotted. The highlighted symbols indicate membership of the pareto set. The partition represented by the diamond minimizes the difference in variances between groups; the partition represented by the square minimizes the difference in means between groups; the partition represented by the triangular minimizes the sum of the differences in means and variances. ", fig.height = 7, fig.width = 6}
 
-# For each partition: Compute SSE objective, and SSE(VAR)
-# SSE
-all_objectives_kMeans <- sapply(
-  partitions,
-  FUN = var_objective,
-  features = features
-)
-
-# SSE(VAR)
-all_objectives_kVar <- sapply(
-  partitions,
-  FUN = var_objective,
-  features = squared_from_mean(as.matrix(features))
-)
-
 # Plot relationship between objectives
 layout(matrix(c(1,2,3,3), 2, 2, byrow = TRUE), heights = c(1, 1.4))
 plot(
-  all_objectives_mean, 
-  all_objectives_kMeans, 
+  df[, c("diff_mean", "kmeans")],
   xlab = "mean(f1) - mean(f2)",
   ylab = "SSE",
   pch = 4, 
@@ -383,8 +393,7 @@ plot(
 )
 legend("topright", legend = "A", cex = 1.3, bty = "n")
 plot(
-  all_objectives_var, 
-  all_objectives_kVar, 
+  df[, c("diff_var", "kvar")],
   xlab = "var(f1) - var(f2)",
   ylab = "SSE_var",
   pch = 4, 
@@ -397,37 +406,38 @@ par(mar = c(7, 10, 0.4, 8) + 0.1)
 
 # Plot SSE vs SSE(VAR)
 plot(
-  df, pch = 4, col = "darkgrey", 
+  df[, c("kmeans", "kvar")], 
+  pch = 4, col = "darkgrey", 
   las = 1, cex = .5,
-  xlab = "mean(f1) - mean(f2)",
-  ylab = "var(f1) - var(f2)"
+  xlab = "kmeans",
+  ylab = "kvar"
 )
-legend("topright", legend = "C", cex = 1.3, bty = "n")
+legend("bottomleft", legend = "C", cex = 1.3, bty = "n")
 
 # Illustrate Pareto set
-pareto_pts <- pareto_set(df, sense = "min")
-points(df[pareto_pts, ], pch = 19)
+#pareto_pts <- pareto_set(df[, c("kmeans", "kvar")])
+#points(df[pareto_pts, c("kmeans", "kvar")], pch = 19)
 
-# Illustrate best partition wrt SSE (difference in means)
+# Illustrate best partition wrt difference in means
 points(
-  all_objectives_mean[which.min(all_objectives_mean)],
-  all_objectives_var[which.min(all_objectives_mean)],
+  df$kmeans[which.max(df$kmeans)],
+  df$kvar[which.max(df$kmeans)],
   cex = 1.2, pch = 22, bg = "white", lwd = 1.7
 )
 
-df$sum <- rowSums(df)
-
-# Illustrate best partition wrt SSE(VAR) (i.e., difference in variance)
+# Illustrate best partition wrt difference in variance
 points(
-  all_objectives_mean[which.min(df$sum)],
-  all_objectives_var[which.min(df$sum)],
+  df$kmeans[which.max(df$kvar)],
+  df$kvar[which.max(df$kvar)],
   cex = 1.2, pch = 24, bg = "white", lwd = 1.7
 )
 
+df$kplus <- rowSums(df[, c("kmeans", "kvar")])
+
 # Illustrate best partition wrt simililarity combined similarity / variance
 points(
-  all_objectives_mean[which.min(df$diff_var)],
-  all_objectives_var[which.min(df$diff_var)],
+  df$kmeans[which.max(df$kplus)],
+  df$kvar[which.max(df$kplus)],
   cex = 1.2, pch = 23, bg = "white", lwd = 1.7
 )
 ```
