@@ -3,7 +3,7 @@
 # optimizing between-group similarity in variance
 
 library(anticlust)
-source("misc-functions.R")
+source("../misc-functions.R")
 
 N <- 12
 K <- 3

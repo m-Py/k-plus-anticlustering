@@ -3,7 +3,7 @@
 # optimizing between-group similarity in variance
 
 source("exchange_method.R")
-source("misc-functions.R")
+source("../misc-functions.R")
 
 
 library(anticlust)

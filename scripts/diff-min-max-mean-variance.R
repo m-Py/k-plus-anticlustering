@@ -9,7 +9,7 @@
 
 library(anticlust)
 source("exchange_method.R")
-source("misc-functions.R")
+source("../misc-functions.R")
 
 N <- 200
 M <- 4
