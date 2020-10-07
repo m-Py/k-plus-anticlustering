@@ -1,5 +1,5 @@
 ---
-title             : "A bicriterion extension of k-means anticlustering to optimize between-group similarity"
+title             : "A bicriterion extension of k-means anticlustering"
 shorttitle        : "Bicriterion K-means anticlustering"
 
 author:
@@ -176,10 +176,10 @@ single optimization of either k-means or k-variance.
 # Problem formalization
 
 For the purpose of problem formalization, I adopt the notation Steinley 
-(2006) provided in his comprehensive synthesis of the literature 
-on k-means. K-means clustering is used to partition two-way, two-mode 
-data (that is, $N$ elements each having $P$ attributes) into $K$ groups 
-$(C_1., \ldots, C_K)$ where $C_k$ is the set of $n_k$ objects in group 
+(2006) provided in his comprehensive synthesis of half a century of research on 
+k-means. K-means clustering is used to partition two-way, two-mode 
+data. That is, $N$ elements each having $P$ attributes into $K$ groups 
+$(C_1., \ldots, C_K)$, $C_k$ being the set of $n_k$ objects in group 
 $k$. The partitioning is subject to the requirements that each element 
 is assigned to exactly one group, formalized by the two constraints
 
@@ -198,21 +198,28 @@ $$
 n_k = \frac{N}{K}, \forall k \in \{1, \ldots, K\}
 $$
 
-In this paper, I will discuss only such applications where groups are of 
-equal size.
-
 For a data matrix $\mathbf{X}_{N \times P} = \{x_{ij}\}_{N \times P}$, k-means 
 clustering aims to minimize the error sum of squares (SSE), also known as the 
-within-group variance. The SSE is the sum of the squared Euclidean distances 
-between each data point and its cluster centroid. The cluster centroid is given 
-by averaging the values on each variable over the elements within that cluster, 
-where the centroid $\overline{x}_j ^{(k)}$ of the *j*th variable in the *k*th cluster is 
+within-group variance [@spath1986]. The SSE is the sum of the squared Euclidean 
+distances between each data point and its cluster centroid; the *k*'th centroid 
+is a vector of length $P$, where each entry is the mean value of one of the $P$ 
+attributes across the observations belonging the *k*'th cluster ($k = 1, \ldots, 
+K$). The centroid of the *k*'th cluster has the notation 
+$\overline{\mathbf{x}}^{(k)}$ with
+$$
+\overline{\mathbf{x}}^{(k)} = 
+  (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})
+$$
+
+The mean $\overline{x}_j ^{(k)}$ of the *j*th variable on the *k*th cluster is 
+computed as:
 
 $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-The SSE is then given as:
+Based on the original data and the cluster centroids, the SSE---i.e., the k-means 
+objective function---is given as:
 
 $$
 \mathit{SSE} = 
@@ -222,16 +229,8 @@ $$
   (x_{ij} - \overline{x}_j ^{(k)})^2
 $$
 
-Note there is a direct connection between $SSE$ and the cluster 
-centroids [@spath1986]. If the complete centroid vector for cluster 
-$C_k$ is given by
-
-$$
-\overline{\mathbf{x}}^{(k)} = 
-  (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})
-$$
-
-and the $SSE$ is minimal, the centroid values 
+Note there is a direct connection between the $SSE$ and the location of the 
+cluster centroids [@spath1986]. If the $SSE$ is minimal, the centroid values 
 $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as 
 possible from the overall data centroid $\overline{\mathbf{x}} = 
 (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, 
@@ -245,58 +244,105 @@ $$
 If the $SSE$ is maximal, the cluster centroids are as close as possible to the 
 overall centroid $\overline{\mathbf{x}}$ and therefore to each other 
 [@spath1986]. Thus, k-means anticlustering directly optimizes the 
-similarity of the mean values of the attributes across the different clusters. 
+similarity of the mean values of the $P$ attributes across the $K$ clusters. 
 
-## K-Variances
+## Bi-criterion extension
 
-K-means anticlustering, i.e., maximizing SSE minimizes differences between the 
-means of the input variables. I present a rather simple extension of the SSE 
-criterion to simultaneously minimize differences with regard to the variances 
-of the input variables. The variance is defined as the sum of the squared 
-distances between all 
+K-means anticlustering---i.e., maximizing the SSE---minimizes differences 
+between the means of the input variables. In the following, a rather 
+straight-forward extension of the SSE criterion is formulated that can be used 
+to minimize differences with regard to the variances of the input variables at 
+the same time.
 
+For the sake of simplicity, we first consider a set of $N$ one-dimensional 
+observations $(x_1, \ldots, x_N)$. The extension to the general case of $P$ 
+attributes will be straight forward, because the formulation of the new 
+criterion effectively reduces to the generation of new variables, leaving the 
+k-means criterion SSE per sé unchanged. 
 
-The squared distance between an element $x = (x_1, \ldots, x_M)$ and the 
-average of all elements $\overline{\mathrm{\boldsymbol{x}}}$ is:
-
-$$
-\vert \vert x - \overline{\mathrm{\boldsymbol{x}}} \vert \vert^2 = 
-  \sum\limits_{m = 1}^{M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2
-$$
-
-Now define new data points representing the squared distances between 
-data points and the grand mean:
-
-$$ 
-y_i = (x_i - \mathrm{\boldsymbol{x}})^2, \forall i \in N
-$$
-
-where $\mathrm{\boldsymbol{x}}$ is a vector of length $M$ containing 
-the average for each feature.
-
-Now:
+The sample variance of this set of 
+observations is computed as the mean of the squared distances between 
+observations and their mean $\mathbf{x}$:
 
 $$
-\sum\limits_{m = 1}^{M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2 + 
-  \sum\limits_{m = 1}^{M}(y_{m} - \overline{\mathrm{\boldsymbol{y_m}}})^2 =
-  \sum\limits_{m = 1}^{M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2 + 
-    (y_{m} - \overline{\mathrm{\boldsymbol{y_m}}})^2
+\mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
 $$
 
-If we define $x_{m + 1} = y_1$, $x_{m + 2} = y_2$, ..., $x_{2M} = y_M$.
-this is the same as:
+We next define a new variable $y = (y_1, \ldots, y_N)$, representing the squared 
+deviation of each observation from the mean: 
 
 $$
-\sum\limits_{m = 1}^{2M}(x_{m} - \overline{\mathrm{\boldsymbol{x_m}}})^2 
+y_i = (x_i - \overline{\mathbf{x}})^2
 $$
 
-Thus, we redefine the data points and include an additional $M$ features 
-for each element. Then, we maximize $\mathit{Var}_{\mathrm{within}}$, 
-which corresponds to a tradeoff between minimizing differences in mean 
-features between clusters, and the average squared distance to the grand 
-mean, i.e., the within-cluster variance. That is: We try to maximize the 
-within-cluster variance, but to a certain degree we also strive to 
-obtain similar within-cluster variance in each cluster.
+The sample variance of $x$ is consequently the mean of these new values:
+
+$$
+\mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} y_i
+$$
+
+Note at this point that the sample variance is basically defined as a mean 
+value. We can use this insight and employ k-means anticlustering to equalize 
+this *mean* across groups. For a given $K$, groups can be created that are 
+similar with regard to the means of $y$---i.e., the variance of $x$---by 
+maximizing the SSE, in this one-dimensional case given as: 
+
+$$
+\mathit{SSE} = 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (y_{i} - \overline{y} ^{(k)})^2
+$$
+
+## Weighted-sum approach
+
+$$
+\mathit{SSE_{comb}} = 
+  w_1
+  \sum\limits_{k=1}^{K} 
+    \sum\limits_{i \in C_k}
+    (x_{i} - \overline{x} ^{(k)})^2 + 
+  w_2
+  \sum\limits_{k=1}^{K} 
+    \sum\limits_{i \in C_k}
+    (y_{i} - \overline{y} ^{(k)})^2
+$$
+
+The weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of 
+equalizing means and variances, respectively.
+
+## Unweighted case
+
+Some simplifications can be arranged when ignoring the weights on the two 
+criteria. 
+
+$$
+\mathit{SSE_{comb}} = 
+  \sum\limits_{k=1}^{K} 
+    \sum\limits_{i \in C_k}
+    (x_{i} - \overline{x} ^{(k)})^2 + 
+  \sum\limits_{k=1}^{K} 
+    \sum\limits_{i \in C_k}
+    (y_{i} - \overline{y} ^{(k)})^2 \\
+  = \sum\limits_{k=1}^{K} 
+     \sum\limits_{i \in C_k}
+     ((x_{i} - \overline{x} ^{(k)})^2 + 
+     (y_{i} - \overline{y} ^{(k)})^2)
+$$
+
+When defining $z = (x, y)$, the SSE reduces to the standard case in (X): 
+
+$$
+\mathit{SSE} = 
+  \sum\limits_{j=1}^{2} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (z_{ij} - \overline{z}_j ^{(k)})^2
+$$
+
+This logic can be extended to the general case of $P$ attributes; for each 
+attribute, a new variable is created as described above, and the entirety of 
+all $2P$ variables is then used as input to standard k-means anticlustering.
 
 ## Criterion Tradeoff
 
@@ -590,6 +636,8 @@ maximizing within-group heterogeneity]
 - Similarly: the reversed objective no longer has a useful clustering 
 interpretation: Maximizing differences in variances does not lead to 
 homogeneous and/or well separated clusters
+
+- extending on covariances?
 
 \newpage
 
