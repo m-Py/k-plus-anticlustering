@@ -186,6 +186,7 @@ is assigned to exactly one group, formalized by the two constraints
 $$
 \bigcup\limits_{k = 1}^{K} C_j = X
 $$
+
 $$
 C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k
 $$
@@ -201,25 +202,20 @@ $$
 For a data matrix $\mathbf{X}_{N \times P} = \{x_{ij}\}_{N \times P}$, k-means 
 clustering aims to minimize the error sum of squares (SSE), also known as the 
 within-group variance [@spath1986]. The SSE is the sum of the squared Euclidean 
-distances between each data point and its cluster centroid; the *k*'th centroid 
+distances between each data point and its cluster centroid. The *k*'th centroid 
 is a vector of length $P$, where each entry is the mean value of one of the $P$ 
-attributes across the observations belonging the *k*'th cluster ($k = 1, \ldots, 
-K$). The centroid of the *k*'th cluster has the notation 
-$\overline{\mathbf{x}}^{(k)}$ with
-$$
-\overline{\mathbf{x}}^{(k)} = 
-  (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})
-$$
-
-The mean $\overline{x}_j ^{(k)}$ of the *j*th variable on the *k*th cluster is 
+attributes, computed across the observations belonging the *k*'th cluster ($k = 
+1, \ldots, K$). The centroid of the *k*'th cluster $\overline{\mathbf{x}}^{(k)} 
+= (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ is 
 computed as:
 
 $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Based on the original data and the cluster centroids, the SSE---i.e., the k-means 
-objective function---is given as:
+Based on the data matrix $\mathbf{X}_{N \times P} = \{x_{ij}\}_{N \times P}$, 
+a partitioning of the data into $K$ clusters, the cluster centroids, the 
+SSE---i.e., the k-means objective function---is then given as:
 
 $$
 \mathit{SSE} = 
@@ -250,19 +246,19 @@ similarity of the mean values of the $P$ attributes across the $K$ clusters.
 
 K-means anticlustering---i.e., maximizing the SSE---minimizes differences 
 between the means of the input variables. In the following, a rather 
-straight-forward extension of the SSE criterion is formulated that can be used 
-to minimize differences with regard to the variances of the input variables at 
-the same time.
+straight-forward bicriterion extension of the SSE criterion is formulated that 
+can be used to minimize differences with regard to the variances of the input 
+variables at the same time.
 
-For the sake of simplicity, we first consider a set of $N$ one-dimensional 
-observations $(x_1, \ldots, x_N)$. The extension to the general case of $P$ 
-attributes will be straight forward, because the formulation of the new 
-criterion effectively reduces to the generation of new variables, leaving the 
-k-means criterion SSE per sé unchanged. 
+For the sake of simplicity, we first consider a set of one-dimensional 
+observations $(x_1, \ldots, x_N)$ to motivate the new criterion. The extension 
+to the general case of $P$ attributes will be straight forward, because the 
+formulation effectively reduces to the generation of new variables, whereas the 
+original k-means criterion remains unchanged.
 
-The sample variance of this set of 
-observations is computed as the mean of the squared distances between 
-observations and their mean $\mathbf{x}$:
+The sample variance of a set of observations $x = (x_1, \ldots, x_N)$ is 
+computed as the mean of the squared distances between observations and their 
+mean $\mathbf{x}$:
 
 $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
@@ -281,31 +277,67 @@ $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} y_i
 $$
 
-Note at this point that the sample variance is basically defined as a mean 
-value. We can use this insight and employ k-means anticlustering to equalize 
-this *mean* across groups. For a given $K$, groups can be created that are 
-similar with regard to the means of $y$---i.e., the variance of $x$---by 
-maximizing the SSE, in this one-dimensional case given as: 
+We can use the insight that the sample variance is basically defined as an 
+average, implying that k-means anticlustering can be employed to equalize this 
+average across different groups. This is the central insight leading to the new 
+criterion. In the one-dimensional case as discussed here, the SSE that 
+represents discrepancies with regard to the variance, is given as: 
 
 $$
-\mathit{SSE} = 
+\mathit{SSE_{Var}} = 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
   (y_{i} - \overline{y} ^{(k)})^2
 $$
 
-## Weighted-sum approach
+This criterion, reflecting discrepancies in variance across groups, is extended 
+to the general case of $P$ attributes as
 
 $$
-\mathit{SSE_{comb}} = 
+\mathit{SSE_{Var}} = 
+  \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (y_{ij} - \overline{y}_j ^{(k)})^2
+$$
+
+with 
+
+$$
+\overline{y}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} y_{ij}
+$$
+
+and 
+
+$$
+y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2.
+$$
+
+## Bicriterion formulation
+
+It will be rarely of interest to maximize $SSE_{Var}$ (equalizing variances) 
+without also considering the standard $SSE$ (i.e., equalizing means). A 
+combination of $SSE_{Var}$ and $SSE$, however, can be employed to simultaneously 
+optimize both objectives. That is, formulating a criterion incorporating both 
+discrepancies in means as well as variances to minimize difference with regard 
+to either. The most simple approach to such a bicriterion optimization is the 
+weighted sum approach. That is, 
+
+Combining (X) and (Y), we can obtain a combined criterion formulation as a 
+weighted sum criterion.
+
+$$
+\mathit{SSE_{bicriterion}} = 
   w_1
+  \sum\limits_{j=1}^{P} 
   \sum\limits_{k=1}^{K} 
-    \sum\limits_{i \in C_k}
-    (x_{i} - \overline{x} ^{(k)})^2 + 
+  \sum\limits_{i \in C_k}
+  (x_{ij} - \overline{x}_j ^{(k)})^2 + 
   w_2
+  \sum\limits_{j=1}^{P} 
   \sum\limits_{k=1}^{K} 
-    \sum\limits_{i \in C_k}
-    (y_{i} - \overline{y} ^{(k)})^2
+  \sum\limits_{i \in C_k}
+  (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
 
 The weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of 
@@ -317,7 +349,7 @@ Some simplifications can be arranged when ignoring the weights on the two
 criteria. 
 
 $$
-\mathit{SSE_{comb}} = 
+\mathit{SSE_{bicriterion}} = 
   \sum\limits_{k=1}^{K} 
     \sum\limits_{i \in C_k}
     (x_{i} - \overline{x} ^{(k)})^2 + 
@@ -330,10 +362,11 @@ $$
      (y_{i} - \overline{y} ^{(k)})^2)
 $$
 
-When defining $z = (x, y)$, the SSE reduces to the standard case in (X): 
+When defining $z_i = (z_{i1}, z_{i2})$ with $z_{i1} = x_i$ and $z_{i2} = y_i$, 
+the bicriterion SSE is computed as
 
 $$
-\mathit{SSE} = 
+\mathit{SSE_{bicriterion}} =
   \sum\limits_{j=1}^{2} 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
