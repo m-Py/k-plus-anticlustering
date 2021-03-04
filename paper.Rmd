@@ -442,7 +442,9 @@ other partitions with regard to $SSE_{Var}$. The diamond symbol represents
 that partition that where the two groups have the least difference in 
 variances. 
 
-Next: use the partition that optimizes $SSE_{kplus}$!
+- Next: use the partition that optimizes $SSE_{kplus}$! 
+- Also talk a bit about the general solution structure (-> many good solutions, 
+unlike clustering)
 
 [^onlyonegroup]: Note that this such a correspondence no longer holds 
 when there are more than two groups or there is more than one 
