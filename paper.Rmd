@@ -1,5 +1,5 @@
 ---
-title             : "k-plus: a bicriterion extension for k-means anticlustering"
+title             : "k-plus: a bicriterion extension of k-means anticlustering"
 shorttitle        : "k-plus anticlustering"
 
 author:
@@ -17,10 +17,11 @@ authornote: |
 
   Martin Papenberg, Department of Experimental Psychology, Heinrich Heine University Düsseldorf.
 
+#  If the study extends or replicates previous research, cite the relevant work with an author–date citation.
 
 abstract: |
 
-    Anticlustering refers to a collection of methods that partition data sets into disjunct groups. The partitioning process may pursue two goals: (a) high between-group similarity and (b) high within-group heterogeneity. Many anticlustering objectives simultaneously pursue both goals while other methods focus on a particular aspect. Recently, Brusco, Cradit and Steinley (2020) presented a highly effective bicriterion optimization algorithm that focuses primarily on maximzing within-group heterogeneity. The present paper introduces a novel bicriterion objective for optimizing between-group similarity. *K-plus anticlustering* is a straightforward extension of k-means anticlustering, which maximizes the sum of squared Euclidean distances between each data point and the center of the cluster to which it belongs. Thereby, k-means anticlustering directly minimizes the difference between the mean values of numeric attributes across clusters, but neglects optimizing similarity with regard to the variance of the data sets. K-plus anticlustering extends the k-means objective by adding a term that aims to simultaneously optimize similarity with regard to the variance. Surprisingly, it is shown that the combined objective (i.e., the bicriterion) can be reduced to an augmentation of the input data, leaving the original k-means criterion unchanged. Tests on simulated and real data show that k-plus anticlustering achieves high similarity both with regard to mean attribute values as well as the variance, usually with no noticable cost to either criterion. It is therefore concluded that the extended model should be preferred to classical k-means anticlustering when optimizing between-group similarity.
+    Anticlustering refers to a collection of methods that partition data sets into disjunct groups with two primary goals: (a) high between-group similarity and (b) high within-group heterogeneity. Many anticlustering objectives simultaneously pursue both goals while other methods focus on a particular aspect. The present paper introduces a novel bicriterion objective aiming at optimizing between-group similarity. *K-plus anticlustering* is an extension of k-means anticlustering, which minimizes the difference between mean values of numeric attributes across clusters. The k-plus objective extends k-means by including a term that aims to optimize similarity with regard to the variance of data across groups, which is ignored by k-means. Surprisingly, it is shown that the combined objective (i.e., the bicriterion) can be reduced to an augmentation of the input data, leaving the original k-means criterion unchanged. Tests on simulated and real data show that k-plus anticlustering usually achieves high similarity both with regard to mean attribute values as well as the variance with no noticable sacrifice to either criterion. The k-plus extension is therefore preferred over classical k-means anticlustering for optimizing between-group similarity.
   
 bibliography      : ["lit.bib"]
   
@@ -51,7 +52,7 @@ source("misc-functions.R")
 
 ```
 
-Anticlustering is a collection of methods to partition elements into disjunct groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: several anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@brusco2019; @papenberg2020; @feo1990]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis such as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012 for an overview], anticlustering is usually formalized as a partitioning process that divides a set of elements exhaustively into disjunct groups in such a way that an objective function---representing between-group similarity and/or within-group heterogeneity---is optimized [@papenberg2020; @spath1986; @brusco2019].
+Anticlustering is a collection of methods to partition elements into disjunct groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: several anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@brusco2019; @papenberg2020; @feo1990]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis such as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012 for an overview], anticlustering is usually formalized as a partitioning process that divides a set of elements into disjunct groups in such a way that an objective function---representing between-group similarity and/or within-group heterogeneity---is optimized [@papenberg2020; @spath1986; @brusco2019].
 
 Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split a test into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to experimental conditions [@lahl2006]. For an overview of anticlustering applications in psychology and other areas, see @brusco2019 and @papenberg2020. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual group assignment is usually suboptimal. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020].
 
@@ -549,6 +550,8 @@ be a more intuitive criterion.
 
 - use some examples (e.g., OASIS data set, 900 items allocated to 10 
 sets, same mean and variance across the 10 sets)
+
+- show that k-plus is strongly preferred over diversity when the groups are of unequal size
 
 # Discussion
 
