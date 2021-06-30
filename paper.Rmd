@@ -21,7 +21,7 @@ authornote: |
 
 abstract: |
 
-    Anticlustering refers to a collection of methods that partition data sets into disjunct groups with two primary goals: (a) high between-group similarity and (b) high within-group heterogeneity. Many anticlustering objectives simultaneously pursue both goals while other methods focus on a particular aspect. The present paper introduces a novel bicriterion objective aiming at optimizing between-group similarity. *K-plus anticlustering* is an extension of k-means anticlustering, which minimizes the difference between mean values of numeric attributes across clusters. The k-plus objective extends k-means by including a term that aims to optimize similarity with regard to the variance of data across groups, which is ignored by k-means. Surprisingly, it is shown that the combined objective (i.e., the bicriterion) can be reduced to an augmentation of the input data, leaving the original k-means criterion unchanged. Tests on simulated and real data show that k-plus anticlustering usually achieves high similarity both with regard to mean attribute values as well as the variance with no noticable sacrifice to either criterion. The k-plus extension is therefore preferred over classical k-means anticlustering for optimizing between-group similarity.
+    Anticlustering refers to a collection of methods that partition data sets into disjunct groups with two primary goals: (a) high between-group similarity and (b) high within-group heterogeneity. Some anticlustering objectives simultaneously pursue both goals while other methods focus on a particular aspect. The present paper introduces a novel bicriterion objective aiming at optimizing between-group similarity. *K-plus anticlustering* is an extension of k-means anticlustering, which minimizes the difference between mean values of numeric attributes across clusters. The k-plus objective extends k-means by including a term that aims to optimize similarity with regard to the variance of data across groups, which is ignored by k-means. Surprisingly, it is shown that the combined objective (i.e., the bicriterion) can be reduced to an augmentation of the input data, leaving the original k-means criterion unchanged. Tests on simulated and real data show that k-plus anticlustering usually achieves high similarity both with regard to mean attribute values as well as the variance, with no noticable sacrifice to either criterion. The k-plus extension is therefore preferred over classical k-means anticlustering for optimizing between-group similarity.
   
 bibliography      : ["lit.bib"]
   
@@ -52,27 +52,21 @@ source("misc-functions.R")
 
 ```
 
-Anticlustering is a collection of methods to partition elements into disjunct groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: several anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@brusco2019; @papenberg2020; @feo1990]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis such as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012 for an overview], anticlustering is usually formalized as a partitioning process that divides a set of elements into disjunct groups in such a way that an objective function---representing between-group similarity and/or within-group heterogeneity---is optimized [@papenberg2020; @spath1986; @brusco2019].
+Anticlustering is a collection of methods to partition elements into disjunct groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: several anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@brusco2019; @papenberg2020; @feo1990]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis such as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012, for an overview], anticlustering is usually formalized as a partitioning process that divides a set of elements into disjunct groups in such a way that an objective function---representing between-group similarity and/or within-group heterogeneity---is optimized [@papenberg2020; @spath1986; @brusco2019].
 
-Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split a test into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to experimental conditions [@lahl2006]. For an overview of anticlustering applications in psychology and other areas, see @brusco2019 and @papenberg2020. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual partitioning is usually suboptimal. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020].
+Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split a test into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to experimental conditions [@lahl2006]. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual partitioning is usually suboptimal. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020]. For a general overview of anticlustering approaches and applications in Psychology, see @brusco2019 and @papenberg2020.
 
-Several anticlustering objectives exist that differ in the assumed input data and their mathematical definition of cluster similarity. Some anticlustering objectives are based pairwise dissimilarity ratings; the most prominent criterion of this kind is the *diversity*, which is the total sum of dissimilarities between any elements within the same group. Another important criterion based on pairwise dissimilarities is the dispersion, which is the minimum dissimilarity between any two items in the same group [@fernandez2013; @brusco2019]. Maximizing the dispersion increases the within-group heterogeneity by ensuring that any two elements as dissimilar as possible from each other.
+Anticlustering objectives differ in the assumed input data and their mathematical definition of cluster similarity. Some anticlustering objectives employ pairwise dissimilarity ratings to compute a total measure of cluster (dis)similarity. The most prominent criterion of this kind is the *diversity*, which is the total sum of dissimilarities between any elements within the same group. Maximizing the diversity simultaneously optimizes within-group heterogeneity as well as between-group similarity. Another important criterion based on pairwise dissimilarities is the *dispersion*, i.e., the minimum dissimilarity between any two elements within the same group [@fernandez2013; @brusco2019]. Maximizing the dispersion increases the within-group heterogeneity by ensuring that any two elements as dissimilar from each other as possible.
 
-Oftentimes, the available data does not represent pairwise similarity, but rather numeric, categorical or binary attributes [@dry2009]. That is, the data is a two-way two-mode [@arabie1992] table where rows represent the entities of study, and columns represent variables describing the elements. For example, numeric ratings may describe the attributes of word stimuli for psycholinguistic experiments. Such data may include Norms for imagery, concreteness and orthographic variables [@friendly1982]. In other cases, attributes are binary and may represent the presence or absence of a feature [@tversky1977]. Such data can be converted to pairwise dissimilarities for example by computing an appropriate dissimilarity measure, such as the pairwise Euclidean or squared Euclidean distance across a set of numeric attributes [@brusco2019]. Then, anticlustering criteria based on pairwise dissimilarity can be applied to partition the elements.
+Oftentimes, the data available to researchers does not represent pairwise similarity, but numeric, categorical or binary attributes [@dry2009]. That is, the data is a two-way two-mode [@arabie1992] table where rows represent the entities of study, and columns represent variables describing the elements. For example, numeric ratings may describe the attributes of word stimuli for psycholinguistic experiments. Such data may include norms for imagery, concreteness and orthographic variables [@friendly1982]. In other cases, attributes are binary and may represent the presence or absence of a feature [@tversky1977]. In the context of anticlustering, One possible approach for handling two-way two-mode data is to compute an appropriate dissimilarity measure such as the pairwise Euclidean or squared Euclidean distance across a set of numeric attributes [@brusco2019]. Then, anticlustering criteria based on pairwise dissimilarities such as the dispersion or diversity can be optimized to partition the elements into groups.
 
-A different approach to anticlustering directly works with feature based data and does not require a transformation into pairwise dissimilarities. Instead, the sum of the squared Euclidean distances between elements and the cluster they are assigned to is minimized [@brusco2006branch], most prominently using the k-means heuristic [@jain2010; @steinley2006]. Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity [@aloise2009np]. Späth [-@spath1986] and Valev [-@valev1998; -@valev1983] independently recognized that by optimizing the reversed k-means objective that is, maximizing the sum of distances between elements and cluster centroids -- a data set is partitioned into similar groups, thereby reversing the logic of classical clustering. They coined the term anticlustering for this purpose. K-means anticlustering maximizes the sum of squared Euclidean distances from each element to the center of the cluster to which it belongs. As @spath1986 noted, k-means anticlustering thereby directly minimizes differences with regard to the means of the numeric variables between groups. Hence, groups only become similar with regard to the mean of the distribution of the numeric attributes, which may perform poorly as a measure of overall similarity; the spread of the data is not targeted and may differ between sets. @papenberg2020 showed that maximizing the diversity (based on the pairwise Euclidean distances) is better suited to minimize difference with regard to both the mean and the variance of the data; it was shown that even an entirely random split usually resulted in more similar standard deviations as k-means solely focuses on the mean. When requiring that groups are overall similar to each other, this focus may be misguided as similar means can be obtained even when the underlying distributions are different [@anscombe1973].
+A different approach to anticlustering directly works with the two-way two-mode feature data using the k-means criterion. K-means is probably the best-known clustering method and its reversal has been recognized as a useful anticlustering tool by Späth [-@spath1986] and Valev [-@valev1998; -@valev1983]. In k-means clustering, the sum of the squared Euclidean distances between elements and the center of the cluster they are assigned to is minimized [@brusco2006branch], usually using the k-means heuristic [@jain2010; @steinley2006]. Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity [@aloise2009np]. For the anticlustering application, the k-means criterion is maximized instead, thereby achieving similarity between groups. Specifically, as @spath1986 noted, k-means anticlustering minimizes differences with regard to the means of the numeric attributes across clusters. Hence, groups are similar with regard to the mean of the distribution of the numeric attributes wheras other parameters---such as the variance---are ignored. When requiring that groups are overall similar to each other, this focus may be misguided as similar means can be obtained even when the underlying distributions are different [@anscombe1973]. @papenberg2020 showed that maximizing the diversity (based on the pairwise Euclidean distances) is better suited to minimize difference with regard to both the mean and the variance of the data; it was shown that even an entirely random split usually resulted in more similar variances because k-means solely focuses on the mean similarity.
 
-In this paper, I present k-plus anticlustering, a simple extension of the k-means objective function to maximize similarity with regard to means and variances at the same time. The aim is to establish groups that are overall similar to each other. It is shown that this is achieved by formulating a bicriterion optimization objective for k-means anticlustering. Interestingly, this reformulation reduces to an augmentation of the original data matrix while the optimization objective remains unchanged. This insight has important consequences as it allows to adapt standard optimization schemes for single criterion anticlustering. I show that the k-plus criterion outperforms other anticlustering criteria when the goal is the minimize difference with regard to the mean and variance of the different groups. In most cases, both objectives can be optimized satisfactorily at the same time without any loss on either; when the data set is large enough (usually, when $N > XX$), the bicriterion optimization leads to > 99.99% objective performance as compared to the single optimization of either k-means or k-variance.
+To optimize overall group similarity---and hence to overcome the limitations of k-means anticlustering---I present k-plus anticlustering in this paper. The k-plus criterion is an extension of the k-means objective that includes a term aiming at optimizing similarity with regard to the variance of data across groups. Interestingly, this bicriterion reformulation can be understood as an augmentation of the original data matrix, leaving the original k-means objective unchanged. I show that the k-plus criterion outperforms other anticlustering criteria when the goal is the minimize difference with regard to the mean and variance of the different groups. In most cases, both objectives can be optimized satisfactorily at the same time without any loss on either. In several examples I illustrate how readers can use k-plus anticlustering easily using the free and open source software anticlust, which is an extension to the statistical programming language R [@papenberg2020].
 
 # Problem formalization
 
-For the purpose of problem formalization, I adopt the notation Steinley (2006) 
-provided in his comprehensive synthesis of half a century of research on 
-k-means. K-means clustering is used to partition two-way, two-mode data into 
-groups. That is, $N$ elements each having $P$ attributes are assigned to $K$ 
-groups $(C_1., \ldots, C_K)$, $C_k$ being the set of $n_k$ objects in group $k$. 
-The partitioning is subject to the requirements that each element is assigned to 
-exactly one group, formalized by the two constraints
+For the purpose of problem formalization, I adopt the notation @steinley2006 provided in his comprehensive synthesis of half a century of research on k-means. K-means clustering (and anticlustering) is used to partition two-way, two-mode data into groups. That is, $N$ elements each having $P$ attributes are assigned to $K$ groups $(C_1., \ldots, C_K)$, $C_k$ being the set of $n_k$ objects in group $k$. The partitioning is subject to the requirement that each element is assigned to exactly one group, formalized by the following two constraints:
 
 $$
 \bigcup\limits_{k = 1}^{K} C_j = X
@@ -82,17 +76,13 @@ $$
 C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k
 $$
 
-In anticlustering applications, we  impose an additional constraint on the group 
-sizes $n_k$, where the most common one requires that all groups have equal size: 
+In anticlustering applications, we impose an additional constraint on the group sizes $n_k$, where the most common restriction requires that all groups have equal size:
 
 $$
 n_k = \frac{N}{K}, \forall k \in \{1, \ldots, K\}
 $$
 
-For a data matrix $\mathbf{X}_{N \times P} = \{x_{ij}\}_{N \times P}$, k-means 
-clustering aims to minimize the error sum of squares (SSE), which is the sum of 
-the squared Euclidean distances between each data point and its cluster 
-centroid:
+For a data matrix $\mathbf{X}_{N \times P} = \{x_{ij}\}_{N \times P}$, k-means anticlustering aims to maximize the error sum of squares (SSE), which is the sum of the squared Euclidean distances between each data point and its cluster centroid:
 
 $$
 \mathit{SSE} = 
@@ -102,76 +92,47 @@ $$
   (x_{ij} - \overline{x}_j ^{(k)})^2
 $$
 
-The *k*'th centroid $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, 
-\overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ is a vector of length $P$, 
-where each entry is the mean value of one of the $P$ attributes, computed across 
-all observations belonging the $k$th cluster $C_k$ ($k = 1, \ldots, K$): 
+The *k*'th centroid $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ is a vector of length $P$, where each entry is the mean value of one of the $P$ attributes, computed across all observations belonging the $k$th cluster $C_k$ ($k = 1, \ldots, K$):
 
 $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Note there is a direct connection between the $SSE$ and the location of the 
-cluster centroids [@spath1986]. If the $SSE$ is minimal, the centroid values 
-$\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible 
-from the overall data centroid $\overline{\mathbf{x}} = 
-(\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, 
-\overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_p$ is the overall mean 
-value on the $p$th attribute:
+Note there is a direct connection between the $SSE$ and the location of the cluster centroids [@spath1986]. If the $SSE$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_p$ is the overall mean value on the $p$th attribute:
 
 $$
 \overline{\mathbf{x}}_p = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ip}
 $$
 
-If the $SSE$ is maximal, the cluster centroids are as close as possible to the 
-overall centroid $\overline{\mathbf{x}}$ and therefore to each other 
-[@spath1986]. Thus, k-means anticlustering directly optimizes the 
-similarity of the mean attribute values across clusters. 
+If the $SSE$ is maximal---which is the goal of k-means *anticlustering*---, the cluster centroids are as close as possible to the overall centroid $\overline{\mathbf{x}}$ and therefore to each other [@spath1986]. Thus, k-means anticlustering directly optimizes the similarity of the mean attribute values across clusters.
 
-## A criterion to quantify differences in variances
+## Quantifying differences in variance
 
-K-means anticlustering---i.e., maximizing the SSE---minimizes differences 
-between the means of the input variables. I now present a rather 
-straight-forward adaption of the SSE to capture differences in variance between 
-groups. To motivate the new criterion, we first consider a set of 
-one-dimensional observations $(x_1, \ldots, x_N)$. The extension to the general 
-case of $P$ attributes will be straight forward.
+In the following, I present a rather straight-forward adaption of the $SSE$ to quantify how the variance of numeric data differs between groups. To motivate the new criterion, we first consider a set of one-dimensional observations $(x_1, \ldots, x_N)$. The extension to the general case of $P$ attributes will be straight-forward.
 
-The sample variance of a set of observations $x = (x_1, \ldots, x_N)$ is 
-computed as the mean of the squared distances between observations and their 
-mean $\overline{\mathbf{x}}$:
+The sample variance of a set of observations $x = (x_1, \ldots, x_N)$ is computed as the mean of the squared distances between observations and their mean $\overline{\mathbf{x}}$:
 
 $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
 $$
 
-We next define a new variable $y = (y_1, \ldots, y_N)$, representing the squared 
-deviation of each observation from the mean: 
+When defining a new variable $y = (y_1, \ldots, y_N)$ as the squared deviation of each observation from the mean $\overline{\mathbf{x}}$, the sample variance of $x$ can be reformulated as the mean of $y$:
 
 $$
 y_i = (x_i - \overline{\mathbf{x}})^2
 $$
 
-The sample variance of $x$ is consequently the mean of these new values:
-
 $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} y_i
 $$
 
-Since the sample variance is basically defined as an average, k-means 
-anticlustering can be employed to equalize the variance across groups. That is, 
-we can formulate an adaption of the SSE that quantifies the degree to which 
-variances differ between groups:
+Because the sample variance is basically defined as an average, k-means anticlustering can be employed to equalize the variance across groups. That is, we can formulate an adaption of the $SSE$ to quantify the degree to which the variance differs between groups. First, however, we generalize the idea to the case of $P$ attributes. For each attribute, we have to compute the squared deviation between all values and the mean of the attribute. We obtain a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$, where
 
 $$
-\mathit{SSE_{Var}} = 
-  \sum\limits_{k=1}^{K} 
-  \sum\limits_{i \in C_k}
-  (y_{i} - \overline{y} ^{(k)})^2
+y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2.
 $$
 
-Maximizing $\mathit{SSE_{Var}}$ will equalize the variance between groups on one 
-attribute. The criterion is extended to the general case of $P$ attributes as
+To reflect how strongly the variances of all attributes vary across the $K$ clusters, we now define the criterion $\mathit{SSE_{Var}}$:
 
 $$
 \mathit{SSE_{Var}} = 
@@ -181,31 +142,17 @@ $$
   (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
 
-where
+Analogously to the standard $SSE$, the centroid values $\overline{y}_j ^{(k)}$ are given as:
 
 $$
 \overline{y}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} y_{ij}
 $$
 
-and 
+Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points.
 
-$$
-y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2.
-$$
+## A bicriterion model: K-plus anticlustering
 
-Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. 
-However, the input data reflect the squared difference between each data point 
-and the average values instead of the raw data points.
-
-## A bicriterion model: k-plus anticlustering
-
-In most applications, it will not be of interest to only maximize $SSE_{Var}$ 
-(i.e., equalizing variances) without also considering the standard $SSE$ (i.e., 
-equalizing means). A combination of $SSE_{Var}$ and $SSE$, however, can be 
-employed to simultaneously optimize both objectives. The most simple approach to 
-such a bicriterion optimization is the weighted sum approach [@naidu2014]. That 
-is, both criteria are computed independently from each other and then combined 
-into a single criterion through a weighted sum:
+It is unlikely that an exclusive optimization of $SSE_{Var}$ (i.e., equalizing variances) is of interest without also considering the $SSE$ (i.e., equalizing means). A combination of $SSE_{Var}$ and $SSE$, however, can be employed to simultaneously optimize both objectives, which is a reasonable idea when striving for overall cluster similarity. The most simple approach for such a bicriterion optimization is the weighted sum approach [@naidu2014; @marler2010]. That is, both criteria are computed independently from each other and then combined into a single criterion through a weighted sum:
 
 $$
 \mathit{SSE_{kplus}} = w_1 
@@ -223,10 +170,7 @@ The weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of
 equalizing means and variances, respectively. Often, they are chosen such that 
 $w_1 + w_2 = 1$ [@brusco2019].
 
-Some simplifications can be arranged when ignoring the weights $w_1$ and $w_2$ 
-(i.e., or setting them to the same value). When defining $z_i = (x_{i1}, \ldots, 
-x_{iP}, y_{i1}, \ldots, x_{iP})$, i.e., the concatenation of the $x_{ij}$ and 
-$y_{ij}$ values, the bicriterion $\mathit{SSE_{kplus}}$ is computed as
+Some simplifications can be arranged when ignoring the weights $w_1$ and $w_2$, e.g., by setting them both to 1. When defining $z_i = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, x_{iP})$, i.e., the concatenation of the $x_{ij}$ and $y_{ij}$ values, the bicriterion $\mathit{SSE_{kplus}}$ is then computed as
 
 $$
 \mathit{SSE_{kplus}} =
@@ -236,25 +180,11 @@ $$
   (z_{ij} - \overline{z}_j ^{(k)})^2
 $$
 
-This formula again has the same form as SSE (and $SSE_{Var}$), but is computed 
-on different data. In this case, both the original data $x_{ij}$ as well as the 
-squared distances $y_{ij}$ are used as attributes that enter the objective 
-function. That is, computing the k-plus criterion is done by first computing the 
-values $y_{ij}$, appending these to the original data matrix, and then compute 
-SSE on the augmented data matrix.
+This formula again has the same form as $SSE$ (and $SSE_{Var}$), but is computed on different data. In this case, both the original data $x_{ij}$ as well as the squared distances $y_{ij}$ are used as attributes that enter the objective function. That is, computing the k-plus criterion can be done by first computing the values $y_{ij}$, appending these to the original data matrix, and then computing the $SSE$ on the augmented data matrix. Hence, k-plus anticlustering reduces to an augmentation of the data matrix, leaving the original k-means criterion unchanged.
 
-Note that a problem may arise when ignoring the weights during optimizing the
-k-plus objective. Since their computation involves squaring, the squared 
-distances $y_{ij}$ have much larger values, on average, than the raw values 
-$x_{ij}$ (also see the axes in Figure 1). Therefore, the $SSE_{Var}$ criterion 
-naturally receives greater weight when computing the k-plus criterion than the 
-standard $SSE$ criterion. This imbalance is unwarranted because optimizing 
-similarity with regard to variances is not more important than optimizing 
-similarity with regard to means. A simple solution for this issue is to 
-standardize all values $x_{ij}$ and $y_{ij}$ to the same scale before computing 
-$SSE_{kplus}$, e.g. via $z$-standardization.
+Note that a problem may arise if the weights $w_1$ and $w_2$ are ignored when optimizing the k-plus objective. Since the computation of the data matrix $\mathbf{Y}_{N \times P}$ involves squaring, the squared distances $y_{ij}$ have much larger values, on average, than the raw values $x_{ij}$ (also see Figure 1). Therefore, the $SSE_{Var}$ criterion naturally receives greater weight when computing $\mathit{SSE_{kplus}}$ than the standard $SSE$ criterion. This imbalance is most likely unwarranted because optimizing similarity with regard to variances is not more important than optimizing similarity with regard to means. A solution is to standardize all values $x_{ij}$ and $y_{ij}$ to the same scale before computing $SSE_{kplus}$, e.g. via $z$-standardization.
 
-## Criterion Tradeoff
+## Criterion tradeoff
 
 ```{r}
 
@@ -310,17 +240,9 @@ if (!file.exists(path)) {
 
 ```
 
-When a bicriterion objective such as $SSE_{kplus}$, the ideal outcome would be 
-to find a partition where both the means and the variances are very similar 
-between groups, i.e., a which partition where both SSE and $SSE_{Var}$ are close 
-to the optimum value. However, research on multi-objective optimization 
-generally shows that cases are rare where a single solution satisfies all 
-criteria to a satisfactory degree. Usually, a tradeoff is necessary. For 
-anticlustering, however, a motivating example illustrates that aiming to 
-simultaneously optimize similarity of means and variances is not only desirable, 
-but may actually be feasible. 
+When optimizing a bicriterion objective such as $SSE_{kplus}$, the ideal outcome would be to find a partition where both the means and the variances are very similar between groups, i.e., a which partition where both the standard $SSE$ and $SSE_{Var}$ are close to the global optimum value. Generally, research on multi-objective optimization has shown that cases are rare where a single solution satisfies all criteria to an optimal degree [@ferligoj1992direct]. Usually, a tradeoff is necessary. For anticlustering, a motivating example illustrates that aiming to simultaneously optimize similarity of means and variances is not only desirable, but may actually be feasible.
 
-```{r, fig.cap = "The relationship between the two criteria SSE and $SSE_{Var}$ across partitions is shown. The partition represented by the triangular minimizes the difference in variances between groups; the partition represented by the square minimizes the difference in means between groups; the partition represented by the diamond is a good tradeoff, satisfying both criteria to an almost optimal degree.", fig.height = 5, fig.width = 5}
+```{r, fig.cap = "The relationship between the objectives $SSE$ and $SSE_{Var}$ across all partitions (for $N = 14$ and $K = 2$). The partition represented by the triangular minimizes the difference in variances between groups; the partition represented by the square minimizes the difference in means between groups; the partition represented by the diamond maximizes $SSE_{kplus}$ and represents a good tradeoff, satisfying both criteria to an almost optimal degree.", fig.height = 5, fig.width = 5}
 
 # Plot SSE vs SSE(VAR)
 plot(
@@ -353,7 +275,7 @@ points(
 )
 ```
 
-For this motivating example, I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $SSE$ and $SSE_{Var}$ across partitions. Note that for both criteria, a larger value is better, i.e., indicates higher similarity with regard to means and variances, respectively. Therefore, to obtain overall between-group similarity, a partition should be chosen that is depicted in the upper right corner of the scatterplot. However, optimal k-means anticlustering would create two groups that are not particularly similar with regard to their variance. The partition that is represented by the squared symbol has the overall best highest $SSE$, but is outperformed by many other partitions with regard to $SSE_{Var}$. Similarly, the partition that maximizes $SSE_{Var}$ (the triangular symbol in Figure 1) is not well-suited to optimize SSE at the same time. The diamond symbol represents the partition that maximizes $SSE_{kplus}$, i.e., sum of SSE and $SSE_{Var}$. This partition is located in the right upper corner and yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum SSE, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $SSE_{Var}$.
+For this motivating example, I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $SSE$ and $SSE_{Var}$ across partitions. Note that for both criteria, a larger value is better, i.e., indicates higher similarity with regard to means and variances, respectively. Therefore, to obtain overall between-group similarity, a partition should be chosen that is depicted in the upper right corner of the scatterplot. However, optimal k-means anticlustering would create two groups that are not particularly similar with regard to their variance. The partition that is represented by the squared symbol has the overall best highest $SSE$, but is outperformed by many other partitions with regard to $SSE_{Var}$. Similarly, the partition that maximizes $SSE_{Var}$ (the triangular symbol in Figure 1) is not well-suited to optimize SSE at the same time. The diamond symbol represents the partition that maximizes the unweighted $SSE_{kplus}$, i.e., the sum of $SSE$ and $SSE_{Var}$. This partition is located in the right upper corner and yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $SSE$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $SSE_{Var}$.
 
 This initial example shows that maximizing the combined k-plus criterion may well be suited to optimize both similarity with regard to means as well as variances between groups. Later, I will show that this result also holds for real data sets, using more groups and a larger number of numeric features.
 
@@ -361,110 +283,6 @@ This initial example shows that maximizing the combined k-plus criterion may wel
 
 
 ```
-
-[^onlyonegroup]: Note that this such a correspondence no longer holds 
-when there are more than two groups or there is more than one 
-numeric attribute (i.e., if $K > 2$ or $P > 1$).
-
-## Bicriterion optimization model
-
-```{r echo = FALSE}
-# From Wikipedia on Multi-objective optimization:
-
-# Without additional subjective preference information, all Pareto optimal 
-# solutions are considered equally good. Researchers study multi-objective 
-# optimization problems from different viewpoints and, thus, there exist 
-# different solution philosophies and goals when setting and solving them. 
-# The goal may be to find a representative set of Pareto optimal 
-# solutions, and/or quantify the trade-offs in satisfying the different 
-# objectives, and/or finding a single solution that satisfies the 
-# subjective preferences of a human decision maker (DM). 
-
-# The most preferred results can be found using different philosophies. 
-# Multi-objective optimization methods can be divided into four 
-# classes. In so-called no preference methods, no DM is expected to be 
-# available, but a neutral compromise solution is identified without 
-# preference information. The other classes are so-called a priori, a 
-# posteriori and interactive methods and they all involve preference 
-# information from the DM in different ways. 
-
-# Solving a multi-objective optimization problem is sometimes understood 
-# as approximating or computing all or a representative set of Pareto 
-# optimal solutions.
-
-# Scalarizing a multi-objective optimization problem is an a priori 
-# method, which means formulating a single-objective optimization problem 
-# such that optimal solutions to the single-objective optimization problem 
-# are Pareto optimal solutions to the multi-objective optimization 
-# problem. In addition, it is often required that every Pareto optimal 
-# solution can be reached with some parameters of the scalarization.
-
-```
-
-- pragmatic solution [easy and practical approach, @marler2010; 
-@naidu2014]: formalize the weighted-sum objective and use the 
-weighted-sum approach. Then check out whether the simplest version is 
-sufficient in this case (but see the problems of weighted sum approach 
-in several contributions by Brusco et al.). Refer to @marler2010 to 
-argue for weighted sum for the current problem
-
-- it should be noted that both mathematical objectives capture different 
-aspects of an underlying substantive objective, that is to maximize 
-similarity of data distributions between different groups
-
-- Weighted sum approach works well on this specific problem [although in 
-general there are caveats to the weighted-sum method, see @brusco2019]. 
-is fast, good results. in fact, the objectives seem to work well 
-together
-
-- weighted sum approach generates a single solution from the 
-(approximated) pareto set
-
-- In this paper: Formalization of the objective function, recognition
-that this formulation does not change the basic structure of the k-means
-objective, because it reduces to augmentation of the data input
-
-- not interested in the Pareto efficient set! Because: Overall 
-similarity should be maximized, which requires that both criteria are 
-satisfied to a strong degree (not interested in just maximizing 
-similarity wrt variance; this may be interesting in other applications). 
-Instead: A tradeoff is possible, and in many cases, simultaneous 
-optimization will meet both criteria almost as well as optimizing just
-either criterion. To justify this approach: show the pareto front, which 
-is not a diagonal / circle [see @brusco2012] but a RIGHT TRIANGLE! (this 
-is probably because this is *anti*clustering!)
-
-- Evaluation will consist of a comparison of different objectives based 
-on the same (simple) exchange algorithm
-
-### Weight selection
-
-- How to select weights? (Oftentimes: for equal weights, the results 
-are good)
-
-- Preference to weight [e.g., @marler2010]. However, the relationship 
-between weights and outcome is not always straightforward and the 
-results may disappoint. On the one hand, vastly different weights need 
-not lead to different solutions; and even equal weights can be 
-sufficient if the solution space offers partitions that maximize both 
-objectives at the same time. "the solution may not preserve one’s
-initial preferences no matter how the weights are set"; "even if one 
-determines acceptable values for the weights a priori, the final 
-solution may not accurately reflect initial preferences" [@marler2010, 
-p. 860]. 
-
-- Standardization of the extended data matrix to ensure that the two
-criterion functions "do not differ markedly in scale" [@brusco2019]. 
-See Figure 1: the objectives do differ in scale, because k-variance 
-is based on a quadratic distance and therefore has larger values.
-
-- Using variable weighting (see Steinley, 2006, p. 13), we can 
-adjust the relative importance of minimizing differences in means
-and variances. Standard in `anticlust`: Equal weight, this is 
-achieved by first creating the new variables, representing 
-the squared differences from the mean, and then standardizing
-the entire feature matrix. If $N$ is large enough (relative to $K$),
-there is usually no need for weighting.
 
 # Evaluation 
 
@@ -491,12 +309,160 @@ minimizes the maximum difference between the variance across groups
 than k-variance (for K > 2), which in the eye of the researcher, may 
 be a more intuitive criterion.
 
-# Examples
+# Applying k-plus anticlusting using the R package anticlust
 
-- use some examples (e.g., OASIS data set, 900 items allocated to 10 
-sets, same mean and variance across the 10 sets)
+In this section I demonstrate how researchers can easily employ k-plus anticlustering using the R package anticlust [@papenberg2020]. The results presented here used anticlust version 0.5.6. The package can be installed in the R environment using the `install.packages()` command:
 
-- show that k-plus is strongly preferred over diversity when the groups are of unequal size
+```R
+install.packages("anticlust")
+```
+
+In this application, I use norming data for the OASIS image data set that is freely available online [@kurdi2017introducing]. @kurdi2017introducing assembled 900 open-access color images and collected ratings on two affective dimensions: arousal and valence. @brielmann2019intense collected an additional rating dimension by measuring how the same 900 images were rated with regard to their beauty. In my application, I use all three features, currently available from Github.[^githubbeauty]
+
+[^githubbeauty]: https://github.com/aenneb/OASIS-beauty
+
+I used k-plus anticlustering to divide the data set of 900 images into 9 groups of 100 images each; this process takes about 3-5 seconds on a contemporary personal computer, depending on how many iterations are needed to find the local maximum. The task was accomplished using the following R code:
+
+```R
+library(anticlust) # load the package anticlust
+
+anticlustering(
+  features,
+  standardize = TRUE,
+  K = 9,
+  objective = "kplus",
+  method = "local-maximum"
+)
+```
+
+Here, the variable `features` has to be a data table containing the image data: 900 rows representing images; 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the fully reproducible code that includes downloading and reading the OASIS data, selecting the relevant columns, and finally storing them in the `features` variable (**TODO**). The arguments `objective = "kplus"` and `method = "local-maximum"` ensure that the k-plus criterion is optimized using the local maximum search method described in the previous section (**TODO**). The argument `K` describes the number of groups. The argument `standardize = TRUE` ensures that all features are standardized before the optimization starts; in particular, this option enforces that equalizing means and variances receives the same weight during the optimization process.
+
+Table 1 shows the results of the anticlustering application by listing the descriptive statistics (means and standard deviations) for each of the 9 groups and for each of the 3 features. Additionaly, Table 1 shows the descriptive statistics for an application of k-means anticlustering and anticluster editing (which maximizes the diversity criterion). It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations. Anticluster editing was also well-suited to match both means and standard deviations, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---anticluster editing does not directly maximize similarity with regard to the means and standard deviations.
+
+```{r}
+
+path <- "results_oasis_same_size.csv"
+
+if (!file.exists(path)) {
+  oasis <- read.csv(
+    "https://raw.githubusercontent.com/aenneb/OASIS-beauty/master/means_per_image.csv"
+  )
+
+  features <- subset(oasis, select = c(beauty_mean, Valence_mean, Arousal_mean))
+
+  K <- 9
+  mean_sd_tabs <- list()
+  for (criterion in c("kplus", "variance", "diversity")) {
+    oasis[[paste(criterion, "group", sep = "_")]] <- anticlustering(
+      features,
+      standardize = TRUE,
+      K = K,
+      objective = criterion,
+      method = "local-maximum"
+    )
+    mean_sd_tabs[[criterion]] <- mean_sd_tab(
+      features,
+      oasis[[paste(criterion, "group", sep = "_")]]
+    )
+    mean_sd_tabs[[criterion]] <- cbind(
+      1:K,
+      nrow(features) / K,
+      mean_sd_tabs[[criterion]]
+    )
+  }
+
+  # append all tables to the same table:
+  oasis_tab <- do.call(rbind, mean_sd_tabs)
+  rownames(oasis_tab) <- NULL
+  colnames(oasis_tab) <- c("Group", "N", "Beauty", "Valence", "Arousal")
+
+  write.table(
+    oasis_tab, path, row.names = FALSE, sep = ";"
+  )
+
+} else {
+  oasis_tab <- read.csv(path, sep = ";")
+}
+
+apa_table(
+  oasis_tab,
+  caption = "Descriptive statistics for OASIS features by group and anticlustering method.",
+  note = "The cells contain mean values by cluster and the standard deviation (in parentheses).",
+  escape = FALSE,
+  align = c("r"),
+  stub_indents = list("\\textbf{K-plus anticlustering}" = 1:9,
+                      "\\textbf{K-means anticlustering}" = 10:18,
+                      "\\textbf{Anticluster editing}" = 19:27)
+)
+```
+
+Table 2 illustrates another advantage of k-plus anticlustering over anticluster editing. When creating groups of unequal size, anticluster editing tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for equal means and variances in all groups, regardless of group size.
+
+Unequal group sizes can be requested in anticlust by passing the group sizes as a vector to the `K` argument:
+
+```R
+anticlustering(
+  features,
+  standardize = TRUE,
+  K = c(100, 100, 100, 600),
+  objective = "kplus",
+  method = "local-maximum"
+)
+```
+
+```{r}
+
+path <- "results_oasis_unequal_size.csv"
+
+if (!file.exists(path)) {
+  oasis <- read.csv(
+    "https://raw.githubusercontent.com/aenneb/OASIS-beauty/master/means_per_image.csv"
+  )
+
+  features <- subset(oasis, select = c(beauty_mean, Valence_mean, Arousal_mean))
+
+  K <- c(100, 100, 100, 600)
+  mean_sd_tabs <- list()
+  for (criterion in c("kplus", "variance", "diversity")) {
+    oasis[[paste(criterion, "group", sep = "_")]] <- anticlustering(
+      features,
+      standardize = TRUE,
+      K = K,
+      objective = criterion,
+      method = "local-maximum"
+    )
+    mean_sd_tabs[[criterion]] <- mean_sd_tab(
+      features,
+      oasis[[paste(criterion, "group", sep = "_")]]
+    )
+    mean_sd_tabs[[criterion]] <- cbind(1:length(K), K, mean_sd_tabs[[criterion]])
+  }
+
+  # append all tables to the same table:
+  oasis_tab <- do.call(rbind, mean_sd_tabs)
+  rownames(oasis_tab) <- NULL
+  colnames(oasis_tab) <- c("Group", "N", "Beauty", "Valence", "Arousal")
+
+  write.table(
+    oasis_tab, path, row.names = FALSE, sep = ";"
+  )
+
+} else {
+  oasis_tab <- read.csv(path, sep = ";")
+}
+
+apa_table(
+  oasis_tab,
+  caption = "Performance of the diversity and k-plus objectives for unequal group sizes.",
+  note = "The cells contain mean values by cluster and the standard deviation (in parentheses).",
+  escape = FALSE,
+  align = c("r"),
+  stub_indents = list("\\textbf{K-plus anticlustering}" = 1:4,
+                      "\\textbf{K-means anticlustering}" = 5:8,
+                      "\\textbf{Anticluster editing}" = 9:12)
+)
+```
+
 
 # Discussion
 
