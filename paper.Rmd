@@ -54,70 +54,15 @@ source("misc-functions.R")
 
 Anticlustering is a collection of methods to partition elements into disjunct groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: several anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@brusco2019; @papenberg2020; @feo1990]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis such as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012 for an overview], anticlustering is usually formalized as a partitioning process that divides a set of elements into disjunct groups in such a way that an objective function---representing between-group similarity and/or within-group heterogeneity---is optimized [@papenberg2020; @spath1986; @brusco2019].
 
-Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split a test into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to experimental conditions [@lahl2006]. For an overview of anticlustering applications in psychology and other areas, see @brusco2019 and @papenberg2020. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual group assignment is usually suboptimal. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020].
+Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split a test into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to experimental conditions [@lahl2006]. For an overview of anticlustering applications in psychology and other areas, see @brusco2019 and @papenberg2020. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual partitioning is usually suboptimal. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020].
 
----
+Several anticlustering objectives exist that differ in the assumed input data and their mathematical definition of cluster similarity. Some anticlustering objectives are based pairwise dissimilarity ratings; the most prominent criterion of this kind is the *diversity*, which is the total sum of dissimilarities between any elements within the same group. Another important criterion based on pairwise dissimilarities is the dispersion, which is the minimum dissimilarity between any two items in the same group [@fernandez2013; @brusco2019]. Maximizing the dispersion increases the within-group heterogeneity by ensuring that any two elements as dissimilar as possible from each other.
 
-**TODO; hier weitermachen**
+Oftentimes, the available data does not represent pairwise similarity, but rather numeric, categorical or binary attributes [@dry2009]. That is, the data is a two-way two-mode [@arabie1992] table where rows represent the entities of study, and columns represent variables describing the elements. For example, numeric ratings may describe the attributes of word stimuli for psycholinguistic experiments. Such data may include Norms for imagery, concreteness and orthographic variables [@friendly1982]. In other cases, attributes are binary and may represent the presence or absence of a feature [@tversky1977]. Such data can be converted to pairwise dissimilarities for example by computing an appropriate dissimilarity measure, such as the pairwise Euclidean or squared Euclidean distance across a set of numeric attributes [@brusco2019]. Then, anticlustering criteria based on pairwise dissimilarity can be applied to partition the elements.
 
-Several anticlustering objectives are based pairwise dissimilarity ratings; the most prominent criterion of this kind is the *diversity*, which is the total sum of dissimilarities between any elements within the same group. Another important criterion based on pairwise dissimilarities is the dispersion, which is the minimum dissimilarity between any two items in the same group [@fernandez2013; @brusco2019]. Maximizing the dispersion increases the within-group heterogeneity by ensuring that any two elements as dissimilar as possible from each other.
+A different approach to anticlustering directly works with feature based data and does not require a transformation into pairwise dissimilarities. Instead, the sum of the squared Euclidean distances between elements and the cluster they are assigned to is minimized [@brusco2006branch], most prominently using the k-means heuristic [@jain2010; @steinley2006]. Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity [@aloise2009np]. Späth [-@spath1986] and Valev [-@valev1998; -@valev1983] independently recognized that by optimizing the reversed k-means objective that is, maximizing the sum of distances between elements and cluster centroids -- a data set is partitioned into similar groups, thereby reversing the logic of classical clustering. They coined the term anticlustering for this purpose. K-means anticlustering maximizes the sum of squared Euclidean distances from each element to the center of the cluster to which it belongs. As @spath1986 noted, k-means anticlustering thereby directly minimizes differences with regard to the means of the numeric variables between groups. Hence, groups only become similar with regard to the mean of the distribution of the numeric attributes, which may perform poorly as a measure of overall similarity; the spread of the data is not targeted and may differ between sets. @papenberg2020 showed that maximizing the diversity (based on the pairwise Euclidean distances) is better suited to minimize difference with regard to both the mean and the variance of the data; it was shown that even an entirely random split usually resulted in more similar standard deviations as k-means solely focuses on the mean. When requiring that groups are overall similar to each other, this focus may be misguided as similar means can be obtained even when the underlying distributions are different [@anscombe1973].
 
-Oftentimes, the available data does not represent pairwise similarity, 
-but rather numeric, categorical or binary attributes [@dry2009]. That 
-is, the data is a two-way two-mode [@arabie1992] table where rows 
-represent the entities of study, and columns represent variables 
-describing the elements. For example, numeric ratings may describe the 
-attributes of word stimuli for psycholinguistic experiments. Such data 
-may include Norms for imagery, concreteness and orthographic variables 
-[@friendly1982]. In other cases, attributes are binary and may represent 
-the presence or absence of a feature [@tversky1977]. Such data can be 
-converted to pairwise dissimilarities for example by computing an 
-appropriate dissimilarity measure, such as the pairwise Euclidean or 
-squared Euclidean distance across a set of numeric attributes 
-[@brusco2019]. Then, anticlustering criteria based on pairwise 
-dissimilarity can be applied to partition the elements. 
-
-A different approach to anticlustering directly works with feature based data 
-and does not require a transformation into pairwise dissimilarities. Instead, 
-the sum of the squared Euclidean distances between elements and the cluster they 
-are assigned to is minimized [@brusco2006branch], most prominently using the 
-k-means heuristic [@jain2010; @steinley2006]. Minimizing the k-means criterion 
-simultaneously maximizes between-cluster separation and within-cluster 
-homogeneity [@aloise2009np]. Späth [-@spath1986] and Valev [-@valev1998; 
--@valev1983] independently recognized that by optimizing the reversed k-means 
-objective that is, maximizing the sum of distances between elements and cluster 
-centroids -- a data set is partitioned into similar groups, thereby reversing 
-the logic of classical clustering. They coined the term anticlustering for this 
-purpose. K-means anticlustering maximizes the sum of squared Euclidean distances 
-from each element to the center of the cluster to which it belongs. As 
-@spath1986 noted, k-means anticlustering thereby directly minimizes differences 
-with regard to the means of the numeric variables between groups. Hence, groups 
-only become similar with regard to the mean of the distribution of the numeric 
-attributes, which may perform poorly as a measure of overall similarity; the 
-spread of the data is not targeted and may differ between sets. @papenberg2020 
-showed that maximizing the diversity (based on the pairwise Euclidean distances) 
-is better suited to minimize difference with regard to both the mean and the 
-variance of the data; it was shown that even an entirely random split usually
-resulted in more similar standard deviations as k-means solely focuses on the 
-mean. When requiring that groups are overall similar to each other, this focus 
-may be misguided as similar means can be obtained even when the underlying 
-distributions are different [@anscombe1973]. 
-
-In this paper, I present k-plus anticlustering, a simple extension of the 
-k-means objective function to maximize similarity with regard to means and 
-variances at the same time. The aim is to establish groups that are overall 
-similar to each other. It is shown that this is achieved by formulating a 
-bicriterion optimization objective for k-means anticlustering. Interestingly, 
-this reformulation reduces to an augmentation of the original data matrix while 
-the optimization objective remains unchanged. This insight has important 
-consequences as it allows to adapt standard optimization schemes for single 
-criterion anticlustering. I show that the k-plus criterion outperforms other 
-anticlustering criteria when the goal is the minimize difference with regard to 
-the mean and variance of the different groups. In most cases, both objectives 
-can be optimized satisfactorily at the same time without any loss on either; 
-when the data set is large enough (usually, when $N > XX$), the bicriterion 
-optimization leads to > 99.99% objective performance as compared to the single 
-optimization of either k-means or k-variance.
+In this paper, I present k-plus anticlustering, a simple extension of the k-means objective function to maximize similarity with regard to means and variances at the same time. The aim is to establish groups that are overall similar to each other. It is shown that this is achieved by formulating a bicriterion optimization objective for k-means anticlustering. Interestingly, this reformulation reduces to an augmentation of the original data matrix while the optimization objective remains unchanged. This insight has important consequences as it allows to adapt standard optimization schemes for single criterion anticlustering. I show that the k-plus criterion outperforms other anticlustering criteria when the goal is the minimize difference with regard to the mean and variance of the different groups. In most cases, both objectives can be optimized satisfactorily at the same time without any loss on either; when the data set is large enough (usually, when $N > XX$), the bicriterion optimization leads to > 99.99% objective performance as compared to the single optimization of either k-means or k-variance.
 
 # Problem formalization
 
