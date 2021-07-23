@@ -38,7 +38,9 @@ draft             : no
 
 documentclass     : "apa6"
 classoption       : "doc"
-output            : papaja::apa6_pdf
+output            : 
+  papaja::apa6_pdf: 
+    number_sections: true
 ---
 
 ```{r setup, include = FALSE}
@@ -56,11 +58,11 @@ Anticlustering is a collection of methods to partition elements into disjunct gr
 
 Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split a test into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to experimental conditions [@lahl2006]. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual partitioning is usually suboptimal. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020]. For a general overview of anticlustering approaches and applications in Psychology, see @brusco2019 and @papenberg2020.
 
-Anticlustering objectives differ in the assumed input data and their mathematical definition of cluster similarity. Some anticlustering objectives employ pairwise dissimilarity ratings to compute a total measure of cluster (dis)similarity. The most prominent criterion of this kind is the *diversity*, which is the total sum of dissimilarities between any elements within the same group. Maximizing the diversity simultaneously optimizes within-group heterogeneity as well as between-group similarity. Another important criterion based on pairwise dissimilarities is the *dispersion*, i.e., the minimum dissimilarity between any two elements within the same group [@fernandez2013; @brusco2019]. Maximizing the dispersion increases the within-group heterogeneity by ensuring that any two elements as dissimilar from each other as possible.
+Anticlustering objectives differ in the assumed input data and their mathematical definition of cluster similarity. Some anticlustering objectives employ pairwise dissimilarity ratings to compute a total measure of cluster (dis)similarity. The most prominent criterion of this kind is the *diversity*, which is the total sum of dissimilarities between any elements within the same group. Maximizing the diversity simultaneously optimizes within-group heterogeneity as well as between-group similarity.  Because the diversity is the reversal of the clustering editing objective [@zahn1964; @shamir2004vf], @papenberg2020 used the term *anticluster editing* to refer to anticlustering approaches that optimize the diversity. Another important criterion based on pairwise dissimilarities is the *dispersion*, i.e., the minimum dissimilarity between any two elements within the same group [@fernandez2013; @brusco2019]. Maximizing the dispersion increases the within-group heterogeneity by ensuring that any two elements as dissimilar from each other as possible.
 
 Oftentimes, the data available to researchers does not represent pairwise similarity, but numeric, categorical or binary attributes [@dry2009]. That is, the data is a two-way two-mode [@arabie1992] table where rows represent the entities of study, and columns represent variables describing the elements. For example, numeric ratings may describe the attributes of word stimuli for psycholinguistic experiments. Such data may include norms for imagery, concreteness and orthographic variables [@friendly1982]. In other cases, attributes are binary and may represent the presence or absence of a feature [@tversky1977]. In the context of anticlustering, One possible approach for handling two-way two-mode data is to compute an appropriate dissimilarity measure such as the pairwise Euclidean or squared Euclidean distance across a set of numeric attributes [@brusco2019]. Then, anticlustering criteria based on pairwise dissimilarities such as the dispersion or diversity can be optimized to partition the elements into groups.
 
-A different approach to anticlustering directly works with the two-way two-mode feature data using the k-means criterion. K-means is probably the best-known clustering method and its reversal has been recognized as a useful anticlustering tool by Späth [-@spath1986] and Valev [-@valev1998; -@valev1983]. In k-means clustering, the sum of the squared Euclidean distances between elements and the center of the cluster they are assigned to is minimized [@brusco2006branch], usually using the k-means heuristic [@jain2010; @steinley2006]. Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity [@aloise2009np]. For the anticlustering application, the k-means criterion is maximized instead, thereby achieving similarity between groups. Specifically, as @spath1986 noted, k-means anticlustering minimizes differences with regard to the means of the numeric attributes across clusters. Hence, groups are similar with regard to the mean of the distribution of the numeric attributes wheras other parameters---such as the variance---are ignored. When requiring that groups are overall similar to each other, this focus may be misguided as similar means can be obtained even when the underlying distributions are different [@anscombe1973]. @papenberg2020 showed that maximizing the diversity (based on the pairwise Euclidean distances) is better suited to minimize difference with regard to both the mean and the variance of the data; it was shown that even an entirely random split usually resulted in more similar variances because k-means solely focuses on the mean similarity.
+A different approach to anticlustering directly works with the two-way two-mode feature data using the k-means criterion. K-means is probably the best-known clustering method and its reversal has been recognized as a useful anticlustering tool by Späth [-@spath1986] and Valev [-@valev1998; -@valev1983]. In k-means clustering, the sum of the squared Euclidean distances between elements and the center of the cluster they are assigned to is minimized [@brusco2006branch], usually using the k-means heuristic [@jain2010; @steinley2006]. Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity [@aloise2009np]. For the anticlustering application, the k-means criterion is maximized instead, thereby achieving similarity between groups. Specifically, as @spath1986 noted, k-means anticlustering minimizes differences with regard to the means of the numeric attributes across clusters. Hence, groups are similar with regard to the mean of the distribution of the numeric attributes wheras other parameters---such as the variance---are ignored. When requiring that groups are overall similar to each other, this focus may be misguided as similar means can be obtained even when the underlying distributions are different [@anscombe1973]. @papenberg2020, showed that maximizing the diversity (based on the pairwise Euclidean distances) is better suited to minimize difference with regard to both the mean and the variance of the data; it was shown that even an entirely random split usually resulted in more similar variances because k-means solely focuses on the mean similarity.
 
 To optimize overall group similarity---and hence to overcome the limitations of k-means anticlustering---I present k-plus anticlustering in this paper. The k-plus criterion is an extension of the k-means objective that includes a term aiming at optimizing similarity with regard to the variance of data across groups. Interestingly, this bicriterion reformulation can be understood as an augmentation of the original data matrix, leaving the original k-means objective unchanged. I show that the k-plus criterion outperforms other anticlustering criteria when the goal is the minimize difference with regard to the mean and variance of the different groups. In most cases, both objectives can be optimized satisfactorily at the same time without any loss on either. In several examples I illustrate how readers can use k-plus anticlustering easily using the free and open source software anticlust, which is an extension to the statistical programming language R [@papenberg2020].
 
@@ -150,7 +152,7 @@ $$
 
 Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points.
 
-## A bicriterion model: K-plus anticlustering
+## A bicriterion model: K-plus anticlustering {#kplus}
 
 It is unlikely that an exclusive optimization of $SSE_{Var}$ (i.e., equalizing variances) is of interest without also considering the $SSE$ (i.e., equalizing means). A combination of $SSE_{Var}$ and $SSE$, however, can be employed to simultaneously optimize both objectives, which is a reasonable idea when striving for overall cluster similarity. The most simple approach for such a bicriterion optimization is the weighted sum approach [@naidu2014; @marler2010]. That is, both criteria are computed independently from each other and then combined into a single criterion through a weighted sum:
 
@@ -275,47 +277,44 @@ points(
 )
 ```
 
-For this motivating example, I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $SSE$ and $SSE_{Var}$ across partitions. Note that for both criteria, a larger value is better, i.e., indicates higher similarity with regard to means and variances, respectively. Therefore, to obtain overall between-group similarity, a partition should be chosen that is depicted in the upper right corner of the scatterplot. However, optimal k-means anticlustering would create two groups that are not particularly similar with regard to their variance. The partition that is represented by the squared symbol has the overall best highest $SSE$, but is outperformed by many other partitions with regard to $SSE_{Var}$. Similarly, the partition that maximizes $SSE_{Var}$ (the triangular symbol in Figure 1) is not well-suited to optimize SSE at the same time. The diamond symbol represents the partition that maximizes the unweighted $SSE_{kplus}$, i.e., the sum of $SSE$ and $SSE_{Var}$. This partition is located in the right upper corner and yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $SSE$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $SSE_{Var}$.
+For this motivating example, I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $SSE$ and $SSE_{Var}$ across partitions. Note that for both criteria, a larger value is better, i.e., indicates higher similarity with regard to means and variances, respectively. Therefore, to obtain overall between-group similarity, a partition should be chosen that is depicted in the upper right corner of the scatterplot. However, optimal k-means anticlustering would create two groups that are not particularly similar with regard to their variance. The partition that is represented by the squared symbol has the overall best highest $SSE$, but is outperformed by many other partitions with regard to $SSE_{Var}$. Similarly, the partition that maximizes $SSE_{Var}$ (the triangular symbol in Figure 1) is not well-suited to optimize SSE at the same time. The diamond symbol represents the partition that maximizes (the unweighted) $SSE_{kplus}$, i.e., the sum of $SSE$ and $SSE_{Var}$. This partition is located in the right upper corner and yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $SSE$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $SSE_{Var}$.
 
-This initial example shows that maximizing the combined k-plus criterion may well be suited to optimize both similarity with regard to means as well as variances between groups. Later, I will show that this result also holds for real data sets, using more groups and a larger number of numeric features.
+This initial example shows that maximizing the combined k-plus criterion may well be suited to optimize both similarity with regard to means as well as variances between groups. In the next section I present a simulation study that more systematically investigates the performance of the k-plus criterion.
 
-```{r}
+# Simulation study
 
+To systematically evaluate the new k-plus criterion, I compared three anticlustering approaches in a simulation study: (a) k-means anticlustering, optimizing the $SSE$; (b) k-plus anticlustering, optimizing the $SSE_{kplus}$; (c) anticluster editing, optimizing the diversity criterion. All methods employed an a priori standardization of the data sets. In the case of k-plus anticlustering, this means that the augmented input data (i.e., the original data and the squared distance data) were subjected to a standardization, which is recommended.
 
-```
+The simulation used the statistical programming environment R [@R-base]. The R package `anticlust` [Version 0.5.6; @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R packages `dplyr` [Version 1.0.7; @R-dplyr], `ggplot2` [Version 3.3.5; @R-ggplot2], `papaja` [Version 0.1.0.9997; @R-papaja] and `tidyr` [Version 1.1.3; @R-tidyr] were used for data processing and result presentation. The simulation study is fully reproducible via code and data that is accessible from the accompanying OSF repository (**link TODO**). 
 
-# Evaluation 
+## Conditions
 
-- Simulation 1: Show that k-means extended obtains 99.999% of the 
-k-means and k-variance objective, on average. 
-  + New objective seems to work best when N is high relative to K; optimizing 
-two objectives at the same time is hard when N is low. Easier when only 
-optimizing one objective (i.e., the mean, as done by normal k-means 
-anticlustering). What I can say: When N / K > X, the objective is 
-usually 99.99% of both objectives.
-  + Two examples: $K = 2$, $N = 20$ vs. $N = 100$, using classical
-k-means: only mean; using k-variance: only variance; combination:
-both, but works better for larger $N$
+First, I generated 10,000 data sets which were subsequently subjected to the three anticlustering methods. The following properties were determined randomly for each data set: (a) the sample size $N$ varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into $K = 2$, $3$, and $4$ groups; (b) the number of features $M$ varied between 1 and 10; (c) the distribution of features was randomly determined to be either (i) uniform in [0, 1], (ii) a standard normal distribution with *M* = 0 and *SD* = 1, or (iii) a wider normal distribution with *M* = 0 and *SD* = 2. For a given data set, all $M$ features were independently sampled from the given distribution and no correlations were assumed between features. All three anticlustering methods were applied to each of the 10,000 data sets using $K = 2$, $K = 3$ and $K = 4$; groups sizes were always equal. 
 
-- Simulation 2: show that k-variance anticlustering outperforms 
-other objectives with regard to similarity in means / variances 
-(in particular: anticluster editing)
+## Optimization algorithm
 
-- Often, maximizing k-means-variance yields more similar variances 
-than k-variance alone. Why is that? I guess: structure in the solution 
-space, local maxima are real. When also considering means, you more 
-often escape bad local maxima? The finding is: k-means-extended better 
-minimizes the maximum difference between the variance across groups 
-than k-variance (for K > 2), which in the eye of the researcher, may 
-be a more intuitive criterion.
+To optimize the three anticlustering criteria, a local-maximum search was applied that systematically swaps elements between groups to gradually improve the objective function [Method LCW in @weitz1998]. Building on an initial random assignment of elements to groups, elements are swapped between groups in such a way that each swap improves the objective criterion by the largest amount that is possible. That is, for each element, all possible swaps are simulated and the resulting objective values are stored. After each exchange has been tested, the one exchange is realized that improves the objective the most. No swap is realized if no swap improves the criterion. The exchange procedure is repeated for each element. Once the last element has been processed, the procedure restarts at the beginning and once again iterates through all elements. The search stops as soon as an iteration through the entire set no longer yields any improvement, i.e., as soon as a local maximum has been found. To obtain better results, this local maximum search may be initialized multiple times [@spath1986]. This simulation employed five repetitions of the local maximum search.
 
-# Applying k-plus anticlusting using the R package anticlust
+## Evaluation criteria
 
-In this section I demonstrate how researchers can easily employ k-plus anticlustering using the R package anticlust [@papenberg2020]. The results presented here used anticlust version 0.5.6. The package can be installed in the R environment using the `install.packages()` command:
+Two primary performance criteria were assessed. First, for k-plus anticlustering, I checked how well the identified solution approximated the ordinary k-means criterion. Specifically, I computed the $SSE$ for the solution that was returned by k-means anticlustering---that directly optimizes $SSE$---and for the solution that was returned by k-plus anticlustering that only indirectly optimizes $SSE$ through $SSE_{kplus}$. If optimizing $SSE_{kplus}$ simultaneously optimizes the standard $SSE$ to a satisfactory degree, we may conclude that simultaneously striving for similar means and variances is feasible by optimizing the k-plus criterion. 
+
+Second, to compare the three anticlustering criteria with regard to their ability to create similar groups, I computed the means and standard deviations and assessed the degree to which discrepancies occurred between groups. To this end, I then computed the difference between the minimum and maximum value of the means and standard deviations between groups, for each of the $M$ features. The mean of the differences across all features quantified the total dissimilarity in means ($\Delta M$) and standard deviations ($\Delta \mathit{SD}$). Therefore, lower values of $\Delta M$ and $\Delta \mathit{SD}$ indicated that groups were more similar with regard means or standard deviations, respectively.
+
+## Results
+
+- k-plus approximates k-means very well, especially for large $N$ (for larger $K$, $N$ schould increase as well)
+- k-plus is the best method to optimize similarity with regard to means and standard deviations at the same time
+
+# K-plus anticlustering using the R package anticlust 
+
+In this section I demonstrate how researchers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020]. The results presented here used `anticlust` version 0.5.6. The package can be installed in the R environment using the `install.packages()` command:
 
 ```R
 install.packages("anticlust")
 ```
+
+## Example Application I
 
 In this application, I use norming data for the OASIS image data set that is freely available online [@kurdi2017introducing]. @kurdi2017introducing assembled 900 open-access color images and collected ratings on two affective dimensions: arousal and valence. @brielmann2019intense collected an additional rating dimension by measuring how the same 900 images were rated with regard to their beauty. In my application, I use all three features, currently available from Github.[^githubbeauty]
 
@@ -335,7 +334,7 @@ anticlustering(
 )
 ```
 
-Here, the variable `features` has to be a data table containing the image data: 900 rows representing images; 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the fully reproducible code that includes downloading and reading the OASIS data, selecting the relevant columns, and finally storing them in the `features` variable (**TODO**). The arguments `objective = "kplus"` and `method = "local-maximum"` ensure that the k-plus criterion is optimized using the local maximum search method described in the previous section (**TODO**). The argument `K` describes the number of groups. The argument `standardize = TRUE` ensures that all features are standardized before the optimization starts; in particular, this option enforces that equalizing means and variances receives the same weight during the optimization process.
+Here, the variable `features` has to be a data table containing the image data: 900 rows representing images; 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the fully reproducible code that includes downloading and reading the OASIS data, selecting the relevant columns, and finally storing them in the `features` variable (**TODO**). The arguments `objective = "kplus"` and `method = "local-maximum"` ensure that the k-plus criterion is optimized using the local maximum search method described in the previous section (**TODO**). The argument `K` describes the number of groups. The argument `standardize = TRUE` ensures that all features are standardized before the optimization starts; in particular, this option enforces that equalizing means and variances receives the same weight during the optimization process (see [Section 1.2](#kplus)).
 
 Table 1 shows the results of the anticlustering application by listing the descriptive statistics (means and standard deviations) for each of the 9 groups and for each of the 3 features. Additionaly, Table 1 shows the descriptive statistics for an application of k-means anticlustering and anticluster editing (which maximizes the diversity criterion). It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations. Anticluster editing was also well-suited to match both means and standard deviations, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---anticluster editing does not directly maximize similarity with regard to the means and standard deviations.
 
@@ -403,8 +402,8 @@ Unequal group sizes can be requested in anticlust by passing the group sizes as 
 ```R
 anticlustering(
   features,
-  standardize = TRUE,
   K = c(100, 100, 100, 600),
+  standardize = TRUE,
   objective = "kplus",
   method = "local-maximum"
 )
@@ -463,25 +462,66 @@ apa_table(
 )
 ```
 
+## Example Application II: Small data set (N = 96)
+
+The simulation study indicated that k-plus may show decreased performance for smaller group sizes. Therefore,    this second example application illustrates that k-plus anticlustering may also yield satisfactory results when group are smaller than in the OASIS example. I employ a norming data set of 96 word stimuli that was contributed to the `anticlust` package by Dr. Schaper [@schaper2019metacognitive; @schaper2019metamory; also see @papenberg2020 for a description of the norming data]. After loading the `anticlust` package, the data set can be accessed as follows: 
+
+```{r, echo = TRUE}
+data(schaper2019)
+```
+
+Table 3 illustrates the results that are obtained when using k-plus anticlustering to divide the stimulus set into 6 groups of size `r 96 / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably, they are still similar enough for any practical purpose, especially when considering inevitable measurement error in norming studies. The following code was used to achieve the results reported in Table 3:
+
+```{r, echo = TRUE}
+features <- schaper2019[, 3:6]
+anticlusters <- anticlustering(
+  features,
+  K = 6,
+  objective = "kplus",
+  method = "local-maximum",
+  repetitions = 5,
+  standardize = TRUE
+)
+```
+
+Note that standardization is particularly useful for anticlustering when the score range differs strongly between features, as is the case for the Schaper data set.
+
+```{r}
+
+tab <- mean_sd_tab(features, anticlusters)
+tab <- cbind(1:6, 96 / 6, tab)
+colnames(tab) <- c("Group", "N", "Typicality", "Atypicality", "Syllables", "Frequency")
+
+apa_table(
+  tab,
+  caption = "Descriptive statistics by group for the Schaper et al. (2019) data set, after applying k-plus anticlustering.",
+  note = "The cells contain mean values by cluster and the standard deviation (in parentheses).",
+  escape = FALSE,
+  align = c("r")
+)
+
+```
 
 # Discussion
 
-- Focus on presentation of new objective function, the bicriterion 
-optimization process might be improved [e.g., by using a direct 
-algorithm as @brusco2019 did]
+- k-plus anticlustering is useful and should in the default case be preferred to k-means anticlustering. For optimizing similarity in means and variances it also outperforms anticluster editing, which, to be fair, does not directly strive to do so. Unequal group sizes give another advantage for k-plus anticlustering in comparison to anticluster editing. For small samples sizes (or large $K$), k-plus anticlustering may return slightly less-than-optimal results in the eye of the user, but in this case it is no problem to return to k-means and only focus on the means. There is not "anticlustering hacking"; users may simply choose the results they like best. For now, I strongly recommend using k-plus anticlustering for creating groups with high between group similarity.
 
-- Future research: Application of more sophisticated bicriterion 
-optimization algorithms are interesting
+## Limitations and outlook
 
-- new criterion: optimizes between-group similarity, no correspondence 
-to within-group heterogeneity [see @brusco2019 for a exceptional method 
-maximizing within-group heterogeneity]
+- This paper focused on the presentation of new objective function, the bicriterion optimization process might be improved [e.g., by using a direct algorithm as @brusco2019 did]. From the algorithmic point of view, this paper did not strive to apply the latest cutting edge methodology. For most practical purposes, however, I assume that optimizing the k-plus criterion will yield very satisfactory results for researchers. I have already worked with researchers planning their experiments who are generally amazed by the groupd that are returned by k-plus anticlustering.
 
-- Similarly: the reversed objective no longer has a useful clustering 
-interpretation: Maximizing differences in variances does not lead to 
-homogeneous and/or well separated clusters
+## Future research
 
-- extending on covariances?
+- Future research: Application of more sophisticated bicriterion optimization algorithms are interesting
+
+- extending k-means anticlustering on maximizing similarity with regard to covariances? Mahalanobis distance?
+
+# General thoughts on anticlustering
+
+- new criterion: optimizes between-group similarity, no correspondence to within-group heterogeneity [see @brusco2019 for a exceptional method maximizing within-group heterogeneity]
+
+- Similarly: the reversed objective no longer has a useful clustering interpretation: Maximizing differences in variances does not lead to homogeneous and/or well separated clusters
+
 
 \newpage
 
