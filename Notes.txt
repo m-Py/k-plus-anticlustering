@@ -1,6 +1,0 @@
-
-- Variance is the average squared distance between the grand average and 
-data points
-- Replace data points by their squared distance to grand mean -> optimize 
-similarity wrt to the average using k-means anticlustering
-
