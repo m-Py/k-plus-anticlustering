@@ -38,7 +38,7 @@ The data sets store the following variables:
     + "k-means-exchange" - k-means anticlustering objective, optimized using a local maximum search exchange method
     + "k-plus" - k-plus anticlustering objective, optimized using a local maximum search exchange method
     + "random" - A random allocation of items to groups (not presented in the paper; may be analyzed if you are curious)
-- result: A string representing the solution that a method returned (how to assign the elements to sets)
+- result: A string representing the solution that a method returned (i.e., how the elements were assigned to groups)
 - kmeans_obj: The k-means objective (higher values = better)
 - kvar_obj: The k-variance objective (higher values = better; not presented in the paper; may be analyzed if you are curious)
 - means_obj: A measure of the discrepancy in the feature means (lower = better)
