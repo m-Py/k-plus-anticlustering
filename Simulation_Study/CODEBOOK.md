@@ -40,6 +40,6 @@ The data sets store the following variables:
     + "random" - A random allocation of items to groups (not presented in the paper; may be analyzed if you are curious)
 - result: A string representing the solution that a method returned (how to assign the elements to sets)
 - kmeans_obj: The k-means objective (higher values = better)
-- kvar_obj: The k-variance objective (higher values = better)
+- kvar_obj: The k-variance objective (higher values = better; not presented in the paper; may be analyzed if you are curious)
 - means_obj: A measure of the discrepancy in the feature means (lower = better)
 - sd_obj: A measure of the discrepancy in the feature standard deviations (lower = better)
