@@ -17,11 +17,9 @@ authornote: |
 
   Martin Papenberg, Department of Experimental Psychology, Heinrich Heine University Düsseldorf.
 
-#  If the study extends or replicates previous research, cite the relevant work with an author–date citation.
-
 abstract: |
 
-    Anticlustering refers to a collection of methods that partition data sets into disjunct while addressing two objectives: (a) high between-group similarity and (b) high within-group heterogeneity. For some anticlustering formulations, these two objectives coincide: high between-group similarity is achieved when within-group heterogeneity is maximized. Other anticlustering methods focus on one of the two aspects. The present paper focuces on maximizing between-group similarity by introducing a novel bicriterion objective. *K-plus anticlustering* is an extension of k-means anticlustering, which minimizes the difference between the mean of numeric attributes across clusters. The k-plus objective extends k-means by adding a term that aims to optimize similarity with regard to the variance of the attributes data across clusters. It is shown that the combined bicriterion objective can be reduced to an augmentation of the input data, leaving the original k-means criterion unchanged. A computer simulation and practical examples on real data show that k-plus anticlustering usually achieves high similarity both with regard to mean attribute values as well as the variance, with no noticable sacrifice to either criterion. The k-plus extension is therefore preferred over classical k-means anticlustering for optimizing between-group similarity. K-plus anticlustering is easily accessible to researchers and practitioners: the method has been implemented as part of the open source R package `anticlust`, which is freely available via CRAN (https://cran.r-project.org/package=anticlust) and Github (https://github.com/m-Py/anticlust).
+    Anticlustering refers to a collection of methods that partition data sets into disjunct groups while addressing two objectives: (a) high between-group similarity and (b) high within-group heterogeneity. For some anticlustering formulations, these two objectives coincide: high between-group similarity is achieved when within-group heterogeneity is maximized. Other anticlustering methods focus on one of the two aspects. The present paper focuces on maximizing between-group similarity by introducing a novel bicriterion objective for anticlustering. *K-plus anticlustering* is an extension of k-means anticlustering, which minimizes the difference between the mean of numeric attributes across clusters. The k-plus objective extends k-means by adding a term that aims to optimize similarity with regard to the variance of the attributes data across clusters. It is shown that the combined bicriterion objective can be reduced to an augmentation of the input data, leaving the original k-means criterion unchanged. A computer simulation and practical examples on real data show that k-plus anticlustering usually achieves high similarity both with regard to mean attribute values as well as the variance, with no noticable sacrifice to either criterion. The k-plus extension is therefore preferred over classical k-means anticlustering for optimizing between-group similarity. K-plus anticlustering is easily accessible to researchers and practitioners: the method has been implemented as part of the open source R package `anticlust`, which is freely available via CRAN (https://cran.r-project.org/package=anticlust) and Github (https://github.com/m-Py/anticlust).
   
 bibliography      : ["lit.bib"]
   
@@ -395,9 +393,7 @@ apa_table(
 )
 ```
 
-Table 2 illustrates another advantage of k-plus anticlustering over anticluster editing. When creating groups of unequal size, anticluster editing tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for equal means and variances in all groups, regardless of group size.
-
-Unequal group sizes can be requested in anticlust by passing the group sizes as a vector to the `K` argument:
+Table 2 illustrates an advantage of k-plus anticlustering over anticluster editing: When creating groups of unequal size, anticluster editing tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for equal means and variances in all groups, regardless of group size. Unequal group sizes can be requested in anticlust by passing the different group sizes to the `K` argument:
 
 ```R
 anticlustering(
@@ -470,7 +466,7 @@ The simulation study indicated that k-plus may show decreased performance for sm
 data(schaper2019)
 ```
 
-Table 3 illustrates the results that are obtained when using k-plus anticlustering to divide the stimulus set into 6 groups of size `r 96 / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably, they are still similar enough for any practical purpose, especially when considering inevitable measurement error in norming studies. The following code was used to achieve the results reported in Table 3:
+Table 3 illustrates the results that are obtained when using k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably, they are still similar enough for any practical purpose---especially when considering inevitable measurement error in norming studies. The following code was used to achieve the results reported in Table 3:
 
 ```{r, echo = TRUE}
 features <- schaper2019[, 3:6]
