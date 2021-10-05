@@ -29,7 +29,7 @@ This directory contains code and data to reproduce and analyze the simulation st
 
 To reproduce the simulation itself (i.e., applying anticlustering functions to the data in the script "2-Call-Methods.R"), the `anticlust` package must be installed (version >= 0.5.6). To compute and aggregate the results, you additionally need the R packages `tidyr`, `dplyr` and `ggplot2`. For `tidyr`, I used version 1.1.3 in my simulation. I expect that future versions will produce the same results because I only relied on rather basic and stable functionality. I expect the same for `ggplot2` (where I used version 3.3.5) and `dplyr` (where I used version 1.0.7).
 
-If you want to recreate the R Markdown paper file ("Paper.Rmd" in the upper directory), you need the same R packages and additionally the R package `papaja` (I used version 0.1.0.9997, currently need yet available froM CRAN, installable via Github from https://github.com/crsh/papaja). However, you may also extract the code from the relevant Rmd chunks if you do not want to work with R Markdown.
+If you want to recreate the R Markdown paper file ("Paper.Rmd" in the upper directory), you need the same R packages and additionally the R package `papaja` (I used version 0.1.0.9997, currently need yet available from CRAN, installable via Github from https://github.com/crsh/papaja). However, you may also extract the code from the relevant Rmd chunks if you do not want to work with R Markdown.
 
 ## Tipps
 
