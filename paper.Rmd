@@ -45,6 +45,9 @@ output            :
 library("papaja")
 library("anticlust")
 library("knitr")
+library("dplyr")
+library("ggplot2")
+library("tidyr")
 options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo_pdf") 
 
@@ -297,11 +300,6 @@ Second, to compare the three anticlustering criteria with regard to their abilit
 
 ```{r, fig.cap = "Displays how well maximizing the k-plus criterion approximates the k-means criterion that is found via direct maximization of the k-means criterion.", fig.height = 5, fig.width = 5}
 
-# Load required packages
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
 ## Analyze data for K = 2 and K = 3 and K = 4
 simulation_results <- list()
 for (K in 2:4) {
@@ -349,11 +347,51 @@ rel %>%
   labs(y = "k-plus approximation of k-means criterion")
 
 # approximation at N > 100
-# mean(filter(rel, N > 100)$rel) * 100
-  
+approx_n100 <- mean(filter(rel, N > 100)$rel) 
+approx_n24_k4 <- mean(filter(rel, N == 24, K == 4)$rel) 
+
+# cut decimals after n decimals
+cut_decimals <- function(x, n) {
+  x <- as.character(x)
+  x1 <- strsplit(x, "\\.")[[1]][1]
+  x2 <- strsplit(x, "\\.")[[1]][2]
+  x2 <- strsplit(x2, "")[[1]]
+  as.numeric(paste0(x1, ".", paste(x2[1:n], collapse = "")))
+}
+
 ```
 
-First, I investigated how well maximizing the k-plus criterion approximates the ordinary k-means criterion at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$ as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yields an adequate approximation of $\mathit{SSE}$. However, the quality of this approximation depends on the group sizes of the partition problem: For larger $N$, k-plus anticlustering very closely follows k-means anticlustering's performance with regard to optimizing $\mathit{SSE}$. For $N > 100$, $\mathit{SSE}$ was approximated to more than 99.99% when conducting k-plus anticlustering as compared to k-means anticlustering. The minimum approximation for N = 24 and K = 4 was ...
+First, I investigated how well maximizing the k-plus criterion approximates the ordinary k-means criterion at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$---as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yielded an adequate approximation of $\mathit{SSE}$. In particular, for large group sizes, there is virtually no sacrifice in $\mathit{SSE}$ when  $\mathit{SSE_{kplus}}$ is optimized: For $N > 100$, $\mathit{SSE}$ was approximated to more than `r cut_decimals(approx_n100, 4) * 100`% when conducting k-plus anticlustering as compared to k-means anticlustering. In the simulation, the worst approximation was found when the group sizes were smallest: for $N = 24$ and $K = 4$ was approximated to $\mathit{SSE}$ `r approx_n24_k4 * 100`%. Thus, the quality of the approximation depended on the group size: smaller groups led to worse approximations, while in general there was very little in $\mathit{SSE}$, expecially for larger groups. 
+
+In a next step, I compared k-means anticlustering, k-plus anticlustering and anticluster editing in their ability to equalize means and standard deviations between groups. 
+
+```{r, fig.cap = "Awesome caption", fig.height = 6.5, fig.width = 5}
+
+ldf %>% 
+  group_by(method, Objective, N, K) %>% 
+  summarise(Mean = mean(value)) %>% 
+  filter(Objective %in% c("means", "sd"), method != "random") %>% 
+  ggplot(aes(x = N, y = Mean, colour = method)) + 
+  geom_line(aes(colour = method), size = .7) + 
+  geom_point(aes(colour = method, shape = method)) +
+  facet_grid(cols = vars(Objective), rows = vars(K), scales = "free") + 
+  theme_apa() +
+  theme(
+    legend.position = "top",
+    legend.title = element_text()
+  ) + 
+  guides(
+    linetype = guide_legend(title = "Method"),
+    shape = guide_legend(title = "Method")
+  ) +
+  theme(
+    legend.position = "top",
+    legend.title = element_text()
+  ) +
+  scale_colour_grey(name = "Method") 
+
+
+```
 
 - k-plus approximates k-means very well, especially for large $N$ (for larger $K$, $N$ schould increase as well)
 - k-plus is the best method to optimize similarity with regard to means and standard deviations at the same time
