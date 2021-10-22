@@ -279,7 +279,7 @@ This initial example shows that maximizing the combined k-plus criterion may wel
 
 # Simulation study
 
-To systematically evaluate the new k-plus criterion, I compared three anticlustering approaches in a simulation study: (a) k-means anticlustering, optimizing the $\mathit{SSE}$; (b) k-plus anticlustering, optimizing the $SSE_{kplus}$; (c) anticluster editing, optimizing the diversity criterion. All methods employed an a priori standardization of the data sets. In the case of k-plus anticlustering, this means that the augmented input data (i.e., the original data and the squared distance data) were subjected to a standardization, which is recommended.
+To systematically evaluate the new k-plus criterion, I compared three anticlustering approaches in a simulation study: (a) k-means anticlustering, optimizing the $\mathit{SSE}$; (b) k-plus anticlustering, optimizing the $SSE_{kplus}$; (c) anticluster editing, optimizing the diversity criterion. All methods used a standardization of the data sets as a preprocessing step. In the case of k-plus anticlustering, this means that the augmented input data (i.e., the data table that contains the original data and the squared distance data) were subjected to a standardization, which is recommended.
 
 The simulation used the statistical programming environment R [@R-base]. The R package `anticlust` [Version 0.5.6; @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R packages `dplyr` [Version 1.0.7; @R-dplyr], `ggplot2` [Version 3.3.5; @R-ggplot2], `papaja` [Version 0.1.0.9997; @R-papaja] and `tidyr` [Version 1.1.3; @R-tidyr] were used for data processing and result presentation. The simulation study is fully reproducible via code and data that is accessible from the accompanying OSF repository (**link TODO**). 
 
@@ -299,7 +299,7 @@ Second, to compare the three anticlustering criteria with regard to their abilit
 
 ## Results
 
-```{r, fig.cap = "Displays how well maximizing the k-plus criterion approximates the k-means criterion that is found via direct maximization of the k-means criterion.", fig.height = 5, fig.width = 5}
+```{r, fig.cap = "Displays how well maximizing the k-plus criterion approximates the k-means criterion that is found via direct maximization of the k-means criterion.", fig.height = 4.5, fig.width = 4.5}
 
 ## Analyze data for K = 2 and K = 3 and K = 4
 simulation_results <- list()
@@ -362,9 +362,9 @@ cut_decimals <- function(x, n) {
 
 ```
 
-First, I investigated how well maximizing the k-plus criterion approximates the ordinary k-means criterion at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$---as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yielded an adequate approximation of $\mathit{SSE}$. In particular, for large group sizes, there is virtually no sacrifice in $\mathit{SSE}$ when  $\mathit{SSE_{kplus}}$ is optimized: For $N > 100$, $\mathit{SSE}$ was approximated to more than `r cut_decimals(approx_n100, 4) * 100`% when conducting k-plus anticlustering as compared to k-means anticlustering. In the simulation, the worst approximation was found when the group sizes were smallest: for $N = 24$ and $K = 4$ was approximated to $\mathit{SSE}$ `r approx_n24_k4 * 100`%. Thus, the quality of the approximation depended on the group size: smaller groups led to worse approximations, while in general there was very little cost with regard $\mathit{SSE}$ when optimizing $\mathit{SSE_{kplus}}$, expecially for larger groups. 
+First, I investigated how well maximizing the k-plus criterion ($\mathit{SSE_{kplus}}$) approximates the ordinary k-means criterion ($\mathit{SSE}$) at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$---as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yielded an adequate approximation of $\mathit{SSE}$. In particular, for large group sizes, there is virtually no sacrifice in $\mathit{SSE}$ when  $\mathit{SSE_{kplus}}$ is optimized: For $N > 100$, $\mathit{SSE}$ was approximated to more than `r cut_decimals(approx_n100, 4) * 100`% when conducting k-plus anticlustering as compared to k-means anticlustering. In the simulation, the worst approximation was found when the group sizes were smallest: for $N = 24$ and $K = 4$ was approximated to $\mathit{SSE}$ `r approx_n24_k4 * 100`%. Thus, the quality of the approximation depended on the group size: smaller groups led to worse approximations, while in general there was very little cost with regard $\mathit{SSE}$ when optimizing $\mathit{SSE_{kplus}}$, expecially for larger groups. 
 
-In a next step, I compared k-means anticlustering, k-plus anticlustering and anticluster editing in their ability to equalize means and standard deviations between groups. The results are shown in Table 1. 
+In a next step, I compared k-means anticlustering, k-plus anticlustering and anticluster editing in their ability to equalize means and standard deviations between groups. To clarify the general pattern of results, Table 1 illustrates the outcome variables  $\Delta M$ and $\Delta \mathit{SD}$ after splitting the sample size into categories and averaging across simulation runs. Note that the results have also been collapsed across the different group sizes ($K = 2, 3, 4$) because the relative performance of the anticlustering methods did not vary by $K$. Only a main effect was observed: across all methods, more groups led to higher discrepancies between means and standard deviations between groups. Table 1 shows that k-means best equalizes means between groups; its advantage is most pronounced for smaller samples sizes. For larger sample sizes, both k-plus anticlustering and anticluster editing perform similarly well with regard to $\Delta M$. Replicating @papenberg2020, it is shown that anticluster editing better minimizes differences with regard to standard deviations between groups than k-means anticlustering. However, noteworthy, k-plus anticlustering strongly outperforms both competitors in this matter; $\Delta \mathit{SD}$ is consistently lowest for the new k-plus method. In conclusion, k-plus anticlustering is well suited to minimize differences with regard to mean values across groups---especially when groups are larger---and at the same time is able to minimize differences in standard deviations between groups.
 
 ```{r, fig.cap = "Awesome caption"}
 
@@ -420,11 +420,9 @@ apa_table(
   
 ```
 
-- k-plus is the best method to optimize similarity with regard to means and standard deviations at the same time
-
 # K-plus anticlustering using the R package anticlust 
 
-In this section I demonstrate how researchers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020]. The results presented here used `anticlust` version 0.5.6. The package can be installed in the R environment using the `install.packages()` command:
+In this section I demonstrate how researchers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020] and show that k-plus anticlustering yields excellent results when being applied to real data sets. The results presented here used `anticlust` version 0.5.6. The package can be installed in the R environment using the `install.packages()` command:
 
 ```R
 install.packages("anticlust")
@@ -452,7 +450,7 @@ anticlustering(
 
 Here, the variable `features` has to be a data table containing the image data: 900 rows representing images; 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the fully reproducible code that includes downloading and reading the OASIS data, selecting the relevant columns, and finally storing them in the `features` variable (**TODO**). The arguments `objective = "kplus"` and `method = "local-maximum"` ensure that the k-plus criterion is optimized using the local maximum search method described in the previous section (**TODO**). The argument `K` describes the number of groups. The argument `standardize = TRUE` ensures that all features are standardized before the optimization starts; in particular, this option enforces that equalizing means and variances receives the same weight during the optimization process (see [Section 1.2](#kplus)).
 
-Table 1 shows the results of the anticlustering application by listing the descriptive statistics (means and standard deviations) for each of the 9 groups and for each of the 3 features. Additionaly, Table 1 shows the descriptive statistics for an application of k-means anticlustering and anticluster editing (which maximizes the diversity criterion). It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations. Anticluster editing was also well-suited to match both means and standard deviations, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---anticluster editing does not directly maximize similarity with regard to the means and standard deviations, but instead optimizes the within-group heterogeneity.
+Table 2 shows the results of the anticlustering application by listing the descriptive statistics (means and standard deviations) for each of the 9 groups and for each of the 3 features. Additionaly, Table 2 shows the descriptive statistics for an application of k-means anticlustering and anticluster editing (which maximizes the diversity criterion). It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations. Anticluster editing was also well-suited to match both means and standard deviations, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---anticluster editing does not directly maximize similarity with regard to the means and standard deviations, but instead optimizes the within-group heterogeneity.
 
 ```{r}
 
@@ -511,7 +509,7 @@ apa_table(
 )
 ```
 
-Table 2 illustrates an advantage of k-plus anticlustering over anticluster editing: When creating groups of unequal size, anticluster editing tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for equal means and variances in all groups, regardless of group size. Unequal group sizes can be requested in anticlust by passing the different group sizes to the `K` argument:
+Table 3 illustrates an advantage of k-plus anticlustering over anticluster editing: When creating groups of unequal size, anticluster editing tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for equal means and variances in all groups, regardless of group size. Unequal group sizes can be requested in anticlust by passing the different group sizes to the `K` argument:
 
 ```R
 anticlustering(
@@ -584,7 +582,7 @@ The simulation study indicated that k-plus may show decreased performance for sm
 data(schaper2019)
 ```
 
-Table 3 illustrates the results that are obtained when using k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably, they are still similar enough for any practical purpose---especially when considering inevitable measurement error in norming studies. The following code was used to achieve the results reported in Table 3:
+Table 4 illustrates the results that are obtained when using k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably, they are still similar enough for any practical purpose---especially when considering inevitable measurement error in norming studies. The following code was used to achieve the results reported in Table 4:
 
 ```{r, echo = TRUE}
 features <- schaper2019[, 3:6]
