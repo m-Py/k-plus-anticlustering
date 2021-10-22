@@ -48,6 +48,7 @@ library("knitr")
 library("dplyr")
 library("ggplot2")
 library("tidyr")
+library("prmisc") # remotes::install_github("m-Py/prmisc")
 options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo_pdf") 
 
@@ -361,39 +362,64 @@ cut_decimals <- function(x, n) {
 
 ```
 
-First, I investigated how well maximizing the k-plus criterion approximates the ordinary k-means criterion at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$---as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yielded an adequate approximation of $\mathit{SSE}$. In particular, for large group sizes, there is virtually no sacrifice in $\mathit{SSE}$ when  $\mathit{SSE_{kplus}}$ is optimized: For $N > 100$, $\mathit{SSE}$ was approximated to more than `r cut_decimals(approx_n100, 4) * 100`% when conducting k-plus anticlustering as compared to k-means anticlustering. In the simulation, the worst approximation was found when the group sizes were smallest: for $N = 24$ and $K = 4$ was approximated to $\mathit{SSE}$ `r approx_n24_k4 * 100`%. Thus, the quality of the approximation depended on the group size: smaller groups led to worse approximations, while in general there was very little in $\mathit{SSE}$, expecially for larger groups. 
+First, I investigated how well maximizing the k-plus criterion approximates the ordinary k-means criterion at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$---as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yielded an adequate approximation of $\mathit{SSE}$. In particular, for large group sizes, there is virtually no sacrifice in $\mathit{SSE}$ when  $\mathit{SSE_{kplus}}$ is optimized: For $N > 100$, $\mathit{SSE}$ was approximated to more than `r cut_decimals(approx_n100, 4) * 100`% when conducting k-plus anticlustering as compared to k-means anticlustering. In the simulation, the worst approximation was found when the group sizes were smallest: for $N = 24$ and $K = 4$ was approximated to $\mathit{SSE}$ `r approx_n24_k4 * 100`%. Thus, the quality of the approximation depended on the group size: smaller groups led to worse approximations, while in general there was very little cost with regard $\mathit{SSE}$ when optimizing $\mathit{SSE_{kplus}}$, expecially for larger groups. 
 
-In a next step, I compared k-means anticlustering, k-plus anticlustering and anticluster editing in their ability to equalize means and standard deviations between groups. 
+In a next step, I compared k-means anticlustering, k-plus anticlustering and anticluster editing in their ability to equalize means and standard deviations between groups. The results are shown in Table 1. 
 
-```{r, fig.cap = "Awesome caption", fig.height = 6.5, fig.width = 5}
+```{r, fig.cap = "Awesome caption"}
 
-ldf %>% 
-  group_by(method, Objective, N, K) %>% 
+# Recode N into categories so the results can be displayed in a more informative way
+ldf <- within(ldf, {
+  N_category <- ifelse(N <= 200, "N <= 200", "N > 200")
+  N_category <- ifelse(N <= 100, "N <= 100", N_category)
+  N_category <- ifelse(N <= 50,  "N <= 50", N_category)
+})
+
+ldf$N_category <- ordered(
+  ldf$N_category, 
+  levels = c("N <= 50", "N <= 100", "N <= 200", "N > 200")
+)
+
+# for sorting by method, make it ordered factor:
+ldf$method <- ordered(
+  ldf$method, 
+  levels = c("k-means-exchange", "kplus", "ace-exchange"),
+  labels = c("k-means", "k-plus", "anticluster editing")
+)
+
+results_table <- ldf %>% 
+  group_by(method, Objective, N_category) %>% 
   summarise(Mean = mean(value)) %>% 
   filter(Objective %in% c("means", "sd"), method != "random") %>% 
-  ggplot(aes(x = N, y = Mean, colour = method)) + 
-  geom_line(aes(colour = method), size = .7) + 
-  geom_point(aes(colour = method, shape = method)) +
-  facet_grid(cols = vars(Objective), rows = vars(K), scales = "free") + 
-  theme_apa() +
-  theme(
-    legend.position = "top",
-    legend.title = element_text()
-  ) + 
-  guides(
-    linetype = guide_legend(title = "Method"),
-    shape = guide_legend(title = "Method")
-  ) +
-  theme(
-    legend.position = "top",
-    legend.title = element_text()
-  ) +
-  scale_colour_grey(name = "Method") 
+  pivot_wider(names_from = Objective, values_from = Mean) %>%
+  arrange(N_category, method)
 
+# enforce two decimals
+results_table$means <- force_decimals(results_table$means, 2)
+results_table$sd <- force_decimals(results_table$sd, 2)
 
+# Generate table
+footnote <- "$\\Delta M$ and $\\Delta \\mathit{SD}$ quantify how strongly means and standard deviations differed between anticlusters. Table cells contain the average objectives across simulation runs, split by $N$."
+
+results_table$N_category <- NULL
+
+colnames <- c("", "$\\Delta M$", "$\\Delta \\mathit{SD}$")
+colnames(results_table) <- colnames
+
+apa_table(
+  results_table, 
+  caption = "Results of the simulation study.", 
+  note = footnote, 
+  escape = FALSE,
+  stub_indents = list("\\textbf{$\\textit{N} \\leq 50$}" = 1:3,
+                      "\\textbf{$50 <\\textit{N} \\leq 100$}" = 4:6,
+                      "\\textbf{$100 <\\textit{N} \\leq 200$}" = 7:9,
+                      "\\textbf{$\\textit{N} > 200$}" = 10:12),
+  span_text_columns = TRUE
+)
+  
 ```
 
-- k-plus approximates k-means very well, especially for large $N$ (for larger $K$, $N$ schould increase as well)
 - k-plus is the best method to optimize similarity with regard to means and standard deviations at the same time
 
 # K-plus anticlustering using the R package anticlust 
@@ -552,7 +578,7 @@ apa_table(
 
 ## Example Application II: Small data set (N = 96)
 
-The simulation study indicated that k-plus may show decreased performance for smaller group sizes. Therefore,    this second example application illustrates that k-plus anticlustering may also yield satisfactory results when group are smaller than in the OASIS example. I employ a norming data set of 96 word stimuli that was contributed to the `anticlust` package by Dr. Schaper [@schaper2019metacognitive; @schaper2019metamory; also see @papenberg2020 for a description of the norming data]. After loading the `anticlust` package, the data set can be accessed as follows: 
+The simulation study indicated that k-plus may show decreased performance for smaller group sizes. Therefore, a second application illustrates that k-plus anticlustering may yield satisfactory results in practice, when group are smaller. I make use of a norming data set of 96 word stimuli that was contributed to the `anticlust` package by Dr. Schaper [@schaper2019metacognitive; @schaper2019metamory; also see @papenberg2020 for a description of the norming data]. After loading the `anticlust` package, the data set can be accessed as follows: 
 
 ```{r, echo = TRUE}
 data(schaper2019)
