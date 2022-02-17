@@ -45,6 +45,7 @@ anticlusters_from_string <- function(string) {
 #' @return The objective. Lower values are better
 
 var_means <- function(clusters, data) {
+  K <- length(unique(clusters))
   featurewise_diff(by(data, clusters, colMeans), K)
 }
 
@@ -54,6 +55,7 @@ var_means <- function(clusters, data) {
 #' 
 #' @return The objective. Lower values are better
 var_sds <- function(clusters, data) {
+  K <- length(unique(clusters))
   featurewise_diff(by(data, clusters, function(x) apply(x, 2, sd)), K)
 }
 
