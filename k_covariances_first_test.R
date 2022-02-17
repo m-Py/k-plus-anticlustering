@@ -16,6 +16,8 @@ diff_group_cors <- function(features, clusters) {
   diff_min_max(by(features, clusters, function(x) cor(x[, 1], x[, 2])))
 }
 
+source("./Simulation_Study/0-functions-analyze-data.R")
+
 paired_data <- function(n, mx = 0, my = 0, sdx = 1, sdy = 1, r, empirical = FALSE) {
   cor_matrix <- matrix(c(1, r, r, 1), ncol = 2)
   sds <- c(sdx, sdy)
@@ -32,12 +34,12 @@ paired_data <- function(n, mx = 0, my = 0, sdx = 1, sdy = 1, r, empirical = FALS
   data
 }
 
-foo <- function() {
+sim_kcov <- function(X, N, r, K) {
 
-    features <- paired_data(n = 60, r = .3)
+    K <- K
 
-    K <- 4
-    
+    features <- as.matrix(paired_data(n = N, r = r))
+
     anticlusters1 <- anticlustering(
         features,
         objective = "variance",
@@ -64,18 +66,40 @@ foo <- function() {
         objective = "variance",
         K = K
     )
-
-    return(
-        c(
-            random = diff_group_cors(features, sample(anticlusters1)),
-            kmeans = diff_group_cors(features, anticlusters1),
-            kplus = diff_group_cors(features, anticlusters2),
-            diversity = diff_group_cors(features, anticlusters3),
-            kcov = diff_group_cors(features, anticlusters4)
+    
+    rnd_anticlusters <- sample(anticlusters1)
+    
+    results <- matrix(
+            c(c(
+                random = var_means(rnd_anticlusters, features),
+                kmeans = var_means(anticlusters1, features),
+                kplus = var_means(anticlusters2, features),
+                diversity = var_means(anticlusters3, features),
+                kcov = var_means(anticlusters4, features)
+            ),
+            c(
+                random = var_sds(rnd_anticlusters, features),
+                kmeans = var_sds(anticlusters1, features),
+                kplus = var_sds(anticlusters2, features),
+                diversity = var_sds(anticlusters3, features),
+                kcov = var_sds(anticlusters4, features)
+            ),
+            c(
+                random = diff_group_cors(features, rnd_anticlusters),
+                kmeans = diff_group_cors(features, anticlusters1),
+                kplus = diff_group_cors(features, anticlusters2),
+                diversity = diff_group_cors(features, anticlusters3),
+                kcov = diff_group_cors(features, anticlusters4)
+            )), ncol = 3
         )
-    )
+    colnames(results) <- c("means", "sds", "cors")
+    rownames(results) <- c("random", "kmeans", "kplus", "diversity", "kcov")
+    
+    results
 }
 
 
-rowMeans(replicate(1000, foo())) # lowest deviation for diversity!
+nsim <- 500
+sim <- lapply(1:nsim, sim_kcov, N = 100, r = .4, K = 5)
+round(Reduce("+", sim) / nsim, 3) # average objective!
 
