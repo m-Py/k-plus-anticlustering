@@ -27,17 +27,20 @@ extended_skew_kurtosis <- cbind(
   fourth_moment_features(features)
 )
 
+# standard k-plus anticlustering
+anticlusters_cov <- anticlustering(
+  scale(extended),
+  K = 3,
+  objective = "variance"
+)
+
+# k-plus anticlustering, also considering skew and curtosis
 anticlusters_skew_kurtosis <- anticlustering(
   scale(extended_skew_kurtosis),
   K = 3,
   objective = "variance"
 )
 
-anticlusters_cov <- anticlustering(
-  scale(extended),
-  K = 3,
-  objective = "variance"
-)
 
 by(features, anticlusters_skew_kurtosis, function(x) round(apply(x, 2, Skew), 2))
 by(features, anticlusters_cov, function(x) round(apply(x, 2, Skew), 2))
