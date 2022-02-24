@@ -1,0 +1,10 @@
+- In problem formalization: describe how to compute the variables that enter into the objective function for skewness, kurtosis, covariance
+- Redo simulation!
+  * Different data generation: 
+    * at least two features in each data set
+    * correlation between all features: .00, .10, .20, .30, .40, .50
+  * Use two additional methods on data sets: kplus + skew/kurtosis; kplus + covariances
+  * Use additional evaluation criteria: similarity of skew/kurtosis/correlations
+  * describe how well kplus + skew/kurtosis and kplus + covariances approximate kplus and k-means
+  * Use anticlustering version 0.6.1 (is on CRAN)
+
