@@ -8,3 +8,4 @@
   * describe how well kplus + skew/kurtosis and kplus + covariances approximate kplus and k-means
   * Use anticlustering version 0.6.1 (is on CRAN)
 
+- in anticlust, include a function "kplus_anticlustering" with arguments variance (logical; default = TRUE); skewness (logical; default = FALSE); kurtosis (logical; default = FALSE); covariances (logical; default = FALSE); as higher_order_moments (integer vector, to specify higher order moments than kurtosis)
