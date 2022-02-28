@@ -277,9 +277,31 @@ For this example I created 14 data points following a univariate normal distribu
 
 This initial example shows that maximizing the combined k-plus criterion may well be suited to optimize both similarity with regard to means as well as variances between groups. In the next section I present a simulation study that more systematically investigates the performance of the k-plus criterion.
 
-## Skewness and kurtosis
+## Higher order moments, skewness and kurtosis
+
+The outlined logic to equalize variance in different groups is easily generalized to higher order moments such as skewness and kurtosis, i.e., the third and fourth distribution moments, respectively. Generally, the *j*'th sample moment of a variable $x = (x_1, \ldots, x_N)$ is computed as [@joanes1998]
+
+$$
+\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^j
+$$
+
+where $j = 2$ gives the variance, $j = 3$ the skewness, and $j = 4$ the kurtosis. 
+
+The approach outlined in sections 1.1 and 1.2 illustrated how the definition of the variance can be used to add variables to the data set to minimize differences with regard to the variance between groups. Changing the power of the deviation between mean and data points, we can use the same logic to equalize any desired sample moment between groups. I expect this to be interesting in particular for the skewness and kurtosis to minimize differences with regard to distribution asymmetry (skewness) and the propensity to include outliers (kurtosis). 
 
 ## Covariance structure
+
+Because the covariance is also defined as an expected value, the k-plus criterion can be extended to reflect differences in covariances between data sets. In this case, an additional variable has to be computed for each pair of variables, i.e., $\binom{N}{2}$ new variables, using the definition of the sample covariance:
+
+
+
+## The k-plus family of anticlustering objectives
+
+Some clarifications with respect to nomenclature are needed. The k-plus criterion is not a single objective function for anticlustering, but instead is a familiy of objectives that use the standard k-means criterion $SSE$ in order to minimize differences between groups with regard to additional characterizations of a data set; that is, not just the mean, but also the variance, covariances, or higher order moments such as skewness and kurtosis. Which of these objectives are pursued depends on a researchers needs. In the most basic---and arguably most important---case, k-plus can be used to not just minimize differences with regard to the mean of variables but also their variance. Measures of location (mean) and spread (variance / standard deviation) are arguably most important to researchers when they "eyeball" their data and they are routinely reported as characterizations of a data set. Hence, by default, the k-plus anticlustering objective implies that means and variances should be equal between groups. 
+
+While less routinely reported (and less well understood), skewness are kurtosis are also important descriptive characterizations of a data set [@decarlo1997; @westfall2014]. To optimize overall similarity between groups, it may thus be desirable to also minimize differences with regard to these distribution moments. In principle, any higher order moments can also be included as part of the k-plus objective. Note, however, that the inclusion each additional moment requires appending as many features to the data set as there were to begin with. 
+
+K-plus anticlustering can also be used to obtain similar covariance structures among groups. This approach may be of interest in cross validation applications where prediction accuracy depends on the correlations among features and criteria [@zeng2000; @papenberg2020]. Note that each additional objective that is pursued with k-plus anticlustering comes with a cost. It becomes more difficult to satisfactorily fulfil many criteria at the same time. As the simulation study below will show, including many k-plus objectives at the same time becomes more appropriate when the data set becomes larger. In the end, it is a tradeoff between fulfilling few objectives to a precise degree or fulfilling many objectives to a less compelling degree. 
 
 # Simulation study
 
