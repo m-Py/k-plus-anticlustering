@@ -59,7 +59,8 @@ var_sds <- function(clusters, data) {
   featurewise_diff(by(data, clusters, function(x) apply(x, 2, sd)), K)
 }
 
-# Determine the range in means and standard deviations per feature
+# Compute per feature per cluster the range in values (mean, sd...), return
+# the average across all features
 featurewise_diff <- function(x, K) {
   mat <- matrix(unlist(x), ncol = K)
   mat <- apply(mat, 1, range_diff)
