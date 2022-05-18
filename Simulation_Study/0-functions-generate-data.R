@@ -16,7 +16,7 @@
 #'     
 
 generate_data <- function(N, M, sd, r, dir = "datasets-K2/") {
-  data <- rnorm_multi(N, M, sd = sd, r = r)
+  data <- faux::rnorm_multi(N, M, sd = sd, r = r)
   file_name <- paste0(
     dir,
     "N", N, "_M", M, "_", "SD", sd, "_", "r", r, "_",
@@ -41,7 +41,7 @@ info_from_filename <- function(file) {
     replacement = ""
   ))
   tests$ID <- info[5]
-  tests$N <- number_from_string(strsplit(info[1], split = "/")[[c(1, 2)]])
+  tests$N <- number_from_string(info[1])
   tests$M <- number_from_string(info[2])
   tests$SD <- number_from_string(info[3])
   tests$SD <- as.numeric(gsub("r", "", info[4]))

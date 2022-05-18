@@ -1,7 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2021
-
+# Year: 2022
 
 #' Apply several anticlustering methods to a data set
 #' 

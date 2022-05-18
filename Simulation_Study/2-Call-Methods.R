@@ -1,6 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2021
+# Year: 2022
 
 # Load required packages
 library(anticlust)

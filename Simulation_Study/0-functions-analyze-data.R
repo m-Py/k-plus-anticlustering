@@ -1,6 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2021
+# Year: 2022
 
 #' Compute objective values for a given method and data set
 #' 
@@ -22,6 +22,9 @@ compute_objectives <- function(row, K) {
   kmeans_obj <- variance_objective(data, anticlusters)
   means_obj <- var_means(anticlusters, data)
   sd_obj <- var_sds(anticlusters, data)
+  skew_obj <- var_skew(anticlusters, data)
+  kur_obj <- var_kurtosis(anticlusters, data)
+  cor_obj <- var_cors(anticlusters, data)
   
   return(c(
     row["ID"],
@@ -29,7 +32,10 @@ compute_objectives <- function(row, K) {
     kvar_obj = kvar_obj,
     kmeans_obj = kmeans_obj,
     means_obj = means_obj,
-    sd_obj = sd_obj
+    sd_obj = sd_obj,
+    skew_obj = skew_obj,
+    kur_obj = kur_obj,
+    cor_obj = cor_obj
   ))
 }
 
@@ -57,6 +63,33 @@ var_means <- function(clusters, data) {
 var_sds <- function(clusters, data) {
   K <- length(unique(clusters))
   featurewise_diff(by(data, clusters, function(x) apply(x, 2, sd)), K)
+}
+
+#' Quantify set similarity by discrepancy in Skew
+#' @return The objective. Lower values are better
+var_skew <- function(clusters, data) {
+  K <- length(unique(clusters))
+  featurewise_diff(by(data, clusters, function(x) apply(x, 2, DescTools::Skew)), K)
+}
+
+#' Quantify set similarity by discrepancy in Kurtosis
+#' @return The objective. Lower values are better
+var_kurtosis <- function(clusters, data) {
+  K <- length(unique(clusters))
+  featurewise_diff(by(data, clusters, function(x) apply(x, 2, DescTools::Kurt)), K)
+}
+
+#' Quantify set similarity by discrepancy in correlations
+#' @return The objective. Lower values are better
+var_cors <- function(clusters, data) {
+  K <- length(unique(clusters))
+  cors_per_cluster <- lapply(by(data, clusters, cor), function(x) x[lower.tri(x)])
+  if (ncol(data) > 2) {
+    per_cor_range_diff <- apply(simplify2array(cors_per_cluster), 1, range_diff)
+  } else { # special treatment for only 2 features because the output is not a matrix when using apply
+    per_cor_range_diff <- range_diff(unlist(cors_per_cluster))
+  }
+  mean(per_cor_range_diff)
 }
 
 # Compute per feature per cluster the range in values (mean, sd...), return

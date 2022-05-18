@@ -1,6 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2021
+# Year: 2022
 
 # Load required packages
 library(dplyr)
@@ -25,37 +25,30 @@ table(table(df$ID))
 # Make long format
 ldf <- pivot_longer(
   df,
-  cols = paste0(c("kvar", "kmeans", "means", "sd"), "_obj"),
+  cols = paste0(c("kvar", "kmeans", "means", "sd", "skew", "kur", "cor"), "_obj"),
   names_to = "Objective",
   names_pattern = "(.*)_obj"
 )
 
+# Plot the results
 ldf %>% 
-  group_by(method, Objective, N, K) %>% 
+  group_by(method, Objective, N) %>% 
   summarise(Mean = mean(value)) %>% 
-  filter(Objective %in% c("means", "sd"), method != "random") %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor"), method != "random") %>% 
   ggplot(aes(x = N, y = Mean, colour = method)) + 
   geom_line(size = 1) + 
-  facet_grid(cols = vars(Objective), rows = vars(K), scales = "free") + 
+  facet_grid(rows = vars(Objective), scales = "free") + 
   theme_bw(base_size = 22)
+
+## by value, aggregate across N and K
+ldf %>% 
+  group_by(method, Objective) %>% 
+  summarise(Mean = round(mean(value), 3)) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor"), method != "random") %>% 
+  arrange(Objective) %>% View()
 
 # Check number of simulations per condition
 ldf %>% 
   group_by(method, Objective, K) %>% 
   summarise(N = n()) %>% 
   pull(N)
-
-# Check how well k-plus approximates k-means
-ldf %>% 
-  group_by(method, Objective, N, K) %>% 
-  summarise(Mean = mean(value)) %>% 
-  filter(Objective == "kmeans", method %in% c("kplus", "k-means-exchange")) %>% 
-  pivot_wider(names_from = method, values_from = Mean) %>% 
-  ungroup() %>% 
-  group_by(N, K) %>% 
-  summarise(rel = kplus / `k-means-exchange`) %>% 
-  ggplot(aes(x = N, y = rel, colour = factor(K))) + 
-  geom_line(size = 1)
-
-# TODO: also display the numbers themselves in a table, but divide N into a 
-# smaller number of categories for this.
