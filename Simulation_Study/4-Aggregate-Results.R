@@ -44,7 +44,7 @@ ldf %>%
 ldf %>% 
   group_by(method, Objective) %>% 
   summarise(Mean = round(mean(value), 3)) %>% 
-  filter(Objective %in% c("means", "sd", "skew", "kur", "cor"), method != "random") %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
   pivot_wider(names_from = Objective, values_from = Mean) %>% 
   select(c(means, sd, skew, kur, cor))
 
