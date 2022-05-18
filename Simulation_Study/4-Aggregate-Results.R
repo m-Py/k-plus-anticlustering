@@ -45,7 +45,8 @@ ldf %>%
   group_by(method, Objective) %>% 
   summarise(Mean = round(mean(value), 3)) %>% 
   filter(Objective %in% c("means", "sd", "skew", "kur", "cor"), method != "random") %>% 
-  arrange(Objective) %>% View()
+  pivot_wider(names_from = Objective, values_from = Mean) %>% 
+  select(c(means, sd, skew, kur, cor))
 
 # Check number of simulations per condition
 ldf %>% 
