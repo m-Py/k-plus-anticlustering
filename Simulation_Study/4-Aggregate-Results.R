@@ -22,6 +22,13 @@ rownames(df) <- NULL
 length(unique(df$ID))
 table(table(df$ID))
 
+## add information on simulation conditions
+## TODO: use this and not the one during anticlustering computations
+conditions <- info_from_filename_vectorized(df$file)
+df <- subset(df, select = -c(N, M, SD))
+df <- data.frame(df, conditions)
+
+
 # Make long format
 ldf <- pivot_longer(
   df,
@@ -30,7 +37,16 @@ ldf <- pivot_longer(
   names_pattern = "(.*)_obj"
 )
 
-# Plot the results
+## Global results, aggregated across all simulation variables
+ldf %>% 
+  group_by(method, Objective) %>% 
+  summarise(Mean = round(mean(value), 3)) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
+  pivot_wider(names_from = Objective, values_from = Mean) %>% 
+  select(c(means, sd, skew, kur, cor))
+
+
+# Plot the results, by N
 ldf %>% 
   group_by(method, Objective, N) %>% 
   summarise(Mean = mean(value)) %>% 
@@ -40,13 +56,50 @@ ldf %>%
   facet_grid(rows = vars(Objective), scales = "free") + 
   theme_bw(base_size = 22)
 
-## by value, aggregate across N and K
+
+### For the appendix -- other splits for the main results as plot (N is most important)
+# Plot the results, by M
 ldf %>% 
-  group_by(method, Objective) %>% 
-  summarise(Mean = round(mean(value), 3)) %>% 
+  group_by(method, Objective, M) %>% 
+  summarise(Mean = mean(value)) %>% 
   filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
-  pivot_wider(names_from = Objective, values_from = Mean) %>% 
-  select(c(means, sd, skew, kur, cor))
+  ggplot(aes(x = M, y = Mean, colour = method)) + 
+  geom_line(size = 1) + 
+  facet_grid(rows = vars(Objective), scales = "free") + 
+  theme_bw(base_size = 22)
+
+# Plot the results, by SD
+ldf %>% 
+  group_by(method, Objective, SD) %>% 
+  summarise(Mean = mean(value)) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
+  ggplot(aes(x = SD, y = Mean, colour = method)) + 
+  geom_point(size = 3) + 
+  geom_line(size = 1) + 
+  facet_grid(rows = vars(Objective), scales = "free") + 
+  theme_bw(base_size = 22)
+
+# Plot the results, by K
+ldf %>% 
+  group_by(method, Objective, K) %>% 
+  summarise(Mean = mean(value)) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
+  ggplot(aes(x = K, y = Mean, colour = method)) + 
+  geom_point(size = 3) + 
+  geom_line(size = 1) + 
+  facet_grid(rows = vars(Objective), scales = "free") + 
+  theme_bw(base_size = 22)
+
+# Plot the results, by r
+ldf %>% 
+  group_by(method, Objective, r) %>% 
+  summarise(Mean = mean(value)) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
+  ggplot(aes(x = r, y = Mean, colour = method)) + 
+  geom_point(size = 3) + 
+  geom_line(size = 1) + 
+  facet_grid(rows = vars(Objective), scales = "free") + 
+  theme_bw(base_size = 22)
 
 # Check number of simulations per condition
 ldf %>% 
