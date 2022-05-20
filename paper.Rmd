@@ -52,8 +52,6 @@ library("prmisc") # remotes::install_github("m-Py/prmisc")
 options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo_pdf") 
 
-source("misc-functions.R")
-
 ```
 
 Anticlustering is a collection of methods to partition elements into disjunct groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: several anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@brusco2019; @papenberg2020; @feo1990]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis such as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012, for an overview], anticlustering is usually formalized as a partitioning process that divides a set of elements into disjunct groups in such a way that an objective function---representing between-group similarity and/or within-group heterogeneity---is optimized [@papenberg2020; @spath1986; @brusco2019].
