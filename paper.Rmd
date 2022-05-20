@@ -118,13 +118,11 @@ If the $\mathit{SSE}$ is maximal---which is the goal of k-means *anticlustering*
 
 In the following, I present a variation of the $\mathit{SSE}$ that quantifies how the variance of numeric data differs between groups. To motivate the new criterion, we first consider a set of one-dimensional observations $(x_1, \ldots, x_N)$. The extension to the general case of $P$ attributes will be straight forward.
 
-The sample variance[^biasedestimate] of a set of observations $x = (x_1, \ldots, x_N)$ is computed as the mean of the squared distances between observations and their mean $\overline{\mathbf{x}}$:
+The sample variance of a set of observations $x = (x_1, \ldots, x_N)$ is computed as the mean of the squared distances between observations and their mean $\overline{\mathbf{x}}$:
 
 $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
 $$
-
-[^biasedestimate]: this
 
 When defining a new variable $y = (y_1, \ldots, y_N)$ as the squared deviation of each observation from the mean $\overline{\mathbf{x}}$, the sample variance of $x$ can be reformulated as the mean of $y$:
 
@@ -185,9 +183,11 @@ $$
   (z_{ij} - \overline{z}_j ^{(k)})^2
 $$
 
-This formula again has the same form as $\mathit{SSE}$ (and $\mathit{SSE_{Var}}$), but is computed on different data. In this case, both the original data $x_{ij}$ as well as the squared distances $y_{ij}$ are used as attributes that enter the objective function. That is, computing the k-plus criterion can be done by first computing the values $y_{ij}$, appending these to the original data matrix, and then computing the $\mathit{SSE}$ on the augmented data matrix. Hence, k-plus anticlustering reduces to an augmentation of the data matrix, leaving the original k-means criterion unchanged.
+This formula again has the same form as $\mathit{SSE}$ (and $\mathit{SSE_{Var}}$), but is computed on different data. In this case, both the original data $x_{ij}$ as well as the squared distances $y_{ij}$ are used as attributes that enter the objective function. That is, computing the k-plus criterion can be done by first computing the values $y_{ij}$, appending these to the original data matrix, and then computing the $\mathit{SSE}$ on the augmented data matrix. Hence, k-plus anticlustering reduces to an augmentation of the data matrix, leaving the original k-means criterion unchanged. 
 
-Note that a problem may arise if the weights $w_1$ and $w_2$ are ignored when optimizing the k-plus objective. Since the computation of the data matrix $\mathbf{Y}_{N \times P}$ involves squaring, the squared distances $y_{ij}$ have much larger values, on average, than the raw values $x_{ij}$. Therefore, the $\mathit{SSE_{Var}}$ criterion naturally receives greater weight when computing $\mathit{SSE_{kplus}}$ than the standard $\mathit{SSE}$ criterion. This imbalance is most likely unwarranted because optimizing similarity with regard to variances is not more important than optimizing similarity with regard to means. A solution is to standardize all values $x_{ij}$ and $y_{ij}$ to the same scale before computing $SSE_{kplus}$, e.g. via $z$-standardization.
+During the remainder of this paper, whenever the k-plus criterion is optimized, the original data matrix is simply extended and the original k-means criterion $SSE$ is optimized. For a multicriterion objective such as the k-plus criterion, this corresponds to a rather basic approach, and future research may investigate more sophisticated optimization schemes for k-plus anticlustering [e.g., see @brusco2012; @brusco2019]. In this paper, however, I am primarily concerned with investigating the properties of new objective itself rather than extending state of the art multicriterion optimization methods. 
+
+Note that a problem may arise if the weights $w_1$ and $w_2$ are ignored when optimizing the k-plus objective, i.e., when just appending the squared-distance-features to the data set. Since the computation of the data matrix $\mathbf{Y}_{N \times P}$ involves squaring, the squared distances $y_{ij}$ have much larger values, on average, than the raw values $x_{ij}$. Therefore, the $\mathit{SSE_{Var}}$ criterion naturally receives greater weight when computing $\mathit{SSE_{kplus}}$ than the standard $\mathit{SSE}$ criterion. This imbalance is most likely unwarranted because optimizing similarity with regard to variances is not more important than optimizing similarity with regard to means. A solution is to standardize all values $x_{ij}$ and $y_{ij}$ to the same scale before computing $SSE_{kplus}$, e.g. via $z$-standardization.
 
 ## Skewness, kurtosis, and higher order moments
 
@@ -209,29 +209,33 @@ $$
 
 # Simulation study
 
-Three k-plus criteria were implemented in a simulation study: (i) standard *k-plus anticlustering*, minimizing differences with regard to the mean and variance; (ii) *k-plus skew/kurtosis*, minimizing differences with regard to the mean, variance, skew and kurtosis; (iii) *k-plus correlation*, minimizing differences with regard to the mean, variance and covariance structure. The k-plus methods were compared to (a) standard k-means anticlustering, (b) diversity anticlustering using the Euclidean distance, and (c) a simple random allocation of elements to groups. All anticlustering methods used a $z$-standardization of the data sets as a preprocessing step. In the case of k-plus anticlustering, this means that the augmented input data (i.e., the data table that contains the original data and the features that were added to incorporate the additional optimization criteria) were subjected to a standardization, which is recommended.
+To evaluate the new k-plus objective function, three criteria were implemented in a simulation study: (i) "standard" k-plus anticlustering, minimizing differences with regard to the mean and variance; (ii) k-plus skew/kurtosis, minimizing differences with regard to the mean, variance, skew and kurtosis; (iii) k-plus correlation, minimizing differences with regard to the mean, variance and covariance structure. 
+
+The three k-plus methods were compared to (i) k-means anticlustering, minimizing differences with regard to group means; (ii) diversity anticlustering, maximizing the sum of Euclidean distances within groups; (c) a simple random allocation of elements to groups. All anticlustering methods used a $z$-standardization of the data sets as a preprocessing step. In the case of k-plus anticlustering, the augmented input data---i.e., the original data as well as the features that were added to incorporate the additional optimization criteria---were subjected to a standardization, which is recommended.
 
 The simulation used the statistical programming environment R [@R-base]. The R package `anticlust` [Version 0.6.1; @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R packages `dplyr` [Version 1.0.7; @R-dplyr], `ggplot2` [Version 3.3.5; @R-ggplot2], `papaja` [Version 0.1.0.9997; @R-papaja] and `tidyr` [Version 1.1.3; @R-tidyr] (**TODO: citation faux**) were used for data processing and result presentation. The simulation study is fully reproducible via code and data that is accessible from the accompanying OSF repository (**link TODO**). 
 
 ## Optimization algorithm
 
-The same local maximum search was applied to optimize each of the competing five anticlustering methods [Method LCW in @weitz1998]. Building on an initial random assignment of elements to groups, elements are swapped between groups in such a way that each swap improves the objective criterion by the largest amount that is possible. That is, for each element, all possible swaps are simulated and the resulting objective values are stored. After each exchange has been tested, the one exchange is realized that improves the objective the most. No swap is realized if no swap improves the criterion. The exchange procedure is repeated for each element. Once the last element has been processed, the procedure restarts at the beginning and once again iterates through all elements. The search stops as soon as an iteration through the entire set no longer yields any improvement, i.e., as soon as a local maximum has been found. To obtain better results, this local maximum search may be initialized multiple times [@spath1986]. The simulation employed five repetitions of the local maximum search.
+The same local maximum search was applied to optimize each of the competing five anticlustering methods [Method LCW in @weitz1998]. Building on an initial random assignment of elements to groups, the algorithm proceeds by swapping elements between groups in such a way that each swap improves the objective criterion by the largest possible margin. That is, for each element, all possible swaps are simulated and the resulting objective values are stored. After each exchange has been tested, the one exchange is realized that improves the objective the most. No swap is realized if no swap improves the criterion. This exchange procedure is repeated for each element. Once the last element has been processed, the procedure restarts at the beginning and once again iterates through all elements. The search stops as soon as an iteration through the entire data set no longer yielded an improvement, i.e., as soon as a local maximum has been found. To obtain better results, this local maximum search may be initialized multiple times [@spath1986]. The simulation employed five repetitions of the local maximum search.
 
 ## Conditions
 
-First, I generated 10,000 data sets following a normal distribution. The data sets were subsequently processed by the competing methods. The following properties were determined randomly for each data set: (a) the sample size $N$ varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into $K = 2$, $3$, and $4$ groups; (b) the number of features varied between 2 and 5; (c) the standard deviation of all features was set to 1, 2 or 3 (the mean was always zero); (d) the correlation between all features was r = 0, r = .1, r = .2, r = .3, r = .4 or r = .5. All five anticlustering methods were applied to each of the 10,000 data sets using $K = 2$, $K = 3$ and $K = 4$ (i.e., each method was applied 30,000 times). Groups sizes were always equal. 
+First, I generated 10,000 data sets following a normal distribution. The data sets were subsequently processed by the competing methods. The following properties were determined randomly for each data set: (a) the sample size $N$ varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into $K = 2$, $3$, and $4$ groups; (b) the number of features varied between 2 and 5; (c) the standard deviation of all features was set to 1, 2 or 3 (the mean was always zero); (d) the correlation between all features was $r = 0$, $r = .1$, $r = .2$, $r = .3$, $r = .4$ or $r = .5$. All anticlustering methods were applied to each of the 10,000 data sets using $K = 2$, $K = 3$ and $K = 4$ (i.e., each method was applied 30,000 times). Groups sizes were always equal. 
 
 ## Evaluation criteria
 
-To compare the five anticlustering criteria with regard to their ability to create similar groups, I investigated the discrepancy in means, standard deviations, skewness, kurtosis, and correlation between features across groups. 
-
-**todo hier weitermachen**
-
-I then computed the difference between the minimum and maximum value of the means and standard deviations between groups, for each of the $M$ features. The mean of the differences across all features quantified the total dissimilarity in means ($\Delta M$) and standard deviations ($\Delta \mathit{SD}$). Therefore, lower values of $\Delta M$ and $\Delta \mathit{SD}$ indicated that groups were more similar with regard means or standard deviations, respectively.
+After the five anticlustering methods and the random allocation had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I compared the competing methods with regard to their ability to create similar groups. To this end, I investigated the discrepancy in means, standard deviations, skewness, kurtosis, and correlation between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$). Quantifying discrepancy in correlations ($\Delta \mathit{Cor}$) followed the same rule, but discrepancies in correlations between groups had to be aggregated across pairs of features instead of single features.
 
 ## Results
 
-```{r, fig.cap = "Displays how well maximizing the k-plus criterion approximates the k-means criterion that is found via direct maximization of the k-means criterion.", fig.height = 4.5, fig.width = 4.5}
+```{r Table1}
+
+# Load required packages
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+source("./Simulation_Study/0-functions-generate-data.R")
 
 ## Analyze data for K = 2 and K = 3 and K = 4
 simulation_results <- list()
@@ -245,114 +249,79 @@ for (K in 2:4) {
 df <- do.call(rbind, simulation_results)
 rownames(df) <- NULL
 
+## add information on simulation conditions
+## TODO: use this and not the one during anticlustering computations
+conditions <- info_from_filename_vectorized(df$file)
+df <- subset(df, select = -c(N, M, SD))
+df <- data.frame(df, conditions)
+
 # Make long format
 ldf <- pivot_longer(
   df,
-  cols = paste0(c("kvar", "kmeans", "means", "sd"), "_obj"),
+  cols = paste0(c("kvar", "kmeans", "means", "sd", "skew", "kur", "cor"), "_obj"),
   names_to = "Objective",
   names_pattern = "(.*)_obj"
 )
 
-# Check how well k-plus approximates k-means
-rel <- ldf %>% 
-  group_by(method, Objective, N, K) %>% 
-  summarise(Mean = mean(value)) %>% 
-  filter(Objective == "kmeans", method %in% c("kplus", "k-means-exchange")) %>% 
-  pivot_wider(names_from = method, values_from = Mean) %>% 
-  group_by(N, K) %>% 
-  summarise(rel = kplus / `k-means-exchange`) 
+## Global results, aggregated across all simulation variables
+tab <- ldf %>% 
+  group_by(method, Objective) %>% 
+  summarise(Mean = round(mean(value), 3)) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
+  pivot_wider(names_from = Objective, values_from = Mean) %>% 
+  select(c(means, sd, skew, kur, cor))
 
-rel %>% 
-  ggplot(aes(x = N, y = rel, colour = factor(K), linetype = factor(K))) + 
-  geom_line(size = 1) +
-  geom_point(aes(colour = factor(K), shape = factor(K)), size = 3) +
-  scale_x_continuous(breaks = seq(36, 300, 24)) + 
-  theme_apa() +
-  theme(
-    legend.position = "top",
-    legend.title = element_text()
-  ) +
-  scale_colour_grey(name = "K") +
-  guides(
-    linetype = guide_legend(title = "K"),
-    shape = guide_legend(title = "K")
-  ) + 
-  labs(y = "k-plus approximation of k-means criterion")
-
-# approximation at N > 100
-approx_n100 <- mean(filter(rel, N > 100)$rel) 
-approx_n24_k4 <- mean(filter(rel, N == 24, K == 4)$rel) 
-
-# cut decimals after n decimals
-cut_decimals <- function(x, n) {
-  x <- as.character(x)
-  x1 <- strsplit(x, "\\.")[[1]][1]
-  x2 <- strsplit(x, "\\.")[[1]][2]
-  x2 <- strsplit(x2, "")[[1]]
-  as.numeric(paste0(x1, ".", paste(x2[1:n], collapse = "")))
-}
-
-```
-
-First, I investigated how well maximizing the k-plus criterion ($\mathit{SSE_{kplus}}$) approximates the ordinary k-means criterion ($\mathit{SSE}$) at the same time. Figure 2 illustrates the relative values of $\mathit{SSE}$ that were found when optimizing $\mathit{SSE_{kplus}}$---as compared to the direct optimization of $\mathit{SSE}$. Generally, optimizing $\mathit{SSE_{kplus}}$ yielded an adequate approximation of $\mathit{SSE}$. In particular, for large group sizes, there is virtually no sacrifice in $\mathit{SSE}$ when  $\mathit{SSE_{kplus}}$ is optimized: For $N > 100$, $\mathit{SSE}$ was approximated to more than `r cut_decimals(approx_n100, 4) * 100`% when conducting k-plus anticlustering as compared to k-means anticlustering. In the simulation, the worst approximation was found when the group sizes were smallest: for $N = 24$ and $K = 4$ was approximated to $\mathit{SSE}$ `r approx_n24_k4 * 100`%. Thus, the quality of the approximation depended on the group size: smaller groups led to worse approximations, while in general there was very little cost with regard $\mathit{SSE}$ when optimizing $\mathit{SSE_{kplus}}$, expecially for larger groups. 
-
-In a next step, I compared k-means anticlustering, k-plus anticlustering and anticluster editing in their ability to equalize means and standard deviations between groups. To clarify the general pattern of results, Table 1 illustrates the outcome variables  $\Delta M$ and $\Delta \mathit{SD}$ after splitting the sample size into categories and averaging across simulation runs. Note that the results have also been collapsed across the different group sizes ($K = 2, 3, 4$) because the relative performance of the anticlustering methods did not vary by $K$.[^kmaineffect] Table 1 shows that k-means was best suited to equalize mean values between groups; this advantage was most pronounced for smaller group sizes. For larger group sizes, k-plus anticlustering and anticluster editing performed similarly well with regard to $\Delta M$. Replicating @papenberg2020, it is shown that anticluster editing better minimizes differences with regard to standard deviations between groups than k-means anticlustering. Noteworthy, however, k-plus anticlustering strongly outperformed both competitors in this matter; $\Delta \mathit{SD}$ was consistently lowest for the new k-plus method. In conclusion, k-plus anticlustering is well suited to minimize differences with regard to mean values across groups---especially when groups are larger---and at the same time is able to minimize differences in standard deviations between groups.
-
-[^kmaineffect]: Only a main effect was observed: across all anticlustering methods, more groups led to higher discrepancies between means and standard deviations between groups.
-
-```{r, fig.cap = "Awesome caption"}
-
-# Recode N into categories so the results can be displayed in a more informative way
-ldf <- within(ldf, {
-  N_category <- ifelse(N <= 200, "N <= 200", "N > 200")
-  N_category <- ifelse(N <= 100, "N <= 100", N_category)
-  N_category <- ifelse(N <= 50,  "N <= 50", N_category)
-})
-
-ldf$N_category <- ordered(
-  ldf$N_category, 
-  levels = c("N <= 50", "N <= 100", "N <= 200", "N > 200")
-)
-
-# for sorting by method, make it ordered factor:
-ldf$method <- ordered(
-  ldf$method, 
-  levels = c("k-means-exchange", "kplus", "ace-exchange"),
-  labels = c("k-means", "k-plus", "anticluster editing")
-)
-
-results_table <- ldf %>% 
-  group_by(method, Objective, N_category) %>% 
-  summarise(Mean = mean(value)) %>% 
-  filter(Objective %in% c("means", "sd"), method != "random") %>% 
-  pivot_wider(names_from = Objective, values_from = Mean) %>%
-  arrange(N_category, method)
-
-# enforce two decimals
-results_table$means <- force_decimals(results_table$means, 2)
-results_table$sd <- force_decimals(results_table$sd, 2)
-
-# Generate table
-footnote <- "$\\Delta M$ and $\\Delta \\mathit{SD}$ quantify how strongly means and standard deviations differed between anticlusters. Table cells contain the average objectives across simulation runs, split by $N$."
-
-results_table$N_category <- NULL
-
-colnames <- c("", "$\\Delta M$", "$\\Delta \\mathit{SD}$")
-colnames(results_table) <- colnames
-
-apa_table(
-  results_table, 
-  caption = "Results of the simulation study.", 
-  note = footnote, 
-  escape = FALSE,
-  stub_indents = list("\\textbf{$\\textit{N} \\leq 50$}" = 1:3,
-                      "\\textbf{$50 <\\textit{N} \\leq 100$}" = 4:6,
-                      "\\textbf{$100 <\\textit{N} \\leq 200$}" = 7:9,
-                      "\\textbf{$\\textit{N} > 200$}" = 10:12),
-  span_text_columns = TRUE
+colnames(tab) <- c("",
+  "$\\Delta M$", 
+  "$\\Delta \\mathit{SD}$",
+  "$\\Delta \\mathit{Skew}$",
+  "$\\Delta \\mathit{Kurtosis}$",
+  "$\\Delta \\mathit{Cor}$"
 )
   
+apa_table(
+  tab,
+  caption = "Results of the simulation study",
+  note = "The global results of the simulation study aggregated across all conditions. Cells contain information about the average between-group discrepancy with regard to means, standard deviations, skewness, kurtosis, and correlations. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\\times$ $K = 2, 3$, or 4).",
+  escape = FALSE,
+  align = c("r")
+)
+
 ```
+
+```{r Figure1, fig.width = 8, fig.height = 10}
+
+# Plot the results, by N
+ldf %>% 
+  group_by(method, Objective, N) %>% 
+  summarise(Mean = mean(value)) %>% 
+  filter(
+    Objective %in% c("means", "sd", "skew", "kur", "cor"),
+    method != "random"
+  ) %>% 
+  mutate(
+    Objective = ordered(
+      Objective, 
+      levels = c("means", "sd", "skew", "kur", "cor"),
+      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+  ) %>%
+  ggplot(aes(x = N, y = Mean, colour = method)) + 
+  geom_line(aes(linetype = method), size = .85) + 
+  facet_grid(rows = vars(Objective), scales = "free") + 
+  ylab("Mean discrepancy") +
+  theme_bw(base_size = 16)
+
+```
+
+Table 1 displays the global simulation results aggregated across all conditions. Standard k-means is best at minimizing discrepancy with regard to means, but disregards all other distribution characteristics. K-plus anticlustering also addresses $\Delta \mathit{M}$ quite well and at the same time tends to minimize discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$). With regard to minimizing $\Delta \mathit{SD}$, all three k-plus approaches outperform all other methods---including diversity anticlustering. 
+
+As Figure 1 shows, with increasing $N$, all k-means and the k-plus methods methods converge on minimizing $\Delta \mathit{M}$. This is an important observation because it shows that including the k-plus term in the optimization process does not necessarily prevent minimizing discrepancy in means; instead, multiple objectives can be addressed at the same time. In particular, standard k-plus anticlustering is not much worse than k-means anticlustering when it comes to $\Delta \mathit{M}$, but it offers the immense benefit of also equalizing the spread of the data across groups. 
+
+While k-plus anticlustering apparently is capable of fulfilling multiple objectives at the same time, it is apparent that increasing the number of optimization criteria aggravates fulfilling each single criterion. For example, k-plus skew/kurtosis and k-plus correlation are worse at minimizing discrepancy with regard to standard deviations than standard k-plus. Still, every k-plus method does what it is supposed to do: k-plus skew/kurtosis is best at minimizing $\Delta \mathit{Skew}$ and $\Delta \mathit{Kurtosis}$, k-plus correlation is best at minimizing discrepancy with regard to $\Delta \mathit{Cor}$. At the same time, these two k-plus objectives maintain a comparably good level of addressing $\Delta \mathit{M}$ and $\Delta \mathit{SD}$, outperforming diversity anticlustering. 
+
+It is maybe surprising that k-plus skew/kurtosis does not seem to be much better than diversity anticlustering with regard to skew and---in particular---kurtosis, even though this methods is specialized for these criteria. Figure 1 gives a more fine grained assessment of this observation by splitting the results by $N$: Surprisingly, for small $N$, k-plus skew/kurtosis is even worse than diversity anticlustering at minimizing $\Delta \mathit{Skew}$ and $\Delta \mathit{Kurtosis}$. However, with increasing $N$, it clearly outperforms diversity anticlustering when it comes to $\Delta \mathit{Skew}$ and $\Delta \mathit{Kurtosis}$. These results show the cost of optimizing several criteria at the same time; increasing $N$ facilitates fulfilling multiple criteria. For low $N$, all k-plus methods show the highest discrepancies in skew and kurtosis; here k-plus seems to be preoccupied with fulfilling the other objectives. But even for small $N$, all k-plus methods outperform all other methods with regard to discrepancies in standard deviations. 
+
+Generally, it should be noted that diversity anticlustering is a good all-arounder method that tends to somewhat address all distribution characteristics. For the specific objectives that are addressed by the k-plus methods, however, diversity anticlustering is clearly outperformed. As as side note, apart from k-plus correlation, diversity anticlustering is the only method that equalizes correlation structure among groups. As far as I know, this observation has not been made previously, even though the maximum diversity problem is quite well studied in the literature. 
 
 # K-plus anticlustering using the R package anticlust 
 
