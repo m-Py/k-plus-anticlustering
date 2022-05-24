@@ -251,7 +251,7 @@ rownames(df) <- NULL
 # Make long format
 ldf <- pivot_longer(
   df,
-  cols = paste0(c("kvar", "kmeans", "means", "sd", "skew", "kur", "cor"), "_obj"),
+  cols = paste0(c("means", "sd", "skew", "kur", "cor"), "_obj"),
   names_to = "Objective",
   names_pattern = "(.*)_obj"
 )
@@ -260,7 +260,6 @@ ldf <- pivot_longer(
 tab <- ldf %>% 
   group_by(method, Objective) %>% 
   summarise(Mean = round(mean(value), 3)) %>% 
-  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
   pivot_wider(names_from = Objective, values_from = Mean) %>% 
   select(c(means, sd, skew, kur, cor))
 
@@ -288,10 +287,7 @@ apa_table(
 ldf %>% 
   group_by(method, Objective, N) %>% 
   summarise(Mean = mean(value)) %>% 
-  filter(
-    Objective %in% c("means", "sd", "skew", "kur", "cor"),
-    method != "random"
-  ) %>% 
+  filter(method != "random") %>% 
   mutate(
     Objective = ordered(
       Objective, 
