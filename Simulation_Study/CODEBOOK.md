@@ -47,3 +47,5 @@ The data sets store the following variables:
 - skew_obj: A measure of the discrepancy in skewness (lower = better)
 - kur_obj: A measure of the discrepancy in kurtosis (lower = better)
 - cor_obj: A measure of the discrepancy in correlations (lower = better)
+
+For a thorough description of the computed objectives and the anticlustering methods, see the manuscript. 

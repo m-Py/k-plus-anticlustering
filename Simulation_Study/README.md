@@ -2,6 +2,7 @@
 # README
 
 - Author: Martin Papenberg
+
 - Year: 2022
 
 ---
@@ -14,14 +15,14 @@ This directory contains code and data to reproduce and analyze the simulation st
 
 - The directory "./datasets" contains the 10,000 data sets used in the simulation
 - R scripts that start with "0-functions" contain function definitions that are used throughout the simulation. These files are "sourced" from the R-scripts that start with numbers >= 1 ("1-Generate-Data.R"; "2-Call-Methods.R"; "3-Compute-Objectives.R"; "4-Aggregate-Results.R")
-- The script "1-Generate-Data.R" should not be called directly because doing so would generate another 10,000 data files in the directory "./datasets", but the data sets that were used in the paper already exist in that directory. Therefore, only execute the script if you *really* want more data sets, for example if you are interested in testing the generalizability of the simulation results. In that case you might want to delete all of the data sets that are already contained in the directory "./datasets". 
-- To reproduce the simulation (i.e., applying the anticlustering methods on the 10,000 data sets), execute all of the commands in the script "2-Call-Methods.R". It will apply all methods to all data sets. It will not reproduce the results exactly because the methods rely on random number generation. I did not include a fixed random seed as the results do not depend on a particular seed. Then calling "3-Compute-Objectives.R" will compute the results based on the anticlustering assignments. This step does not use random number generation.
+- The script "1-Generate-Data.R" should not be called directly because doing so would generate another 10,000 data files in the directory "./datasets", but the data sets that were used in the paper already exist in that directory. Therefore, only execute the script if you *really* want more data sets, for example if you are interested in testing the generalizability of the simulation results. In that case you might want to first delete all of the data sets that are already contained in the directory "./datasets". 
+- To reproduce the simulation (i.e., applying the anticlustering methods on the 10,000 data sets), execute all of the commands in the script "2-Call-Methods.R". This will not reproduce the results exactly because the methods rely on random number generation. I did not include a fixed random seed as the results do not depend on a particular seed. Then calling "3-Compute-Objectives.R" will compute the results based on the anticlustering assignments. This step does not use random number generation.
   + Running "2-Call-Methods.R" will write the data sets "results-K2-solutions.csv", "results-K3-solutions.csv" and "results-K4-solutions.csv".
   + Running "3-Compute-Objectives.R" will write the files "results-K3-objectives-raw.csv", "results-K2-objectives-raw.csv" and "results-K4-objectives-raw.csv"
   + Running both simulation script probably takes about 1,5 days on a personal computer
-- If you want to restart a simulation, you should first delete the files "results-K2-objectives-raw.csv", "results-K3-objectives-raw.csv" and "results-K4-objectives-raw.csv" (and also "results-K2-aggregated.csv", "results-K3-aggregated.csv" and "results-K4-aggregated.csv" if you have already computed results using the scripts "3-Compute-Objectives.R" and "4-Aggregate-Results.R"). 
-- To just reproduce the analysis reported in the paper (and not re-run the simulation), run the script "4-Aggregate-Results.R". To reproduce all results *exactly as presented* in the paper, check out the Rmd source file "Paper.Rmd" in the upper directory.
-- The file CODEBOOK.md contains information on the variables in the data sets "results-KX-objectives-raw.csv" and "results-KX-solutions.csv"
+- If you want to restart a simulation, you should first delete the files "results-K2-objectives-raw.csv", "results-K3-objectives-raw.csv" and "results-K4-objectives-raw.csv" (and also "results-K2-solutions.csv", "results-K3-solutions.csv" and "results-K4-solutions.csv" if you have already computed results using the script "3-Compute-Objectives.R").
+- To just reproduce the analysis reported in the paper (and not re-run the simulation), run the script "4-Aggregate-Results.R". To reproduce all results / graphs *exactly as presented* in the paper, check out the Rmd source file "Paper.Rmd" in the upper directory.
+- The file CODEBOOK.md contains information on the variables in the data sets "results-..-objectives-raw.csv" and "results-..-solutions.csv"
 - Make sure that the R working directory is set into this directory (i.e., the directory where this README file resides) when working with the simulation R scripts.
 
 ## Dependencies: 
@@ -38,4 +39,4 @@ To not run the entire simulation on all 10,000 data sets, I recommend to uncomme
 
 - `# files <- sample(files, size = 300)`
 
-Adjust the value given to `size` as needed; it determines the number of data sets that are processed using the different anticlustering techniques (here: 300). The logic of the script ensures that no data set is processed more than once, so feel free to adjust the number of data sets and repeat the simulation as often as needed. The results will be appended to the files "results-K2-objectives-raw.csv", "results-K3-objectives-raw.csv" and "results-K4-objectives-raw.csv" whenever you call "2-Call-Methods.R". So if you call the script repeatedly, the results files will grow. 
+Adjust the value given to `size` as needed; it determines the number of data sets that are processed using the different anticlustering techniques (here: 300). The logic of the script ensures that no data set is processed more than once, so feel free to adjust the number of data sets and repeat the simulation as often as needed. The results will be appended to the files "results-K2-solutions.csv", "results-K3-solutions.csv" and "results-K4-solutions.csv" whenever you call "2-Call-Methods.R". So if you call the script repeatedly, the results files will grow. 
