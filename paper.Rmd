@@ -48,7 +48,6 @@ library("knitr")
 library("dplyr")
 library("ggplot2")
 library("tidyr")
-library("prmisc") # remotes::install_github("m-Py/prmisc")
 options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo_pdf") 
 
