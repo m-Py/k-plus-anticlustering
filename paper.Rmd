@@ -48,6 +48,8 @@ library("knitr")
 library("dplyr")
 library("ggplot2")
 library("tidyr")
+# for formatting numbers in Rmarkdown, use my package prmisc (https://github.com/m-Py/prmisc)
+library("prmisc") # remotes::install_github("m-Py/prmisc") 
 options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo_pdf") 
 
@@ -348,101 +350,113 @@ The argument `method = "local-maximum"` ensures that the k-plus criterion is opt
 
 Table 2 shows the results of the anticlustering application by listing the descriptive statistics (means and standard deviations) for each of the 9 groups and for each of the 3 features. Additionaly, Table 2 shows the descriptive statistics for an application of k-means anticlustering and anticluster editing. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations. Anticluster editing was also well-suited to match both means and standard deviations, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---anticluster editing does not directly maximize similarity with regard to the means and standard deviations, but instead maximizes within-group heterogeneity. 
 
-```{r, eval = FALSE}
+```{r}
 
-path <- "results_oasis_same_size.csv"
+example1_file <- "results_oasis_same_size.csv"
+if (!file.exists(example1_file)) {
 
-if (!file.exists(path)) {
-  oasis <- read.csv(
+    oasis <- read.csv(
     "https://raw.githubusercontent.com/aenneb/OASIS-beauty/master/means_per_image.csv"
-  )
+    )
 
-  features <- subset(oasis, select = c(beauty_mean, Valence_mean, Arousal_mean))
-  
-  K <- 9
-  for (criterion in c("kplus", "variance", "diversity")) {
-    if (criterion == "kplus") {
-        oasis[[paste(criterion, "group", sep = "_")]] <- kplus_anticlustering(
-            features,
-            K = K,
-            variance = TRUE,
-            skew = TRUE,
-            kurtosis = FALSE,
-            covariances = FALSE,
-            moments = NULL,
-            method = "local-maximum",
-            standardize = TRUE
+    features <- subset(oasis, select = c(beauty_mean, Valence_mean, Arousal_mean))
+
+    K <- 9
+
+    # k-plus variance / skew
+    groups_kplus <- kplus_anticlustering(
+        features,
+        K = K,
+        variance = TRUE,
+        skew = TRUE,
+        method = "local-maximum",
+        standardize = TRUE
+    )
+
+    # k-means
+    groups_kmeans <- anticlustering(
+        features,
+        K = K,
+        objective = "variance",
+        method = "local-maximum",
+        standardize = TRUE
+    )
+
+    # diversity
+    groups_diversity <- anticlustering(
+        features,
+        K = K,
+        objective = "diversity",
+        method = "local-maximum",
+        standardize = TRUE
+    )
+
+
+    # Functions to compute means / SD / skew per group 
+    descriptives_by_group <- function(features, anticlusters, FUN, name) {
+        df <- data.frame(
+            t(data.frame(lapply(by(features, anticlusters, FUN), c)))
         )
-    } else {
-        oasis[[paste(criterion, "group", sep = "_")]] <- anticlustering(
-            features,
-            standardize = TRUE,
-            K = K,
-            objective = criterion,
-            method = "local-maximum"
-        )
+        df$group <- 1:nrow(df)
+        df$Descriptive = name
+        df
     }
 
-  }
-  
-    descriptive_by_group <- function(features, anticlusters, FUN, name) {
-    df <- data.frame(
-      t(data.frame(lapply(by(features, anticlusters, FUN), c)))
+
+    all_descriptives_by_group <- function(features, anticlusters) {
+    means <- descriptives_by_group(features, anticlusters, colMeans, "mean")
+    sds <- descriptives_by_group(
+        features, 
+        anticlusters, 
+        function(x) sapply(x, sd),
+        "sds"
     )
-    df$group <- 1:nrow(df)
-    df$Descriptive = name
-    df
-  }
-  
-  
-  descriptive_by_group_all <- function(features, anticlusters) {
-    means <- descriptive_by_group(features, anticlusters, colMeans, "mean")
-    sds <- descriptive_by_group(
-      features, 
-      anticlusters, 
-      function(x) sapply(x, sd),
-      "sds"
-    )
-    skew <- descriptive_by_group(
-      features, 
-      anticlusters, 
-      function(x) sapply(x, DescTools::Skew),
-      "skew"
+    skew <- descriptives_by_group(
+        features, 
+        anticlusters, 
+        function(x) sapply(x, DescTools::Skew),
+        "skew"
     )
     rbind(means, sds, skew)
-  }
+    }
 
 
-kplus <- descriptive_by_group_all(features, oasis$kplus_group)
-kplus <- data.frame(kplus, Objective = "kplus")
+    kplus <- all_descriptives_by_group(features, groups_kplus)
+    kplus <- data.frame(kplus, Objective = "kplus")
 
-kmeans <- descriptive_by_group_all(features, oasis$variance_group)
-kmeans <- data.frame(kmeans, Objective = "kmeans")
-diversity <- descriptive_by_group_all(features, oasis$variance_group)
-diversity <- data.frame(diversity, Objective = "diversity")
+    kmeans <- all_descriptives_by_group(features, groups_kmeans)
+    kmeans <- data.frame(kmeans, Objective = "kmeans")
+    diversity <- all_descriptives_by_group(features, groups_diversity)
+    diversity <- data.frame(diversity, Objective = "diversity")
 
-all_objs <- rbind(kplus, kmeans, diversity) %>% 
-  pivot_wider(names_from = Descriptive, values_from = c(beauty_mean, Valence_mean, Arousal_mean))
-  
-  
-  # append all tables to the same table:
-  rownames(all_objs) <- NULL
-  colnames(all_objs) <- c("Group", "N", "Beauty", "Valence", "Arousal")
+    all_objs <- rbind(kplus, kmeans, diversity) %>% 
+    pivot_wider(names_from = Descriptive, values_from = c(beauty_mean, Valence_mean, Arousal_mean))
+    
+    write.table(
+        all_objs, example1_file, row.names = FALSE, sep = ";"
+    )
 
-
+    
 } else {
-  oasis_tab <- read.csv(path, sep = ";")
+  all_objs <- read.csv(example1_file, sep = ";")
 }
 
+table_all_objs <- subset(all_objs, select = -Objective)
+table_all_objs <- as.matrix(table_all_objs)
+colnames(table_all_objs) <- c("Group", rep(c("$M$", "$\\mathit{SD}$", "Skew"), 3))
+table_all_objs <- apply(table_all_objs, 2, force_or_cut)
+#mode(table_all_objs) <- "character"
+
 apa_table(
-  oasis_tab,
+  table_all_objs,
   caption = "Descriptive statistics for OASIS features by group and anticlustering method.",
-  note = "The cells contain mean values by cluster and the standard deviation (in parentheses).",
+  note = "The k-plus approach minimized differences with regard to means, variances and skew.",
   escape = FALSE,
-  align = c("r"),
+  align = c("c", rep("r", 9)),
+  col_spanners = list(Beauty = c(2, 4), Valence = c(5, 7), Arousal = c(8, 10)), 
   stub_indents = list("\\textbf{K-plus anticlustering}" = 1:9,
                       "\\textbf{K-means anticlustering}" = 10:18,
-                      "\\textbf{Anticluster editing}" = 19:27)
+                      "\\textbf{Diversity anticlustering}" = 19:27)
 )
 ```
 
