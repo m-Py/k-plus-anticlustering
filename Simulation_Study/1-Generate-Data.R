@@ -6,7 +6,7 @@
 source("0-functions-generate-data.R")
 
 sample_sizes <- 12 * 2:25 # 24 - 300
-nsets <- 1000
+nsets <- 10000
 
 N  <- sample(sample_sizes, replace = TRUE, size = nsets)
 M  <- sample(2:5, replace = TRUE, size = nsets)
