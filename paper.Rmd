@@ -248,12 +248,6 @@ for (K in 2:4) {
 df <- do.call(rbind, simulation_results)
 rownames(df) <- NULL
 
-## add information on simulation conditions
-## TODO: use this and not the one during anticlustering computations
-conditions <- info_from_filename_vectorized(df$file)
-df <- subset(df, select = -c(N, M, SD))
-df <- data.frame(df, conditions)
-
 # Make long format
 ldf <- pivot_longer(
   df,
