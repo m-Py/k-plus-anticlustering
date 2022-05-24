@@ -7,6 +7,8 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 
+source("0-functions-generate-data.R")
+
 ## Analyze data for K = 2 and K = 3 and K = 4
 simulation_results <- list()
 for (K in 2:4) {
@@ -40,7 +42,7 @@ ldf <- pivot_longer(
 ## Global results, aggregated across all simulation variables
 ldf %>% 
   group_by(method, Objective) %>% 
-  summarise(Mean = round(mean(value), 3)) %>% 
+  summarise(Mean = round(mean(value), 2)) %>% 
   filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
   pivot_wider(names_from = Objective, values_from = Mean) %>% 
   select(c(means, sd, skew, kur, cor))
@@ -50,7 +52,8 @@ ldf %>%
 ldf %>% 
   group_by(method, Objective, N) %>% 
   summarise(Mean = mean(value)) %>% 
-  filter(Objective %in% c("means", "sd", "skew", "kur", "cor")) %>% 
+  filter(Objective %in% c("means", "sd", "skew", "kur", "cor"),
+         method != "random") %>% 
   ggplot(aes(x = N, y = Mean, colour = method)) + 
   geom_line(size = 1) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
