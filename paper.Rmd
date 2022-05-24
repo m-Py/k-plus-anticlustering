@@ -281,14 +281,14 @@ colnames(tab) <- c("",
 apa_table(
   tab,
   caption = "Results of the simulation study",
-  note = "The global results of the simulation study aggregated across all conditions. Cells contain information about the average between-group discrepancy with regard to means, standard deviations, skewness, kurtosis, and correlations. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\\times$ $K = 2$, $K = 3$, $K = or 4$).",
+  note = "The global results of the simulation study aggregated across all conditions. Cells contain information about the average between-group discrepancy with regard to means, standard deviations, skewness, kurtosis, and correlations. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\\times$ $K = 2$, $K = 3$ or $K = 4$).",
   escape = FALSE,
   align = c("r")
 )
 
 ```
 
-```{r Figure1, fig.width = 8, fig.height = 10}
+```{r Figure1, fig.width = 8, fig.height = 10, fig.cap = "Simulation results by $N$."}
 
 # Plot the results, by N
 ldf %>% 
