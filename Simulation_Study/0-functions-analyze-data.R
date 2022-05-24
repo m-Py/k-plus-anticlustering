@@ -16,8 +16,6 @@ compute_objectives <- function(row, K) {
   #print(filename)
   data <- read.csv(filename)
   anticlusters <- anticlusters_from_string(row["result"])
-  kvar_obj <- variance_objective(squared_from_mean(data), anticlusters)
-  kmeans_obj <- variance_objective(data, anticlusters)
   means_obj <- var_means(anticlusters, data)
   sd_obj <- var_sds(anticlusters, data)
   skew_obj <- var_skew(anticlusters, data)
@@ -27,8 +25,6 @@ compute_objectives <- function(row, K) {
   return(c(
     row["ID"],
     row["method"],
-    kvar_obj = kvar_obj,
-    kmeans_obj = kmeans_obj,
     means_obj = means_obj,
     sd_obj = sd_obj,
     skew_obj = skew_obj,
