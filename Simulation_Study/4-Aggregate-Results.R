@@ -7,8 +7,6 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 
-source("0-functions-generate-data.R")
-
 ## Analyze data for K = 2 and K = 3 and K = 4
 simulation_results <- list()
 for (K in 2:4) {
@@ -23,13 +21,6 @@ rownames(df) <- NULL
 
 length(unique(df$ID))
 table(table(df$ID))
-
-## add information on simulation conditions
-## TODO: use this and not the one during anticlustering computations
-conditions <- info_from_filename_vectorized(df$file)
-df <- subset(df, select = -c(N, M, SD))
-df <- data.frame(df, conditions)
-
 
 # Make long format
 ldf <- pivot_longer(

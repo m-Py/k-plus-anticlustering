@@ -49,18 +49,3 @@ info_from_filename <- function(file) {
 }
 
 number_from_string <- function(x) as.numeric(gsub("[^0-9]", "", x))
-
-
-info_from_filename_vectorized <- function(file) {
-  info <- lapply(
-    strsplit(file, "_"), 
-    FUN = gsub,
-    pattern = "_", 
-    replacement = ""
-  )
-  N <- sapply(info, function(x) number_from_string(x[1]))
-  M <- sapply(info, function(x) number_from_string(x[2]))
-  SD <- sapply(info, function(x) number_from_string(x[3]))
-  r <- sapply(info, function(x) as.numeric(gsub("r", "", x[4])))
-  data.frame(N, M, SD, r)
-}

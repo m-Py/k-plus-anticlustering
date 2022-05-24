@@ -14,8 +14,6 @@
 compute_objectives <- function(row, K) {
   filename <- paste0("./datasets/", row["file"], ".csv")
   #print(filename)
-  #print(row)
-  #print(row$file)
   data <- read.csv(filename)
   anticlusters <- anticlusters_from_string(row["result"])
   kvar_obj <- variance_objective(squared_from_mean(data), anticlusters)
