@@ -55,9 +55,9 @@ anticluster_data_ <- function(data, K) {
   objectives <- c(
     "diversity",
     "k-means",
-    "kplus",
-    "kplus-skew-kurtosis",
-    "kplus-correlation",
+    "k-plus",
+    "k-plus-skew-kurtosis",
+    "k-plus-correlation",
     "random"
   )
   clusters <- as.list(rep(NA, length(objectives)))
@@ -87,7 +87,7 @@ anticluster_data_ <- function(data, K) {
         repetitions = repetitions,
         standardize = standardize
       )
-    } else if (i == "kplus") {
+    } else if (i == "k-plus") {
       clusters[[i]] <- anticlustering(
         data, 
         K = K,
@@ -96,7 +96,7 @@ anticluster_data_ <- function(data, K) {
         repetitions = repetitions,
         standardize = standardize
       )
-    } else if (i == "kplus-skew-kurtosis") {
+    } else if (i == "k-plus-skew-kurtosis") {
       var_data <- moment_features(data, moment = 2)
       skew_data <- moment_features(data, moment = 3)
       kurtosis_data <- moment_features(data, moment = 4)
@@ -109,7 +109,7 @@ anticluster_data_ <- function(data, K) {
           repetitions = repetitions,
           standardize = FALSE
         )
-    } else if (i == "kplus-correlation") {
+    } else if (i == "k-plus-correlation") {
       var_data <- moment_features(data, moment = 2)
       covar_data <- covariance_features(data)
       data_correlation <- scale(cbind(data, var_data, covar_data))
@@ -123,6 +123,8 @@ anticluster_data_ <- function(data, K) {
       )
     } else if (i == "random") {
       clusters[[i]] <- sample(rep_len(1:K, N))
+    } else {
+      stop("There is a typo in your method names!")
     }
   }
   clusters
