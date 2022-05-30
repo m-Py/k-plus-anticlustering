@@ -322,7 +322,7 @@ install.packages("anticlust")
 
 ## Example Application I
 
-In the first example, I use norming data for the OASIS image data set that is freely available online [@kurdi2017introducing]. @kurdi2017introducing assembled 900 open-access color images and collected ratings on two affective dimensions: arousal and valence. @brielmann2019intense collected an additional rating dimension by measuring how the same 900 images were rated with regard to their beauty. In my application, I use all three features, currently available from Github.[^githubbeauty]
+In the first example, I use norming data for the OASIS image data set that is freely available online [@kurdi2017introducing]. Kurdi et al.  assembled 900 open-access color images and collected ratings on two affective dimensions: arousal and valence. @brielmann2019intense collected an additional rating dimension by measuring how the same 900 images were rated with regard to their beauty. In my application, I use all three features; the corresponding data is available from Github.[^githubbeauty]
 
 [^githubbeauty]: https://github.com/aenneb/OASIS-beauty
 
@@ -344,11 +344,11 @@ kplus_anticlustering(
 )
 ```
 
-The code runs in about 10 seconds on a contemporary personal computer and varies depending on how many iterations are needed to find the local maximum. The variable `features` has to be a data table containing the image data: 900 rows representing images; 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the fully reproducible code that includes downloading and reading the OASIS data, selecting the relevant columns, and finally storing them in the variable `features` (**TODO**). 
+The code runs in about 10 seconds on a contemporary personal computer; the run time may vary depending on how many iterations are needed to find the local maximum. The variable `features` is a data table containing the image data: 900 rows representing images and 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains code to reproduce the example (**TODO**). 
 
-The `kplus_anticlustering()` function has four boolean arguments to specify whether variance, skewness, kurtosis and covariances should be included as part of the k-plus criterion. Only the argument `variance` is set to `TRUE` by default---corresponding to the understanding that k-plus is an extension to k-means that at least equalizes the variance in addition to the mean. The arguments corresponding to skewness, kurtosis and convariance have to be spefically "turned on". If other higher order moments should be included as part of the optimization, the optional argument `moments` can be used to specify the desired moments as an integer vector. The argument `method = "local-maximum"` ensures that the k-plus criterion is optimized using the local maximum search method described in the previous section. The argument `K` describes the number of groups. By default, the function ensures that all features are standardized before the optimization starts; in particular, this option enforces that all k-plus criteria receive the same weight during the optimization process. This behaviour can be adjusted using the boolean argument `standardize`. The documentation of the `anticlust` package also provides detailed information on how to use the `kplus_anticlustering()` function.
+The `kplus_anticlustering()` function has four boolean arguments to specify whether variance, skewness, kurtosis and covariances should be included as part of the k-plus criterion. Only the argument `variance` is set to `TRUE` by default---corresponding to the understanding that k-plus is an extension to k-means that at least equalizes variances in addition to means. The arguments corresponding to skewness, kurtosis and convariance have to be spefically "turned on", i.e., by setting them to `TRUE` in the function call of `kplus_anticlustering()`. If other higher order moments should be included as part of the optimization, the optional argument `moments` can be used to specify the desired moments as an integer vector. The argument `method = "local-maximum"` ensures that the k-plus criterion is optimized using the local maximum search method described in the previous section. The argument `K` describes the number of groups. By default, the function ensures that all features are standardized before the optimization starts; in particular, this option enforces that all k-plus criteria receive the same weight during the optimization process. This behaviour can be adjusted using the boolean argument `standardize`. The documentation of the `anticlust` package also provides detailed information on how to use the `kplus_anticlustering()` function.
 
-Table 2 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 2 also entails the results that were obtained when applying k-means and diversity anticlustering with the same specifications. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations. The skewness is also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and especially skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---anticluster editing does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity. Generally, all methods fulfilled their goals pretty well because the data set they were applied to was rather large. 
+Table 2 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 2 also includes results of k-means anticlustering and diversity anticlustering. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations, and the skewness was also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and especially skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---diversity anticlustering does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity.
 
 ```{r}
 
@@ -450,7 +450,7 @@ table_all_objs <- apply(table_all_objs, 2, force_or_cut)
 apa_table(
   table_all_objs,
   caption = "Descriptive statistics for OASIS features by group and anticlustering method.",
-  note = "The k-plus approach minimized differences with regard to means, variances and skew.",
+  note = "The k-plus criterion that was optimized included a term to minimize differences with regard to means, variances, and skewness.",
   escape = FALSE,
   align = c("c", rep("r", 9)),
   col_spanners = list(Beauty = c(2, 4), Valence = c(5, 7), Arousal = c(8, 10)), 
@@ -460,7 +460,9 @@ apa_table(
 )
 ```
 
-Table 3 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for equal means and variances in all groups, regardless of group size. Unequal group sizes can be requested in anticlust by passing the different group sizes to the argument `K`. The following code was used to equalize means and variances between four groups:
+Table 3 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. This is due the diversity criterion being a measure of within-group heterogeneity; maximizing within-group heterogeneity only incidentally maximizes between-group similarity. However, because the diversity criterion is a sum rather than an average, the correspondence between within-group heterogeneity and between-group similarity no longer holds unequal-sized groups. K-plus anticlustering strives for between-group similarity regardless of group size.
+
+Unequal group sizes can be requested in anticlust by passing the different group sizes to the argument `K`. The following code was used to equalize means and variances between four groups using the k-plus approach:
 
 ```R
 kplus_anticlustering(
@@ -527,9 +529,11 @@ apa_table(
   align = c("r"),
   stub_indents = list("\\textbf{K-plus anticlustering}" = 1:4,
                       "\\textbf{K-means anticlustering}" = 5:8,
-                      "\\textbf{Anticluster editing}" = 9:12)
+                      "\\textbf{Diversity anticlustering}" = 9:12)
 )
 ```
+
+This function call relied on the default k-plus settings, ensuring that variances are equalized -- but no higher order moments or covariances.
 
 ## Example Application II: Small data set ($N = 96$)
 
@@ -539,9 +543,9 @@ The simulation study indicated that k-plus may show decreased performance for sm
 data(schaper2019)
 ```
 
-Table 4 illustrates the results that are obtained when using k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are still similar enough for any practical purpose---especially when considering inevitable measurement error in norming studies. The following code was used to achieve the results reported in Table 4:
+Table 4 illustrates the results that are obtained when using standard k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are still similar enough for any practical purpose---especially when considering inevitable measurement error in norming studies.
 
-```{r, echo = TRUE}
+```{r, echo = FALSE}
 features <- schaper2019[, 3:6]
 anticlusters <- anticlustering(
   features,
@@ -561,7 +565,7 @@ colnames(tab) <- c("Group", "N", "Typicality", "Atypicality", "Syllables", "Freq
 
 apa_table(
   tab,
-  caption = "Descriptive statistics by group for the Schaper et al. (2019a; 2019b) data set, after applying k-plus anticlustering.",
+  caption = "Descriptive statistics by group for the Schaper et al. (2019a; 2019b) data set, after applying default k-plus anticlustering.",
   note = "The cells contain mean values by cluster and the standard deviation (in parentheses).",
   escape = FALSE,
   align = c("r")
