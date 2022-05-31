@@ -37,8 +37,7 @@ draft             : no
 documentclass     : "apa6"
 classoption       : "doc"
 output            : 
-  papaja::apa6_pdf: 
-    number_sections: true
+  papaja::apa6_pdf
 ---
 
 ```{r setup, include = FALSE}
@@ -55,7 +54,7 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
 
 ```
 
-Anticlustering is a collection of methods to partition a set of elements into disjoint groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: some anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@feo1990]. Anticlustering thereby reverses the logic of its better known twin cluster analysis, which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis---including as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012, for an overview]---anticlustering is usually formalized as a partitioning process that optimizes an objective function, representing between-group similarity and/or within-group heterogeneity [@papenberg2020; @spath1986; @brusco2019].
+Anticlustering is a collection of methods to partition elements into disjoint groups, with the goal of obtaining high between-group similarity or within-group heterogeneity [@brusco2019; @spath1986; @valev1998]. Oftentimes, both goals coincide: some anticlustering objectives imply that similarity between groups is maximal whenever similarity within groups is minimal [@feo1990]. Anticlustering thereby reverses the logic of its better known twin cluster analysis, which seeks homogeneity within clusters and heterogeneity between clusters [@rokach2005; @steinley2006]. Whereas a variety of different approaches exist for cluster analysis---including as hierarchical methods, model-based clustering, or network approaches [see @brusco_emergent_2012, for an overview]---anticlustering is usually formalized as a partitioning process that optimizes an objective function, representing between-group similarity and/or within-group heterogeneity [@papenberg2020; @spath1986; @brusco2019].
 
 Anticlustering is useful in many tasks surrounding research work in psychology. For example, anticlustering can be used to split tests into parts of equal difficulty [@gierl2017], to assign students to work groups [@baker2002] or when assigning stimuli to different---but parallel---experimental conditions [@lahl2006]. For a more comprehensive overview of anticlustering applications in Psychology, see @brusco2019 and @papenberg2020. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual partitioning is usually subpar. Fortunately, these problems can be formalized as mathematical optimization problems [e.g., @brusco2019; @spath1986; @baker2002; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020]. 
 
@@ -166,7 +165,7 @@ w_2 \sum\limits_{j=1}^{P}
   (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
 
-The weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of equalizing means and variances, respectively. Some simplifications can be arranged when ignoring the weights $w_1$ and $w_2$, e.g., by setting them both to 1. When defining $z_i = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, x_{iP})$, i.e., the concatenation of the $x_{ij}$ and $y_{ij}$ values, the bicriterion $\mathit{SSE_{kplus}}$ can be computed as
+The weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of equalizing means and variances, respectively. Some simplifications can be arranged when ignoring the weights $w_1$ and $w_2$, e.g., by setting them both to 1. This simplification leads to the *unweighted sum approach* for k-plus anticlustering: When defining $z_i = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, x_{iP})$, i.e., the concatenation of the $x_{ij}$ and $y_{ij}$ values, the bicriterion $\mathit{SSE_{kplus}}$ can be computed as
 
 $$
 \mathit{SSE_{kplus}} =
@@ -176,9 +175,7 @@ $$
   (z_{ij} - \overline{z}_j ^{(k)})^2
 $$.
 
-This formula again has the same form as $\mathit{SSE}$ (and $\mathit{SSE_{Var}}$), but is computed on different data. In this case, both the original data $x_{ij}$ as well as the squared distances $y_{ij}$ are used as attributes that enter the objective function. That is, computing the k-plus criterion can be done by first computing the values $y_{ij}$, appending these to the original data matrix, and then computing the $\mathit{SSE}$ on the augmented data matrix. Hence, k-plus anticlustering reduces to an augmentation of the data matrix, leaving the original k-means criterion unchanged. 
-
-During the remainder of this paper, whenever the k-plus criterion is optimized, the original data matrix is simply extended and the original k-means criterion $SSE$ is optimized. For a multicriterion objective such as the k-plus criterion, this corresponds to a rather basic approach, and future research may investigate more sophisticated optimization schemes for k-plus anticlustering [e.g., see @brusco2012; @brusco2019]. In this paper, however, I am primarily concerned with investigating the properties of new objective itself rather than extending the state of the art on multicriterion optimization methods. 
+This formula again has the same form as $\mathit{SSE}$ (and $\mathit{SSE_{Var}}$), but is computed on different data. In this case, both the original data $x_{ij}$ as well as the squared distances $y_{ij}$ are used as attributes that enter the objective function. That is, computing the k-plus criterion can be done by first computing the values $y_{ij}$, appending these to the original data matrix, and then computing the $\mathit{SSE}$ on the augmented data matrix. Hence, using the unweighted sum approach, k-plus anticlustering reduces to an augmentation of the data matrix, leaving the original k-means criterion unchanged.
 
 Note that a problem may arise if the weights $w_1$ and $w_2$ are ignored when optimizing the k-plus objective, i.e., when just appending the squared-distance-features to the data set. Since the computation of the data matrix $\mathbf{Y}_{N \times P}$ involves squaring, the squared distances $y_{ij}$ have much larger values, on average, than the raw values $x_{ij}$. Therefore, the $\mathit{SSE_{Var}}$ criterion naturally receives greater weight when computing $\mathit{SSE_{kplus}}$ than the standard $\mathit{SSE}$ criterion. This imbalance is most likely unwarranted because optimizing similarity with regard to variances is not more important than optimizing similarity with regard to means. A solution is to standardize all values $x_{ij}$ and $y_{ij}$ to the same scale before computing $SSE_{kplus}$, e.g. via $z$-standardization.
 
@@ -204,7 +201,7 @@ Thus, to maximize between-groups similarity with regard to covariance structure,
 
 # Simulation study
 
-To thorougly evaluate the k-plus approach to anticlustering, three specific k-plus criteria were implemented in a simulation study: (i) "standard" k-plus anticlustering, minimizing differences with regard to the mean and variance; (ii) k-plus *skew/kurtosis*, minimizing differences with regard to the mean, variance, skew and kurtosis; (iii) k-plus *correlation*, minimizing differences with regard to the mean, variance and covariance structure. 
+To thorougly evaluate the k-plus approach to anticlustering, three specific k-plus criteria were implemented in a simulation study: (i) "standard" k-plus anticlustering, minimizing differences with regard to the mean and variance; (ii) k-plus *skew/kurtosis*, minimizing differences with regard to the mean, variance, skew and kurtosis; (iii) k-plus *correlation*, minimizing differences with regard to the mean, variance and covariance structure. To implement all k-plus objectives, the simple unweighted sum outlined above approach was employed. Thus, when optimizing a k-plus criterion, the original data matrix was extended to incorporate the additional criteria. Subsequently, the original k-means criterion $SSE$ was maximized on the basis of the augmented data set.
 
 The three k-plus methods were compared to (i) k-means anticlustering, minimizing differences with regard to group means; (ii) diversity anticlustering, maximizing the sum of Euclidean distances within groups; (iii) a simple random allocation of elements to groups. All anticlustering methods used a $z$-standardization of the data sets as a preprocessing step. In the case of k-plus anticlustering, the augmented input data---i.e., the original data as well as the features that were added to incorporate the additional optimization criteria---were subjected to a standardization, which is recommended.
 
