@@ -54,6 +54,13 @@ ldf %>%
 ldf %>% 
   group_by(method, Objective, M) %>% 
   summarise(Mean = mean(value)) %>% 
+  filter(method != "random") %>% 
+  mutate(
+    Objective = ordered(
+      Objective, 
+      levels = c("means", "sd", "skew", "kur", "cor"),
+      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+  ) %>% 
   ggplot(aes(x = M, y = Mean, colour = method)) + 
   geom_line(size = 1) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
@@ -63,6 +70,13 @@ ldf %>%
 ldf %>% 
   group_by(method, Objective, SD) %>% 
   summarise(Mean = mean(value)) %>% 
+  filter(method != "random") %>% 
+  mutate(
+    Objective = ordered(
+      Objective, 
+      levels = c("means", "sd", "skew", "kur", "cor"),
+      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+  ) %>% 
   ggplot(aes(x = SD, y = Mean, colour = method)) + 
   geom_point(size = 3) + 
   geom_line(size = 1) + 
