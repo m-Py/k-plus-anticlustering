@@ -279,7 +279,7 @@ apa_table(
 ```{r Figure1, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by $N$."}
 
 # Plot the results, by N
-ldf <- ldf %>% 
+ldf %>% 
   group_by(method, Objective, N) %>% 
   summarise(Mean = mean(value)) %>% 
   filter(method != "random") %>% 
@@ -288,10 +288,7 @@ ldf <- ldf %>%
       Objective, 
       levels = c("means", "sd", "skew", "kur", "cor"),
       labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
-  ) 
-
-
-ldf %>%
+  ) %>%
   ggplot(aes(x = N, y = Mean, colour = method)) + 
   geom_line(aes(linetype = method), size = .85) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
