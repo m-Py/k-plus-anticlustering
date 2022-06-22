@@ -83,20 +83,17 @@ ldf %>%
   facet_grid(rows = vars(Objective), scales = "free") + 
   theme_bw(base_size = 22)
 
-# Plot the results, for delte(Mean) by SD and N
-ldf %>% 
-  group_by(method, Objective, SD, N) %>% 
-  summarise(Mean = mean(value)) %>% 
-  filter(Objective %in% c("means")) %>% 
-  ggplot(aes(x = N, y = Mean, colour = method)) + 
-  geom_line(size = 1) + 
-  facet_grid(cols = vars(SD)) + 
-  theme_bw(base_size = 22)
-
 # Plot the results, by K
 ldf %>% 
   group_by(method, Objective, K) %>% 
   summarise(Mean = mean(value)) %>% 
+  filter(method != "random") %>% 
+  mutate(
+    Objective = ordered(
+      Objective, 
+      levels = c("means", "sd", "skew", "kur", "cor"),
+      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+  ) %>% 
   ggplot(aes(x = K, y = Mean, colour = method)) + 
   geom_point(size = 3) + 
   geom_line(size = 1) + 
@@ -107,6 +104,13 @@ ldf %>%
 ldf %>% 
   group_by(method, Objective, r) %>% 
   summarise(Mean = mean(value)) %>% 
+  filter(method != "random") %>% 
+  mutate(
+    Objective = ordered(
+      Objective, 
+      levels = c("means", "sd", "skew", "kur", "cor"),
+      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+  ) %>% 
   ggplot(aes(x = r, y = Mean, colour = method)) + 
   geom_point(size = 3) + 
   geom_line(size = 1) + 
