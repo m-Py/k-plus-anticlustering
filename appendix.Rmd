@@ -1,54 +1,6 @@
+# 
 
-# Author: Martin Papenberg
-# Year: 2022
-
-# Load required packages
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
-## Analyze data for K = 2 and K = 3 and K = 4
-simulation_results <- list()
-for (K in 2:4) {
-  filename <- paste0("results-K", K, "-objectives-raw.csv")
-  df <- read.csv(filename, sep = ";", stringsAsFactors = FALSE)
-  df$K <- K
-  simulation_results[[paste0("K-", K)]] <- df
-}
-
-df <- do.call(rbind, simulation_results)
-rownames(df) <- NULL
-
-length(unique(df$ID))
-table(table(df$ID))
-
-# Make long format
-ldf <- pivot_longer(
-  df,
-  cols = paste0(c("means", "sd", "skew", "kur", "cor"), "_obj"),
-  names_to = "Objective",
-  names_pattern = "(.*)_obj"
-)
-
-## Global results, aggregated across all simulation variables
-ldf %>% 
-  group_by(method, Objective) %>% 
-  summarise(Mean = round(mean(value), 2)) %>% 
-  pivot_wider(names_from = Objective, values_from = Mean) %>% 
-  select(c(means, sd, skew, kur, cor))
-
-
-# Plot the results, by N
-ldf %>% 
-  group_by(method, Objective, N) %>% 
-  summarise(Mean = mean(value)) %>% 
-  filter(method != "random") %>% 
-  ggplot(aes(x = N, y = Mean, colour = method)) + 
-  geom_line(size = 1) + 
-  facet_grid(rows = vars(Objective), scales = "free") + 
-  theme_bw(base_size = 22)
-
-
+```{r Figure2, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *M*."}
 ### For the appendix -- other splits for the main results as plot (N is most important)
 # Plot the results, by M
 ldf %>% 
@@ -65,8 +17,11 @@ ldf %>%
   geom_line(aes(linetype = method), size = .85) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
   ylab("Mean discrepancy") +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 16) + 
+  scale_x_continuous(breaks = 2:5)
+```
 
+```{r Figure3, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *SD*."}
 # Plot the results, by SD
 ldf %>% 
   group_by(method, Objective, SD) %>% 
@@ -82,8 +37,11 @@ ldf %>%
   geom_line(aes(linetype = method), size = .85) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
   ylab("Mean discrepancy") +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 16) + 
+  scale_x_continuous(breaks = 1:3)
+```
 
+```{r Figure4, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *K*."}
 # Plot the results, by K
 ldf %>% 
   group_by(method, Objective, K) %>% 
@@ -99,8 +57,11 @@ ldf %>%
   geom_line(aes(linetype = method), size = .85) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
   ylab("Mean discrepancy") +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 16) + 
+  scale_x_continuous(breaks = 2:4)
+```
 
+```{r Figure5, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *r*."}
 # Plot the results, by r
 ldf %>% 
   group_by(method, Objective, r) %>% 
@@ -116,10 +77,6 @@ ldf %>%
   geom_line(aes(linetype = method), size = .85) + 
   facet_grid(rows = vars(Objective), scales = "free") + 
   ylab("Mean discrepancy") +
-  theme_bw(base_size = 16)
-
-# Check number of simulations per condition
-ldf %>% 
-  group_by(method, Objective, K) %>% 
-  summarise(N = n()) %>% 
-  pull(N)
+  theme_bw(base_size = 16) + 
+  scale_x_continuous(breaks = 0:5 / 10)
+```
