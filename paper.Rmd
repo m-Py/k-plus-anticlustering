@@ -34,13 +34,30 @@ linenumbers       : no
 mask              : no
 draft             : no
 
-documentclass     : "apa6"
 output            : 
   papaja::apa6_pdf
 appendix: "appendix.Rmd"
 
 header-includes:
   - \usepackage{setspace}
+  - \usepackage{float}
+  - \floatstyle{plaintop}
+  - \restylefloat{figure}
+  - |
+    \makeatletter
+    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-1em}%
+      {\normalfont\normalsize\bfseries\typesectitle}}
+    
+    \renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-\z@\relax}%
+      {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+    \makeatother
+
+csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
+documentclass     : "apa7"
 ---
 
 ```{r setup, include = FALSE}
@@ -673,9 +690,6 @@ This paper introduced k-plus anticlustering for maximizing between-group similar
 # References
 
 \begingroup
-\setlength{\parindent}{-0.5in}
-\setlength{\leftskip}{0.5in}
-
 <div id="refs" custom-style="Bibliography"></div>
 \endgroup
 
