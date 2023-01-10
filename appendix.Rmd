@@ -1,8 +1,8 @@
 # 
 
-```{r Figure2, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *M*."}
+```{r Figure2, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by the number of features, averaged across the remaining variables that varied in the simulation)."}
 ### For the appendix -- other splits for the main results as plot (N is most important)
-# Plot the results, by M
+# Plot the results, by M (number of features)
 ldf %>% 
   group_by(method, Objective, M) %>% 
   summarise(Mean = mean(value)) %>% 
@@ -11,17 +11,23 @@ ldf %>%
     Objective = ordered(
       Objective, 
       levels = c("means", "sd", "skew", "kur", "cor"),
-      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+      labels = paste0(
+        "Delta[italic(",
+        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        ")]"
+      )
+    ) 
   ) %>% 
   ggplot(aes(x = M, y = Mean, colour = method)) + 
   geom_line(aes(linetype = method), size = .85) + 
-  facet_grid(rows = vars(Objective), scales = "free") + 
+  facet_grid(rows = vars(Objective), scales = "free", labeller = label_parsed) + 
   ylab("Mean discrepancy") +
+  xlab("Number of features") +
   theme_bw(base_size = 16) + 
   scale_x_continuous(breaks = 2:5)
 ```
 
-```{r Figure3, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *SD*."}
+```{r Figure3, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by *SD*, averaged across the remaining variables that varied in the simulation)."}
 # Plot the results, by SD
 ldf %>% 
   group_by(method, Objective, SD) %>% 
@@ -31,17 +37,23 @@ ldf %>%
     Objective = ordered(
       Objective, 
       levels = c("means", "sd", "skew", "kur", "cor"),
-      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+      labels = paste0(
+        "Delta[italic(",
+        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        ")]"
+      )
+    ) 
   ) %>% 
   ggplot(aes(x = SD, y = Mean, colour = method)) + 
   geom_line(aes(linetype = method), size = .85) + 
-  facet_grid(rows = vars(Objective), scales = "free") + 
-  ylab("Mean discrepancy") +
+  facet_grid(rows = vars(Objective), scales = "free", labeller = label_parsed) + 
+  ylab("Mean discrepancy")+
+  xlab(expression(italic(SD))) +
   theme_bw(base_size = 16) + 
   scale_x_continuous(breaks = 1:3)
 ```
 
-```{r Figure4, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *K*."}
+```{r Figure4, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by *K*, averaged across the remaining variables that varied in the simulation)."}
 # Plot the results, by K
 ldf %>% 
   group_by(method, Objective, K) %>% 
@@ -51,17 +63,23 @@ ldf %>%
     Objective = ordered(
       Objective, 
       levels = c("means", "sd", "skew", "kur", "cor"),
-      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+      labels = paste0(
+        "Delta[italic(",
+        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        ")]"
+      )
+    ) 
   ) %>% 
   ggplot(aes(x = K, y = Mean, colour = method)) + 
   geom_line(aes(linetype = method), size = .85) + 
-  facet_grid(rows = vars(Objective), scales = "free") + 
-  ylab("Mean discrepancy") +
+  facet_grid(rows = vars(Objective), scales = "free", labeller = label_parsed) + 
+  ylab("Mean discrepancy")+
+  xlab(expression(italic(K))) +
   theme_bw(base_size = 16) + 
   scale_x_continuous(breaks = 2:4)
 ```
 
-```{r Figure5, fig.width = 8, fig.height = 10, fig.cap = "Between-group discrepancies for all evaluation criteria split by *r*."}
+```{r Figure5, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by *r*, averaged across the remaining variables that varied in the simulation)."}
 # Plot the results, by r
 ldf %>% 
   group_by(method, Objective, r) %>% 
@@ -71,12 +89,18 @@ ldf %>%
     Objective = ordered(
       Objective, 
       levels = c("means", "sd", "skew", "kur", "cor"),
-      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+      labels = paste0(
+        "Delta[italic(",
+        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        ")]"
+      )
+    ) 
   ) %>% 
   ggplot(aes(x = r, y = Mean, colour = method)) + 
   geom_line(aes(linetype = method), size = .85) + 
-  facet_grid(rows = vars(Objective), scales = "free") + 
-  ylab("Mean discrepancy") +
+  facet_grid(rows = vars(Objective), scales = "free", labeller = label_parsed) + 
+  ylab("Mean discrepancy")+
+  xlab(expression(italic(r))) +
   theme_bw(base_size = 16) + 
   scale_x_continuous(breaks = 0:5 / 10)
 ```
