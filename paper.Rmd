@@ -61,14 +61,15 @@ documentclass     : "apa7"
 ---
 
 ```{r setup, include = FALSE}
-library("papaja") # use the development version: `remotes::install_github("crsh/papaja@devel")`; currently 0.1.1.9001
-library("anticlust")
-library("knitr")
-library("dplyr")
-library("ggplot2")
-library("tidyr")
+library(papaja) # use the development version: `remotes::install_github("crsh/papaja@devel")`; currently 0.1.1.9001
+library(anticlust)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(DescTools)
 # for formatting numbers in Rmarkdown, use my package prmisc (https://github.com/m-Py/prmisc)
-library("prmisc") # remotes::install_github("m-Py/prmisc") 
+library(prmisc) # remotes::install_github("m-Py/prmisc") 
 options(digits = 2)
 knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo_pdf") 
 
