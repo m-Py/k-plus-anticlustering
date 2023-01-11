@@ -1,6 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2022
+# Year: 2023
 
 #' Compute objective values for a given method and data set
 #' 

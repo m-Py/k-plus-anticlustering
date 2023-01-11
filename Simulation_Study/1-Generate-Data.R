@@ -1,6 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2022
+# Year: 2023
 
 # First step in the simulation: Generate data
 source("0-functions-generate-data.R")

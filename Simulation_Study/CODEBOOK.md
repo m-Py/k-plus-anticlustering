@@ -1,9 +1,8 @@
 
 # Codebook
 
-Author: Martin Papenberg
-
-Year: 2022
+- Author: Martin Papenberg
+- Year: 2023
 
 ---
 
@@ -16,7 +15,7 @@ This file is the codebook for the data sets
 - results-K3-objectives-raw.csv
 - results-K4-objectives-raw.csv
 
-These files contain the simulation data reported in the manuscript "k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity" (Papenberg, 2022).  **XXX TODO**
+These files contain the simulation data reported in the manuscript "k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity" (Papenberg, 2023).
 
 --- 
 

@@ -1,6 +1,6 @@
 
 # Author: Martin Papenberg
-# Year: 2022
+# Year: 2023
 
 #' Generate a data set for k-plus anticlustering simulation.
 #' Uses faux::rnorm_multi to generate the multivariate normal data.
