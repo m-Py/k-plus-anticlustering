@@ -326,7 +326,7 @@ To thoroughly evaluate the k-plus approach to anticlustering, three specific k-p
 
 The three k-plus methods were compared to (i) k-means anticlustering, minimizing differences with regard to group means; (ii) diversity anticlustering, maximizing the sum of pairwise Euclidean distances within groups; (iii) a simple random allocation of elements to groups.
 
-The simulation was implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during the simulation. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr] and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that is accessible from the accompanying OSF repository (**link TODO**).
+The simulation was implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during the simulation. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr] and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible via an accompanying OSF repository [@osf2023].
 
 ## Optimization algorithm
 
@@ -459,7 +459,7 @@ In the first example, I use norming data for the OASIS image data set that is fr
 
 [^githubbeauty]: https://github.com/aenneb/OASIS-beauty
 
-I used the function `kplus_anticlustering()` to divide the data set of 900 images into 9 groups of 100 images each. The first argument of the function call is a variable named `features`, which contains the image data as a table: 900 rows representing images and 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the full code to reproduce the example (**TODO**). 
+I used the function `kplus_anticlustering()` to divide the data set of 900 images into 9 groups of 100 images each. The first argument of the function call is a variable named `features`, which contains the image data as a table: 900 rows representing images and 3 columns representing the features beauty, arousal, and valence. The accompanying OSF repository contains the full code to reproduce the example [@osf2023].
 
 ```R
 library(anticlust) # load the package anticlust
