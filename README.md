@@ -4,7 +4,7 @@ This repository contains materials for the manuscript
 
 k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity (Papenberg, 2023)
 
-The manuscript has not yet been submitted for publication (but will soon be).
+The manuscript has been submitted to the PsyArXiv preprint server (available via https://psyarxiv.com/7jw6v) and will soon be submitted for publication.
 
 - The file "paper.Rmd" is the R-Markdown file which renders the manuscript. To reproduce the manuscript...
   * ... ensure that the packages that are loaded in the first R code chunk are installed (in particular, use the development version of [papaja](https://github.com/crsh/papaja) to render it in APA 7th ed. style)
