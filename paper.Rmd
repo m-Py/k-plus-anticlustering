@@ -160,6 +160,7 @@ Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$.
 As discussed (**TODO**) in the previous section, an exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is not feasible without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). Moreover, only equalizing variances between groups is most likely not even of interest in most applications. Hence, when striving for similarity in group variances by maximizing $\mathit{SSE_{Var}}$, it is at the same time necessary and worthwhile to strive for similarity in means, thus to maximize $\mathit{SSE}$ at the same time. Hence, a combination of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ should be employed to simultaneously optimize both criteria, which also represents a reasonable idea when striving for overall between-group similarity. The most simple approach for such a multicriterion optimization is the weighted sum approach [@naidu2014; @marler2010]. That is, all criteria are computed independently from each other and are then combined into a single criterion through a weighted sum
 
 $$
+\mathit{SSE_{kplus}} = 
 w_1 \sum\limits_{j=1}^{P} 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
@@ -169,7 +170,7 @@ w_2 \sum\limits_{j=1}^{P}
   \sum\limits_{i \in C_k}
   (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
-where the weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of equalizing means and variances, respectively. 
+where the weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of equalizing means and variances, respectively. Maximizing $\mathit{SSE_{kplus}}$ for a given $K$ will lead to similar means as well as variances between groups. 
 
 ```{r motivatingExample}
 
@@ -238,7 +239,7 @@ if (!file.exists(path)) {
 
 ```
 
-Research on multiobjective optimization indicates that solutions oftentimes fail to satisfactorily address several criteria at the same time if the underlying objectives are in conflict with each other [@ferligoj1992direct]. It is therefore unclear whether optimizing a bicriterion objective such as $\mathit{SSE_{kplus}}$ (**TODO undefined**) can yield a partitioning where both constituting criteria (mean and variance) are similar between groups, because it is unknown if these objectives tend to align with each other or are in conflict. A motivating example illustrates that aiming to simultaneously optimize similarity of means and variances may be feasible. I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ across partitions. The partition that is represented by the squared symbol has the overall best highest $\mathit{SSE}$, but is outperformed by many other partitions with regard to $\mathit{SSE_{Var}}$. Similarly, the partition that maximizes $\mathit{SSE_{Var}}$ (represented by the triangular symbol) is not well-suited to optimize $\mathit{SSE}$ at the same time. Thus, when only considering one of the objectives, the mathematically optimal partitioning fails to establish groups that are similar both with regard to their means and variances. The diamond symbol represents the partition that maximizes the unweighted sum of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ (i.e., $w_1$ and $w_2$ were simply set to 1), which yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $\mathit{SSE}$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $\mathit{SSE_{Var}}$. Thus, even using a very simple unweighted sum approach, the two constituting criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ can be fulfilled to an astonishing degree, indicating that these objectives tend to align and are not in conflict with each other. 
+Research on multiobjective optimization indicates that solutions oftentimes fail to satisfactorily address several criteria at the same time if the underlying objectives are in conflict with each other [@ferligoj1992direct]. It is therefore unclear whether optimizing a bicriterion objective such as $\mathit{SSE_{kplus}}$ can yield a partitioning where both constituting criteria (mean and variance) are similar between groups, because it is unknown if these objectives tend to align with each other or are in conflict. A motivating example illustrates that aiming to simultaneously optimize similarity of means and variances may be feasible. I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ across partitions. The partition that is represented by the squared symbol has the overall best highest $\mathit{SSE}$, but is outperformed by many other partitions with regard to $\mathit{SSE_{Var}}$. Similarly, the partition that maximizes $\mathit{SSE_{Var}}$ (represented by the triangular symbol) is not well-suited to optimize $\mathit{SSE}$ at the same time. Thus, when only considering one of the objectives, the mathematically optimal partitioning fails to establish groups that are similar both with regard to their means and variances. The diamond symbol represents the partition that maximizes the unweighted sum of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ (i.e., $w_1$ and $w_2$ were simply set to 1), which yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $\mathit{SSE}$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $\mathit{SSE_{Var}}$. Thus, even using a very simple unweighted sum approach, the two constituting criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ can be fulfilled to an astonishing degree, indicating that these objectives tend to align and are not in conflict with each other. 
 
 ```{r, fig.cap = "The relationship between the objectives $\\mathit{SSE}$ and $\\mathit{SSE_{Var}}$ across all ways to partition $N = 14$ normally distributed random values into $K = 2$ groups. The partition represented by the square maximizes $\\mathit{SSE}$ and thus minimizes the difference in means between groups; the partition represented by the triangular maximizes $\\mathit{SSE_{Var}}$ and thus minimizes the difference in variances between groups. The partition represented by the diamond maximizes $\\mathit{SSE_{kplus}}$ and satisfies both constituting criteria to an almost optimal degree.", fig.height = 5, fig.width = 5}
 
@@ -275,7 +276,7 @@ points(
 )
 ```
 
-## Higher order moments
+## Including higher order moments
 
 Note that the k-plus logic to equalizing group variances as well as group means can be seamlessly generalized to higher order moments. The *t*'th sample moment of a variable $x = (x_1, \ldots, x_N)$ can be computed as 
 
@@ -298,7 +299,7 @@ $$
 This computation results in an augmented data matrix $\mathbf{\hat{X}}_{N \times (T \cdot P)} = \{x_{tij}\}_{N \times (T \cdot P)}$ where $T$ is the number of distribution moments that should be equalized between groups. Note that when defining $x_{tij}$, the condition $t = 1$ is included to keep the unchanged original data as the first $P$ columns in the data, which is used to equalize the the mean---the first moment---between groups. Using the thus defined data matrix $\mathbf{\hat{X}}_{N \times (T \cdot P)}$, the generalized multicriterion for k-plus anticlustering can be formalized by the formula
 
 $$
-\mathit{SSE_{kplus}} =
+\mathit{SSE_{kplusGeneralized}} =
   \sum\limits_{t=1}^{T} 
   w_t \left(
   \sum\limits_{j=1}^{P} 
@@ -308,7 +309,7 @@ $$
   \right)
 $$
 
-where $w_t$ is the weight associated with the $t'th$ moment and $\overline{x}_{.j} ^{(k)}$ is the mean of the $j'th$ variable in the $k'th$ group. Maximizing $\mathit{SSE_{kplus}}$ with a given number of moments $T$ can be used to equalize these distribution moments between $K$ groups. Note that according to this definition the inclusion of a distribution moment $t$ always implies that all moments $z < t$ are also included as part of the criterion $\mathit{SSE_{kplus}}$; it is not deemed worthwhile to exclude lower order moments in favor of higher order moments. In particular, the first moment, represented by the original data, should always be included because otherwise the criterion $\mathit{SSE_{kplus}}$ is not valid for higher order moments. 
+where $w_t$ is the weight associated with the $t'th$ moment and $\overline{x}_{.j} ^{(k)}$ is the mean of the $j'th$ variable in the $k'th$ group. Maximizing $\mathit{SSE_{kplusGeneralized}}$ with a given number of moments $T$ can be used to equalize these distribution moments between $K$ groups. Note that according to this definition the inclusion of a distribution moment $t$ always implies that all moments $z < t$ are also included as part of the criterion $\mathit{SSE_{kplusGeneralized}}$; it is not deemed worthwhile to exclude lower order moments in favor of higher order moments. In particular, the first moment, represented by the original data, should always be included because otherwise the criterion $\mathit{SSE_{kplusGeneralized}}$ is not valid for higher order moments. 
 
 **TODO: include discussion of weight selection, as suggested by reviewer 2**
 
