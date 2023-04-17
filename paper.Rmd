@@ -41,6 +41,7 @@ appendix: "appendix.Rmd"
 header-includes:
   - \usepackage{setspace}
   - \usepackage{float}
+  - \usepackage{amsmath}
   - \floatstyle{plaintop}
   - \restylefloat{figure}
   - |
@@ -122,9 +123,9 @@ $$
 
 If the $\mathit{SSE}$ is maximal---which is the goal of k-means *anticlustering*---, the cluster centroids are as close as possible to the overall centroid $\overline{\mathbf{x}}$ and therefore to each other [@spath1986]. Thus, k-means anticlustering directly optimizes the similarity of the mean attribute values between clusters.
 
-## Quantifying differences in variance
+## Minimizing discrepancy in variance between groups
 
-In the following, I present a variation of the $\mathit{SSE}$ that quantifies how the variance of numeric data differs between groups. To motivate the new criterion, we first consider a set of one-dimensional observations. The sample variance of a set of $N$ observations $x = (x_1, \ldots, x_N)$ is computed as the mean of the squared distances between observations and their mean $\overline{\mathbf{x}}$:
+In the following, I present a variation of the $\mathit{SSE}$ that can be used to minimize differences in variance between groups instead of only mean values. To motivate the new criterion, we first consider a set of one-dimensional observations. The sample variance of a set of $N$ observations $x = (x_1, \ldots, x_N)$ is computed as the mean of the squared distances between observations and their mean $\overline{\mathbf{x}}$:
 
 $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
@@ -140,7 +141,9 @@ $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} y_i
 $$
 
-Because the sample variance is basically defined as an average---and k-means anticlustering minimizes differences with regard to averages---k-means anticlustering can be employed to equalize the variance across groups. This constitutes the central insight motivating the new k-plus criterion. Thus, to obtain an adaptation of the $\mathit{SSE}$ that quantifies the degree to which the variance differs between groups, a new variable is computed for each original variable: The new variable represents the squared distance of each of the original values to the overall mean of the variable. We obtain a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2$. On the basis of $\mathbf{Y}_{N \times P}$, we define the criterion $\mathit{SSE_{Var}}$, reflecting how strongly the variances of all attributes vary across the $K$ clusters:
+Because the sample variance is basically defined as an average---and k-means anticlustering minimizes differences with regard to averages---k-means anticlustering can be employed to equalize the variance across groups. This constitutes the central insight motivating the new k-plus criterion. 
+
+Thus, to obtain an adaptation of the $\mathit{SSE}$ that can be maximized in order to minimize differences in variances between groups, a new variable is computed for each original variable: The new variable represents the squared distance of each of the original values to the overall mean of the variable. We obtain a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2$. On the basis of $\mathbf{Y}_{N \times P}$, we define the criterion $\mathit{SSE_{Var}}$:
 
 $$
 \mathit{SSE_{Var}} = 
@@ -150,11 +153,11 @@ $$
   (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
 
-Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points. Maximizing $\mathit{SSE_{Var}}$ will lead to similar variances across the $K$ groups in the $P$ attributes. 
+Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points. Maximizing $\mathit{SSE_{Var}}$ will lead to similar variances across the $K$ groups in the $P$ attributes (**only if the group means are close to the overall mean, discuss this as suggested in reviewer 1's comment 4**; $\mathit{SSE_{Var}}$ is only valid if the group means are close to the overall means of the data.).
 
-## A bicriterion model: K-plus anticlustering {#kplus}
+## A multicriterion optimization model: K-plus anticlustering {#kplus}
 
-It is unlikely that an exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is of interest without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). A combination of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$, however, can be employed to simultaneously optimize both criteria, which is a reasonable idea when striving for overall between-group similarity. The most simple approach for such a bicriterion optimization is the weighted sum approach [@naidu2014; @marler2010]. That is, both criteria are computed independently from each other and are then combined into a single criterion through a weighted sum:
+As discussed (**TODO**) in the previous section, an exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is not feasible without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). Moreover, only equalizing variances between groups is most likely not even of interest in most applications. Hence, when striving for similarity in group variances by maximizing $\mathit{SSE_{Var}}$, it is at the same time necessary and worthwhile to strive for similarity in means, thus to maximize $\mathit{SSE}$ at the same time. Hence, a combination of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ should be employed to simultaneously optimize both criteria, which also represents a reasonable idea when striving for overall between-group similarity. The most simple approach for such a multicriterion optimization is the weighted sum approach [@naidu2014; @marler2010]. That is, all criteria are computed independently from each other and are then combined into a single criterion through a weighted sum
 
 $$
 w_1 \sum\limits_{j=1}^{P} 
@@ -166,32 +169,7 @@ w_2 \sum\limits_{j=1}^{P}
   \sum\limits_{i \in C_k}
   (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
-
-The weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of equalizing means and variances, respectively. Some simplifications can be arranged when ignoring the weights $w_1$ and $w_2$, e.g., by setting them both to 1. This simplification leads to the *unweighted sum approach* for k-plus anticlustering: When defining a new data matrix $\mathbf{Z}_{N \times 2P} = \{z_{ij}\}_{N \times 2P}$ as the augmentation of $\mathbf{X}_{N \times P}$ with $\mathbf{Y}_{N \times P}$, i.e.
-
-$$
-  \mathbf{Z}_{N \times 2P} =
-  \left[ {\begin{array}{cccc|cccc}
-    x_{11} & x_{12} & \cdots & x_{1P} & y_{11} & y_{12} & \cdots & y_{1P}\\
-    x_{21} & x_{22} & \cdots & x_{2P} & y_{21} & y_{22} & \cdots & y_{2P}\\
-    \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots\\
-    x_{N1} & x_{N2} & \cdots & x_{NP} & y_{N1} & y_{N2} & \cdots & y_{NP}\\
-  \end{array} } \right]
-$$
-
-and $z_{i.} = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, y_{iP})$, the bicriterion $\mathit{SSE_{kplus}}$ can be computed as
-
-$$
-\mathit{SSE_{kplus}} =
-  \sum\limits_{j=1}^{2 P} 
-  \sum\limits_{k=1}^{K} 
-  \sum\limits_{i \in C_k}
-  (z_{ij} - \overline{z}_j ^{(k)})^2.
-$$
-
-This term again has the same form as $\mathit{SSE}$ but is computed on different data. Hence, computing the k-plus criterion can be done by first computing the squared distances $y_{ij}$, appending them as new columns to the original data matrix, and then computing $\mathit{SSE}$ on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged. 
-
-Note that a problem may arise if the weights $w_1$ and $w_2$ are ignored when computing $\mathit{SSE_{kplus}}$. Because the computation of the new attribute values $y_{ij}$ involves squaring, their range of values is expected to be very different from the raw values $x_{ij}$ (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ when computing $\mathit{SSE_{kplus}}$. To ensure an equal weight of both criteria, all attributes ($x_{ij}$ and $y_{ij}$) can be standardized before computing $\mathit{SSE_{kplus}}$, e.g. via $z$-standardization.
+where the weights $w_1$ and $w_2$ can be chosen to adjust the relative importance of equalizing means and variances, respectively. 
 
 ```{r motivatingExample}
 
@@ -242,7 +220,7 @@ if (!file.exists(path)) {
   all_objectives_kPlus <- sapply(
     partitions,
     FUN = var_objective,
-    features = scale(cbind(features, squared_distances_from_mean))
+    features = cbind(features, squared_distances_from_mean)
   )
   
   df <- data.frame(
@@ -260,8 +238,7 @@ if (!file.exists(path)) {
 
 ```
 
-Research on multiobjective optimization indicates that solutions oftentimes fail to satisfactorily address several criteria at the same time [@ferligoj1992direct]. It is therefore unclear whether optimizing a bicriterion objective such as $\mathit{SSE_{kplus}}$ can yield a partitioning where both constituting criteria (mean and variance) are similar between groups. A motivating example illustrates that aiming to simultaneously optimize similarity of means and variances may be feasible. I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ across partitions. The partition that is represented by the squared symbol has the overall best highest $\mathit{SSE}$, but is outperformed by many other partitions with regard to $\mathit{SSE_{Var}}$. Similarly, the partition that maximizes $\mathit{SSE_{Var}}$ (represented by the triangular symbol) is not well-suited to optimize $\mathit{SSE}$ at the same time. Thus, when only considering one of the objectives, the mathematically optimal partitioning fails to establish groups that are similar both with regard to their means and variances. The diamond symbol represents the partition that maximizes $\mathit{SSE_{kplus}}$, which yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $\mathit{SSE}$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $\mathit{SSE_{Var}}$. Thus, using the unweighted sum approach, the optimal partition according to $\mathit{SSE_{kplus}}$ fulfills the two constituting criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ to an astonishing degree. 
-
+Research on multiobjective optimization indicates that solutions oftentimes fail to satisfactorily address several criteria at the same time if the underlying objectives are in conflict with each other [@ferligoj1992direct]. It is therefore unclear whether optimizing a bicriterion objective such as $\mathit{SSE_{kplus}}$ (**TODO undefined**) can yield a partitioning where both constituting criteria (mean and variance) are similar between groups, because it is unknown if these objectives tend to align with each other or are in conflict. A motivating example illustrates that aiming to simultaneously optimize similarity of means and variances may be feasible. I created 14 data points following a univariate normal distribution ($M = 15$, $SD = 3$) and then generated all `r n_partitions(14, 2)` possible ways to partition the 14 data points into $K = 2$ equal-sized groups. Figure 1 shows the scatterplot of the criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ across partitions. The partition that is represented by the squared symbol has the overall best highest $\mathit{SSE}$, but is outperformed by many other partitions with regard to $\mathit{SSE_{Var}}$. Similarly, the partition that maximizes $\mathit{SSE_{Var}}$ (represented by the triangular symbol) is not well-suited to optimize $\mathit{SSE}$ at the same time. Thus, when only considering one of the objectives, the mathematically optimal partitioning fails to establish groups that are similar both with regard to their means and variances. The diamond symbol represents the partition that maximizes the unweighted sum of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ (i.e., $w_1$ and $w_2$ were simply set to 1), which yields `r df$kmeans[which.max(df$kplus)] / max(df$kmeans) * 100`% of the global maximum $\mathit{SSE}$, and `r df$kvar[which.max(df$kplus)] / max(df$kvar) * 100`% of the global maximum value of $\mathit{SSE_{Var}}$. Thus, even using a very simple unweighted sum approach, the two constituting criteria $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ can be fulfilled to an astonishing degree, indicating that these objectives tend to align and are not in conflict with each other. 
 
 ```{r, fig.cap = "The relationship between the objectives $\\mathit{SSE}$ and $\\mathit{SSE_{Var}}$ across all ways to partition $N = 14$ normally distributed random values into $K = 2$ groups. The partition represented by the square maximizes $\\mathit{SSE}$ and thus minimizes the difference in means between groups; the partition represented by the triangular maximizes $\\mathit{SSE_{Var}}$ and thus minimizes the difference in variances between groups. The partition represented by the diamond maximizes $\\mathit{SSE_{kplus}}$ and satisfies both constituting criteria to an almost optimal degree.", fig.height = 5, fig.width = 5}
 
@@ -298,15 +275,72 @@ points(
 )
 ```
 
-## Skewness, kurtosis, and higher order moments
+## Higher order moments
 
-The k-plus approach to equalizing the variance can be generalized to higher order moments. The *j*'th sample moment of a variable $x = (x_1, \ldots, x_N)$ can be computed as 
+Note that the k-plus logic to equalizing group variances as well as group means can be seamlessly generalized to higher order moments. The *t*'th sample moment of a variable $x = (x_1, \ldots, x_N)$ can be computed as 
 
 $$
-\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^j.
+\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^t.
 $$
 
-where $j = 2$ gives the variance, $j = 3$ the skewness, and $j = 4$ the kurtosis [@joanes1998]. Thus, by changing $j$---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. For each moment $j$ and for each variable $x$, this is accomplished by adding a new variable $y^{(j)} = (y^{(j)}_1, \ldots, y^{(j)}_N)$ with $y^{(j)}_i = (x_i - \overline{\mathbf{x}})^j$ to the data set and subsequently applying standard k-means anticlustering. I expect this to be particularly interesting for the skewness and kurtosis when aiming to minimize differences with regard to distribution asymmetry (skewness) and the propensity to include outliers (kurtosis).
+where $t = 2$ gives the variance, $t = 3$ the skewness, and $t = 4$ the kurtosis [@joanes1998]. Thus, by changing $t$---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. 
+
+Next, I provide some notation needed to compute the general $\mathit{SSE}$ for k-plus anticlustering, which may include arbitrary distribution moments as part of the computation. For each moment $t$ and for column of the original data matrix $x_{.j} =  (x_{1j}, \ldots, x_{Nj})$ ($j = 1, \ldots, P$) with mean $\overline{\mathbf{x}}_j$, a new variable $x_{t.j} = (x_{t1j}, \ldots, x_{tNj})$ is computed where 
+
+$$
+    x_{tij} = 
+\begin{cases}
+    x_{ij} & \text{if } t = 1\\
+    (x_{ij} - \overline{\mathbf{x}}_j)^t, & \text{if } t > 1.
+\end{cases}
+$$
+
+This computation results in an augmented data matrix $\mathbf{\hat{X}}_{N \times (T \cdot P)} = \{x_{tij}\}_{N \times (T \cdot P)}$ where $T$ is the number of distribution moments that should be equalized between groups. Note that when defining $x_{tij}$, the condition $t = 1$ is included to keep the unchanged original data as the first $P$ columns in the data, which is used to equalize the the mean---the first moment---between groups. Using the thus defined data matrix $\mathbf{\hat{X}}_{N \times (T \cdot P)}$, the generalized multicriterion for k-plus anticlustering can be formalized by the formula
+
+$$
+\mathit{SSE_{kplus}} =
+  \sum\limits_{t=1}^{T} 
+  w_t \left(
+  \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (x_{tij} - \overline{x}_{.j} ^{(k)})^2
+  \right)
+$$
+
+where $w_t$ is the weight associated with the $t'th$ moment and $\overline{x}_{.j} ^{(k)}$ is the mean of the $j'th$ variable in the $k'th$ group. Maximizing $\mathit{SSE_{kplus}}$ with a given number of moments $T$ can be used to equalize these distribution moments between $K$ groups. Note that according to this definition the inclusion of a distribution moment $t$ always implies that all moments $z < t$ are also included as part of the criterion $\mathit{SSE_{kplus}}$; it is not deemed worthwhile to exclude lower order moments in favor of higher order moments. In particular, the first moment, represented by the original data, should always be included because otherwise the criterion $\mathit{SSE_{kplus}}$ is not valid for higher order moments. 
+
+**TODO: include discussion of weight selection, as suggested by reviewer 2**
+
+## The unweighted sum approach for k-plus anticlustering
+
+**argue why unweighted standardization k-plus anticlustering is good, as demanded by reviewer 2; also maybe include small scale simulation study**
+
+Some simplifications can be arranged when ignoring the weights $w_1$ and $w_2$, e.g., by setting them both to 1. This simplification leads to the *unweighted sum approach* for k-plus anticlustering: When defining a new data matrix $\mathbf{Z}_{N \times 2P} = \{z_{ij}\}_{N \times 2P}$ as the augmentation of $\mathbf{X}_{N \times P}$ with $\mathbf{Y}_{N \times P}$, i.e.
+
+$$
+  \mathbf{Z}_{N \times 2P} =
+  \left[ {\begin{array}{cccc|cccc}
+    x_{11} & x_{12} & \cdots & x_{1P} & y_{11} & y_{12} & \cdots & y_{1P}\\
+    x_{21} & x_{22} & \cdots & x_{2P} & y_{21} & y_{22} & \cdots & y_{2P}\\
+    \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+    x_{N1} & x_{N2} & \cdots & x_{NP} & y_{N1} & y_{N2} & \cdots & y_{NP}\\
+  \end{array} } \right]
+$$
+
+and $z_{i.} = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, y_{iP})$, the bicriterion $\mathit{SSE_{kplus}}$ can be computed as
+
+$$
+\mathit{SSE_{kplus}} =
+  \sum\limits_{j=1}^{2 P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (z_{ij} - \overline{z}_j ^{(k)})^2.
+$$
+
+This term again has the same form as $\mathit{SSE}$ but is computed on different data. Hence, computing the k-plus criterion can be done by first computing the squared distances $y_{ij}$, appending them as new columns to the original data matrix, and then computing $\mathit{SSE}$ on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged. 
+
+Note that a problem may arise if the weights $w_1$ and $w_2$ are ignored when computing $\mathit{SSE_{kplus}}$. Because the computation of the new attribute values $y_{ij}$ involves squaring, their range of values is expected to be very different from the raw values $x_{ij}$ (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ when computing $\mathit{SSE_{kplus}}$. To ensure an equal weight of both criteria, all attributes ($x_{ij}$ and $y_{ij}$) can be standardized before computing $\mathit{SSE_{kplus}}$, e.g. via $z$-standardization.
 
 ## Covariances
 
