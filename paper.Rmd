@@ -316,9 +316,7 @@ $$
 $$
 
 
-Note that when defining $\hat{x}_{tij}$, the condition $t = 1$ is separately included to keep the unchanged original data as the first $P$ columns in the data, which is used to equalize the the mean---the first moment---between groups. 
-
-Using the data matrix $\mathbf{\hat{X}}_{N \times \mathit{TP}}$ and a vector of weights $\mathbf{w} = (w_1, \dots, w_T$), the generalized multicriterion for k-plus anticlustering $\mathit{SSE_{kplusGeneralized}}$ can be formalized:
+Note that when defining $\hat{x}_{tij}$, the condition $t = 1$ is separately included to keep the unchanged original data as the first $P$ columns in the data, which is used to equalize the the mean---the first moment---between groups. Using the data matrix $\mathbf{\hat{X}}_{N \times \mathit{TP}}$ and a vector of weights $\mathbf{w} = (w_1, \dots, w_T$), the generalized multicriterion for k-plus anticlustering $\mathit{SSE_{kplusGeneralized}}$ can be formalized:
 
 $$
 \mathit{SSE_{kplusGeneralized}} =
@@ -331,7 +329,7 @@ $$
   \right)
 $$
 
-Here, $w_t$ is the weight associated with the $t$'th moment, $\overline{x}_{tj} ^{(k)}$ is mean for the $k$'th group on the $j$'th $t$-moment variable. Maximizing $\mathit{SSE_{kplusGeneralized}}$ can be used to equalize the first $T$ distribution moments between $K$ groups. 
+Here, $w_t$ is the weight associated with the $t$'th moment and $\overline{x}_{tj} ^{(k)}$ is mean for the $k$'th group on the $j$'th $t$-moment variable. Maximizing $\mathit{SSE_{kplusGeneralized}}$ can be used to equalize the first $T$ distribution moments between $K$ groups. 
 
 
 ## The unweighted sum approach for k-plus anticlustering
