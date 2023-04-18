@@ -1,6 +1,6 @@
 # 
 
-```{r Figure2, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by the number of features, averaged across the remaining variables that varied in the simulation)."}
+```{r Figure2, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness and kurtosis (split by the number of features, averaged across the remaining variables that varied in the simulation)."}
 ### For the appendix -- other splits for the main results as plot (N is most important)
 # Plot the results, by M (number of features)
 ldf %>% 
@@ -10,10 +10,10 @@ ldf %>%
   mutate(
     Objective = ordered(
       Objective, 
-      levels = c("means", "sd", "skew", "kur", "cor"),
+      levels = c("means", "sd", "skew", "kur"),
       labels = paste0(
         "Delta[italic(",
-        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        c("M", "SD", "Skew", "Kurtosis"),
         ")]"
       )
     ) 
@@ -27,7 +27,7 @@ ldf %>%
   scale_x_continuous(breaks = 2:5)
 ```
 
-```{r Figure3, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by *SD*, averaged across the remaining variables that varied in the simulation)."}
+```{r Figure3, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness and kurtosis (split by *SD*, averaged across the remaining variables that varied in the simulation)."}
 # Plot the results, by SD
 ldf %>% 
   group_by(method, Objective, SD) %>% 
@@ -36,10 +36,10 @@ ldf %>%
   mutate(
     Objective = ordered(
       Objective, 
-      levels = c("means", "sd", "skew", "kur", "cor"),
+      levels = c("means", "sd", "skew", "kur"),
       labels = paste0(
         "Delta[italic(",
-        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        c("M", "SD", "Skew", "Kurtosis"),
         ")]"
       )
     ) 
@@ -53,7 +53,7 @@ ldf %>%
   scale_x_continuous(breaks = 1:3)
 ```
 
-```{r Figure4, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by *K*, averaged across the remaining variables that varied in the simulation)."}
+```{r Figure4, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness and kurtosis (split by *K*, averaged across the remaining variables that varied in the simulation)."}
 # Plot the results, by K
 ldf %>% 
   group_by(method, Objective, K) %>% 
@@ -62,10 +62,10 @@ ldf %>%
   mutate(
     Objective = ordered(
       Objective, 
-      levels = c("means", "sd", "skew", "kur", "cor"),
+      levels = c("means", "sd", "skew", "kur"),
       labels = paste0(
         "Delta[italic(",
-        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        c("M", "SD", "Skew", "Kurtosis"),
         ")]"
       )
     ) 
@@ -79,7 +79,7 @@ ldf %>%
   scale_x_continuous(breaks = 2:4)
 ```
 
-```{r Figure5, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by *r*, averaged across the remaining variables that varied in the simulation)."}
+```{r Figure5, fig.width = 8, fig.height = 10, fig.cap = "Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness and kurtosis (split by *r*, averaged across the remaining variables that varied in the simulation)."}
 # Plot the results, by r
 ldf %>% 
   group_by(method, Objective, r) %>% 
@@ -88,10 +88,10 @@ ldf %>%
   mutate(
     Objective = ordered(
       Objective, 
-      levels = c("means", "sd", "skew", "kur", "cor"),
+      levels = c("means", "sd", "skew", "kur"),
       labels = paste0(
         "Delta[italic(",
-        c("M", "SD", "Skew", "Kurtosis", "Cor"),
+        c("M", "SD", "Skew", "Kurtosis"),
         ")]"
       )
     ) 
