@@ -296,7 +296,7 @@ $$
 \end{cases}
 $$
 
-This computation results in a three dimensional tensor $\mathbf{\hat{X}}_{T \times N \times P}$ = $\{\hat{x}_{tij}\}_{T \times N \times P}$ where---in comparison to the original data matrix $\mathbf{X}_{N \times P}$---the additional dimension is given by the $T$ distribution moments that are considered in the anticlustering process. When defining $\hat{x}_{tij}$, the condition $t = 1$ is separately included to keep the unchanged original data as first entry in the "moment dimension" in $\mathbf{\hat{X}}_{T \times N \times P}$, which is used to equalize the the mean---the first moment---between groups. 
+This computation results in a three dimensional tensor $\mathbf{\hat{X}}_{T \times N \times P}$ = $\{\hat{x}_{tij}\}_{T \times N \times P}$ where---in comparison to the original data matrix $\mathbf{X}_{N \times P}$---the additional dimension is given by the $T$ distribution moments that are considered in the anticlustering process. When defining $\hat{x}_{tij}$, the condition $t = 1$ is separately included to keep the unchanged original data as first entry in the "moment dimension" in $\mathbf{\hat{X}}_{T \times N \times P}$, which is used to equalize the mean---the first moment---between groups. 
 
 Using the tensor  $\mathbf{\hat{X}}_{T \times N \times P}$ and a vector of weights $\mathbf{w} = (w_1, \dots, w_T$), the generalized multicriterion for k-plus anticlustering $\mathit{SSE_{kplusGeneralized}}$ can be formalized:
 
