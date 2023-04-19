@@ -350,27 +350,81 @@ Thus, when setting all the weights for all moments to 1, the k-plus criterion $\
 
 Note that a problem may arise if the weights $\mathbf{w}$ are ignored when computing. Because the computation of the new $t$-moment variables involves squaring, their range of values is expected to be very different from the raw values $x_{ij}$ (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of $\mathit{SSE}$ and $\mathit{SSE_{Var}}$ when computing $\mathit{SSE_{kplus}}$. To ensure an equal weight of both criteria, all attributes---i.e., the original data as well as the new $t$-moment varibles---can be standardized before computing $\mathit{SSE_{kplusGeneralized}}$, e.g. via $z$-standardization.
 
-# Simulation study
+# Evaluation
 
-To thoroughly evaluate the k-plus approach to anticlustering, two k-plus criteria were implemented in a simulation study: (i) "standard" k-plus anticlustering, minimizing differences with regard to group means and variances; (ii) k-plus *skew/kurtosis*, minimizing differences with regard to group means, variances, skewness and kurtosise. To implement the k-plus objectives, the unweighted sum approach was employed. Thus, to optimize a k-plus criterion, the original data set was augmented to incorporate the additional criteria and all variables---the original and the augmented variables---were $z$-standardized. Subsequently, the original k-means criterion $\mathit{SSE}$ was maximized on the basis of the augmented data set. The three k-plus methods were compared to (i) k-means anticlustering, minimizing differences with regard to group means, (ii) diversity anticlustering, maximizing the sum of pairwise Euclidean distances within groups, (iii) a random allocation of elements to groups.
+Two simulation studies were conducted to evaluate the new k-plus objective for anticlustering. A first small scale simulation compared different approaches for weight selection for the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$. In a second large scale simulation study, the k-plus objective was compared to other popular anticlustering objectives, i.e., the k-means and diversity objectives. 
 
-The simulation was implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during the simulation. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr] and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible in an accompanying OSF repository [@osf2023].
+The simulation studies were implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during the simulation. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr] and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible in an accompanying OSF repository [@osf2023].
 
 ## Optimization algorithm
 
-The same local maximum search was applied to optimize each of the five competing anticlustering objectives [Method LCW, @weitz1998]. Building on an initial random allocation, the algorithm proceeds by swapping elements between groups in such a way that each swap improves the objective criterion by the largest possible margin. That is, it starts with the first element and simulates all exchanges with elements that are currently assigned to a different group. After each exchange has been evaluated, the one exchange is realized that improves the objective function the most. No exchange is realized if no improvement is possible. The exchange process is repeated for each element. After that, the procedure restarts at the beginning and is repeated until an iteration through the entire data set no longer yields an improvement. To obtain better results, this local maximum search may be initialized multiple times [@spath1986]. In the simulation study five repetitions were used.
+In both simulation studies, the same local maximum search was applied to optimize the competing anticlustering objectives [Method LCW, @weitz1998]. Building on an initial random allocation, the algorithm proceeds by swapping elements between groups in such a way that each swap improves the objective criterion by the largest possible margin. That is, it starts with the first element and simulates all exchanges with elements that are currently assigned to a different group. After each exchange has been evaluated, the one exchange is realized that improves the objective function the most. No exchange is realized if no improvement is possible. The exchange process is repeated for each element. After that, the procedure restarts at the beginning and is repeated until an iteration through the entire data set no longer yields an improvement. To obtain better results, this local maximum search may be initialized multiple times [@spath1986]. In the simulation studies, five repetitions were used.
 
-## Conditions
+## Simulation 1: Selecting weights for k-plus anticlustering
 
-For the simulation, I generated 10,000 data sets following a normal distribution. The data sets were subsequently processed by the competing methods. The following properties were determined randomly for each data set: (a) the sample size $N$ varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into $K = 2$, $3$, and $4$ groups; (b) the number of features varied between 2 and 5; (c) the standard deviation of all features was set to 1, 2 or 3 (the mean was always zero); (d) the correlation between all features was $r = 0$, $r = .1$, $r = .2$, $r = .3$, $r = .4$ or $r = .5$. All anticlustering methods were applied to each of the 10,000 data sets using $K = 2$, $K = 3$ and $K = 4$ (i.e., each method was applied 30,000 times). Groups sizes were always equal. 
+```{r getresultsSim1}
+files <- list.files("./Simulation_Study/Weight_Simulation", pattern = ".Rdata")
+results <- list()
+for (file in files) {
+  results <- c(results, get(load(paste0("Simulation_Study/Weight_Simulation/", file))))
+}
 
-## Evaluation criteria
+```
+
+In general, the weighting scheme for k-plus anticlustering can become highly complex as it might encompass an arbitrary number of distribution moments, and hence, an arbitrary number of weights. While an exhaustive evaluation of the influence of weights is beyond the scope of the current paper, a small scale simulation study was conducted to investigate the influence of weights for a selected number of moments. The target was the optimization of $\mathit{SSE_{kplusGeneralized}}$ with $T = 4$, i.e. minizimizing differences with regard to means, variances, skew and kurtosis. The two unweighted approaches were implemented with $\mathbf{w} = (1, 1, 1, 1)$. In one case, a standardization of all columns of $\mathbf{\hat{X}'}_{N \times \mathit{TP}}$ was implemented. That is, the original as well as the augmented variables were standardized before the criterion $\mathit{SSE_{kplusGeneralized}}$ was optimized. In the second case, the unstandardized matrix $\mathbf{\hat{X}'}_{N \times \mathit{TP}}$ was used. The four weighted approaches were implemented by giving a 10 times increased weight to one of the respective moments. That is, to compute $\mathit{SSE_{kplusGeneralized}}$ favoring similarity in means during the optimization process, I set $\mathbf{w} = (10, 1, 1, 1)$; the weights favoring similarity in variances, skewness and kurtosis, were defined as $\mathbf{w} = (1, 10, 1, 1)$, $\mathbf{w} = (1, 1, 10, 1)$, and $\mathbf{w} = (1, 1, 1, 10)$, repectively. The weighted approaches did not use standardization of the input data.
+
+To compare the different weighting schemes, `r length(results)` data sets from were generated from a normal distribution ($M = 0$, $\mathit{SD} = 1$). The number of variables $P$ was determined randomly for each data set and varied between 1 and 5; the number of anticlusters $K$ was also determined randomly for each data set and varied between 2 and 4; the sample size $N$ randomly varied between 10 and 100 with the restriction that $N$ had to be divisible by $K$. For each data set, $\mathit{SSE_{kplusGeneralized}}$ was optimized using the local maximum algorithm, once for each of the six competing weighting schemes. 
+
+
+```{r}
+final_tab_sim1 <- (Reduce("+", results) / length(results) * 100) |> round(2)
+rownames(final_tab_sim1) <- c(
+  "$\\mathbf{w} = (1, 1, 1, 1)$ / unstandardized",
+  "$\\mathbf{w} = (1, 1, 1, 1)$ / standardized",
+  "$\\mathbf{w} = (10, 1, 1, 1)$",
+  "$\\mathbf{w} = (1, 10, 1, 1)$",
+  "$\\mathbf{w} = (1, 1, 10, 1)$",
+  "$\\mathbf{w} = (1, 1, 1, 10)$"
+)
+colnames(final_tab_sim1) <- c(
+  "$\\mathit{SSE}$",
+  "$\\mathit{SSE_{Var}}$", 
+  "$\\mathit{SSE_{Skew}}$",
+  "$\\mathit{SSE_{Kurtosis}}$",
+  "Average"
+)
+note <- paste0("The results of Simulation 1 averaged across all ", length(results), " data sets. Cells indicate how well the maximization of the weighted $\\mathit{SSE_{kplusGeneralized}}$ fulfilled each of the four constituting criteria $\\mathit{SSE}$, $\\mathit{SSE_{Var}}$, $\\mathit{SSE_{Skew}}$, and $\\mathit{SSE_{Kurtosis}}$. Cell values represent relative performance, i.e. they were computed as the $\\mathit{SSE}$ that was attained by the given weighting scheme, divided by the best $\\mathit{SSE}$ that was obtained by any weighting scheme in a given simulation run.")
+
+apa_table(
+  final_tab_sim1, 
+  escape = FALSE, 
+  caption = "Results of Simulation study 1",
+  note = note,
+  stub_indents = list("Unweighted approaches" = 1:2,
+                      "Weighted approaches" = 3:6)
+)
+
+unstd_best <- sapply(results, function(x) names(which.max(x[, 5]))) == "unweighted_std"
+
+```
+
+Table 1 illustrates how well each of the six weighting schemes fulfilled each of the four constititung criteria, averaged across the `r length(results)` simulation runs. It is shown that for the weighted approaches, the criterion that received the highest weight was fulfilled to the highest degree, as should be expected. Interestingly, the unweighted approach including standardization had the best average performance across the four criteria. While the advantage over the other weighting schemes does not seem to be remarkable, this result held across an astonishing `r sum(unstd_best)` simulation runs (`r mean(unstd_best) * 100`%). Among the competing methods, the unweighted standardization approach therefore seems preferable. It is also a strong approach because it yielded the best results with regard to maximizing the standard $\mathit{SSE}$. Hence, the unweighted standardization approach implicitly gives high precedence to minimizing differences in means. This is a pleasant result because, as discussed earlier, for the higher order moment $\mathit{SSE}$s to be valid, it has to be ensured that the group means are close to the overall mean, which is best accomplished if the standard $\mathit{SSE}$ receives high priority. 
+
+## Simulation 2: Comparing k-plus anticlustering to other objectives
+
+To thoroughly evaluate the k-plus approach to anticlustering, two specific k-plus criteria were compared to traditional anticlustering criteria in a second simulation study: (i) "standard" k-plus anticlustering, minimizing differences with regard to group means and variances (by maximizing $\mathit{SSE_{kplus}}$); (ii) "generalized" k-plus anticlustering, minimizing differences with regard to group means, variances, skewness and kurtosis (by maximizing $\mathit{SSE_{kplusGeneralized}}$ with $T = 4$). To implement the k-plus objectives, the unweighted standardization approach was employed that performed best in Simulation 1. Thus, to optimize a k-plus criterion, the original data set was augmented to incorporate the additional criteria and all variables---the original and the augmented variables---were $z$-standardized. Subsequently, the original k-means criterion $\mathit{SSE}$ was maximized on the basis of the augmented data set. The k-plus methods were compared to (i) k-means anticlustering, minimizing differences with regard to group means, (ii) diversity anticlustering, maximizing the sum of pairwise Euclidean distances within groups, (iii) a random allocation of elements to groups.
+
+### Conditions
+
+For Simulation 2, I generated 10,000 data sets following a normal distribution. The data sets were subsequently processed by the competing methods. The following properties were determined randomly for each data set: (a) the sample size $N$ varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into $K = 2$, $3$, and $4$ groups; (b) the number of features varied between 2 and 5; (c) the standard deviation of all features was set to 1, 2 or 3 (the mean was always zero); (d) the correlation between all features was $r = 0$, $r = .1$, $r = .2$, $r = .3$, $r = .4$ or $r = .5$. All anticlustering methods were applied to each of the 10,000 data sets using $K = 2$, $K = 3$ and $K = 4$ (i.e., each method was applied 30,000 times). Groups sizes were always equal. 
+
+### Evaluation criteria
 
 After the five anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness, kurtosis, and correlation between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$). Quantifying discrepancy in correlations ($\Delta \mathit{Cor}$) followed the same rule, but discrepancies in correlations had to be averaged across pairs of features instead of single features.
 
-## Results
+### Results
 
-Table 1 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means ($\Delta \mathit{M}$), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating @papenberg2020, k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed $\Delta \mathit{M}$ almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$); all three k-plus approaches strongly outperformed all other methods with regard to minimizing $\Delta \mathit{SD}$. 
+Table 1 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means ($\Delta \mathit{M}$), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating @papenberg2020, k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed $\Delta \mathit{M}$ almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$); both k-plus approaches strongly outperformed all other methods with regard to minimizing $\Delta \mathit{SD}$. 
 
 
 \begin{singlespace}
@@ -420,7 +474,7 @@ colnames(tab) <- c("",
 
 apa_table(
   tab,
-  caption = "Results of the simulation study",
+  caption = "Results of Simulation study 2",
   note = "The global results of the simulation study aggregated across all conditions. Cells contain information about the average global between-group discrepancy with regard to means, standard deviations, skewness and kurtosis. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\\times$ $K = 2$, $K = 3$ or $K = 4$).",
   escape = FALSE,
   align = c("r")
