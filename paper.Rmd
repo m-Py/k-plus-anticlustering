@@ -424,7 +424,7 @@ After the five anticlustering methods and the random allocation procedure had be
 
 ### Results
 
-Table 1 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means ($\Delta \mathit{M}$), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating @papenberg2020, k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed $\Delta \mathit{M}$ almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$); both k-plus approaches strongly outperformed all other methods with regard to minimizing $\Delta \mathit{SD}$. 
+Table 2 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means ($\Delta \mathit{M}$), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating @papenberg2020, k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed $\Delta \mathit{M}$ almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$); both k-plus approaches strongly outperformed all other methods with regard to minimizing $\Delta \mathit{SD}$. 
 
 
 \begin{singlespace}
@@ -528,7 +528,7 @@ Generally, it should be noted that diversity anticlustering is a good all-rounde
 
 # Applying k-plus anticlustering using the R package anticlust 
 
-This section demonstrates how readers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020] using the function `kplus_anticlustering()`, which is available from version 0.6.3 onward. The package can be installed in the R environment using the `install.packages()` command:
+This section demonstrates how readers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020] using the function `kplus_anticlustering()`, which implements the unweighted sum approach for k-plus anticlustering. The package can be installed in the R environment using the `install.packages()` command:
 
 ```R
 install.packages("anticlust")
@@ -555,7 +555,7 @@ kplus_anticlustering(
 
 The function call takes about 10 seconds on a contemporary personal computer. The function `kplus_anticlustering()` has three boolean arguments to specify whether variance, skewness and kurtosis should be included as part of the k-plus criterion. Only the argument `variance` is set to `TRUE` by default---corresponding to the understanding that k-plus is an extension to k-means that at least equalizes variances in addition to means. The arguments corresponding to skewness and kurtosis have to be specifically "turned on", i.e., by setting them to `TRUE` in the function call of `kplus_anticlustering()`. If other higher order moments should be included as part of the optimization, the optional argument `moments` can be used to specify the desired moments as an integer vector. The argument `method = "local-maximum"` ensures that the k-plus criterion is optimized using the local maximum search method described in the previous section. The argument `K` describes the number of groups. By default, the function ensures that all features are standardized before the optimization starts; in particular, this option enforces that all k-plus criteria receive the same weight during the optimization process. This behaviour can be adjusted using the boolean argument `standardize`.
 
-Table 2 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 2 also contains the results after applying k-means anticlustering and diversity anticlustering. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations, and the skewness was also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---diversity anticlustering does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity.
+Table 3 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 3 also contains the results after applying k-means anticlustering and diversity anticlustering. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations, and the skewness was also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---diversity anticlustering does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity.
 
 ```{r}
 
@@ -667,7 +667,7 @@ apa_table(
 )
 ```
 
-Table 3 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for between-group similarity regardless of group size. Unequal group sizes can be requested by passing the different group sizes to the argument `K`. The following code was used to equalize means and variances between four groups using the k-plus approach:
+Table 4 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for between-group similarity regardless of group size. Unequal group sizes can be requested by passing the different group sizes to the argument `K`. The following code was used to equalize means and variances between four groups using the k-plus approach:
 
 ```R
 kplus_anticlustering(
@@ -746,7 +746,7 @@ The simulation study indicated that k-plus may show decreased performance for sm
 data(schaper2019)
 ```
 
-Table 4 illustrates the results that are obtained when using standard[^standardkplus] k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are similar enough for any practical purposes.
+Table 5 illustrates the results that are obtained when using standard[^standardkplus] k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are similar enough for any practical purposes.
 
 [^standardkplus]: I refer to *standard* k-plus anticlustering as the minimization of differences in means and variances, but not in higher order moments. 
 
