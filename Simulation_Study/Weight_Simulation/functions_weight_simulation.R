@@ -36,7 +36,7 @@ kplus_kurtosis_preferred <- function(features, clusters) {
 
 clusters_for_all_methods <- function(data, K) {
   all_results <- list()
-  repetitions <- 1
+  repetitions <- 5
   method <- "local-maximum"
   # antiweighted k-plus anticlustering really is just k-means anticlusteriung
   all_results[["unweighted_unstd"]] <- anticlustering(
@@ -105,4 +105,3 @@ weight_sim <- function(dat, K) {
   results <- t(t(objective_results) / apply(objective_results, 2, max))
   results 
 }
-

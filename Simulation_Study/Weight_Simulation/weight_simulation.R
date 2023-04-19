@@ -3,7 +3,9 @@
 
 source("./Simulation_Study/Weight_Simulation/functions_weight_simulation.R")
 
-nsim <- 30
+set.seed(6758) # random.org gave me this one 
+
+nsim <- 100
 results <- list()
 start <- Sys.time()
 for (i in 1:nsim) {
