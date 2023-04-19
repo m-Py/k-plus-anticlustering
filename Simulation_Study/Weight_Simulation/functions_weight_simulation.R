@@ -7,12 +7,12 @@ moment_features <- function(data, moment = 2) {
 
 kplus_objective_weighted <- function(features, clusters, moments, weights) {
   objectives <- rep(NA, length(moments))
-  for (i in moments) {
-    if (i == 1) {
-      objectives[i] <- variance_objective(features, clusters)
+  for (t in moments) {
+    if (t == 1) {
+      objectives[t] <- variance_objective(features, clusters)
     } else {
-      moment_variables <- moment_features(features, moments[i])
-      objectives[i] <- variance_objective(moment_variables, clusters)
+      moment_variables <- moment_features(features, moments[t])
+      objectives[t] <- variance_objective(moment_variables, clusters)
     }
   }
   sum(objectives * weights)
