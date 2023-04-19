@@ -109,7 +109,7 @@ $$
   (x_{ij} - \overline{x}_j ^{(k)})^2
 $$
 
-The *k*'th centroid $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ is a vector of length $P$, where each entry is the mean value of one of the $P$ attributes, computed across all observations belonging to the $k$'th cluster $C_k$ ($k = 1, \ldots, K$):
+The *k*'th centroid $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ is a vector of length $P$, where each entry is the mean value of one of the $P$ attributes, computed across all $n_k$ observations belonging to the $k$'th cluster $C_k$ ($k = 1, \ldots, K$):
 
 $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
