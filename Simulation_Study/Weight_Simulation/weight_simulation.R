@@ -8,7 +8,7 @@ results <- list()
 start <- Sys.time()
 for (i in 1:nsim) {
   K <- sample(2:4, size = 1)
-  N <- sample((10:100)[10:100 %% K == 0], size = 1)
+  N <- sample((20:100)[20:100 %% K == 0], size = 1)
   M <- sample(1:5, size = 1)
   message("Starting to work on N = ", N, ", K = ", K, ", M = ", M, ".")
   dat <- matrix(rnorm(N * M), ncol = M)
