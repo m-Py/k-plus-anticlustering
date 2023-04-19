@@ -115,10 +115,10 @@ $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Note that there is a direct connection between the $\mathit{SSE}$ and the location of the cluster centroids [@spath1986]. If the $\mathit{SSE}$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_p$ is the overall mean value on the $p$th attribute:
+Note that there is a direct connection between the $\mathit{SSE}$ and the location of the cluster centroids [@spath1986]. If the $\mathit{SSE}$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_j$ ($j = 1, \ldots, P$) is the overall mean value on the $j$th attribute:
 
 $$
-\overline{\mathbf{x}}_p = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ip}
+\overline{\mathbf{x}}_j = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ij}
 $$
 
 If the $\mathit{SSE}$ is maximal---which is the goal of k-means *anticlustering*---, the cluster centroids are as close as possible to the overall centroid $\overline{\mathbf{x}}$ and therefore to each other [@spath1986]. Thus, k-means anticlustering directly optimizes the similarity of the mean attribute values between clusters.
@@ -153,11 +153,11 @@ $$
   (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
 
-Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points. Maximizing $\mathit{SSE_{Var}}$ can be used to create groups that have similar variances across the $P$ attributes. As a caveat, it is crucial to note that maximizing $\mathit{SSE_{Var}}$ only reliably yields similar group variances if the group centroids $\overline{\mathbf{x}}^{(k)}$, ($k = 1, \dots, K$) are close to the overall data centroid $\overline{\mathbf{x}}$. To reiterate, this condition has to be met for the original data $\mathbf{X}_{N \times P}$. Thus, only considering $\mathbf{Y}_{N \times P}$ in order to minimize discrepancies in variance may not yield satisfying results; instead, it has to be ensured that the group means of the original data are also similar between groups. Fortunately, minimizing discrepancy with regard to group means can be accomplished by standard k-means anticlustering, i.e., the maximization of $\mathit{SSE}$. Combining the maximization of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ at the same time leads to the k-plus approach for anticlustering, which is detailed in the next section. 
+Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$. However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points. Maximizing $\mathit{SSE_{Var}}$ can be used to create groups that have similar variances across the $P$ attributes. As a caveat, it is crucial to note that maximizing $\mathit{SSE_{Var}}$ only reliably yields similar group variances if the group centroids $\overline{\mathbf{x}}^{(k)}$ ($k = 1, \dots, K$) are close to the overall data centroid $\overline{\mathbf{x}}$. To reiterate, this condition has to be met for the original data $\mathbf{X}_{N \times P}$. Thus, only considering $\mathbf{Y}_{N \times P}$ in order to minimize discrepancies in variance may not yield satisfying results; instead, it has to be ensured that the group means of the original data are also similar between groups. Fortunately, minimizing discrepancy with regard to group means can be accomplished by standard k-means anticlustering, i.e., the maximization of $\mathit{SSE}$. Combining the maximization of $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ at the same time leads to the k-plus approach for anticlustering, which is detailed in the next section. 
 
 ## A multicriterion optimization model: K-plus anticlustering {#kplus}
 
-As discussed in the previous section, an exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is not feasible without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). Moreover, maximizing only $\mathit{SSE_{Var}}$ is most likely not interesting in any real application. Hence, when striving for similarity in group variances by maximizing $\mathit{SSE_{Var}}$, it is at the same time necessary and worthwhile to strive for similarity in means, and thus to maximize $\mathit{SSE}$ at the same time. The most simple approach for a multicriterion optimization is the weighted sum approach [@naidu2014; @marler2010]. That is, all criteria are computed independently from each other and are then combined into a single criterion through a weighted sum; a suitable optimization algorithm is then used to maximize the combined criterion. By combining $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ in a single criterion, we define the objective function for k-plus anticlustering: 
+An exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is not feasible---and most likely not interesting on its own---without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). Hence, when striving for similarity in group variances by maximizing $\mathit{SSE_{Var}}$, it is at the same time necessary and worthwhile to strive for similarity in means, and thus to maximize $\mathit{SSE}$ at the same time. The most simple approach for an optimization that considers multiple criteria at the same time is the weighted sum approach [@naidu2014; @marler2010]. That is, all criteria are computed independently from each other and are then combined into a single criterion through a weighted sum; a suitable optimization algorithm is then used to maximize the combined criterion. By combining $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ in a single criterion, we define the objective function for k-plus anticlustering: 
 
 $$
 \mathit{SSE_{kplus}} = 
@@ -296,7 +296,7 @@ $$
 \end{cases}
 $$
 
-This computation results in a three dimensional tensor $\mathbf{\hat{X}}_{T \times N \times P}$ = $\{\hat{x}_{tij}\}_{T \times N \times P}$ where---in comparison to the original data matrix $\mathbf{X}_{N \times P}$---the additional dimension is given by the $T$ distribution moments that are considered in the anticlustering process. When defining $\hat{x}_{tij}$, the condition $t = 1$ is separately included to keep the unchanged original data as first entry in the "moment dimension" in $\mathbf{\hat{X}}_{T \times N \times P}$, which is used to equalize the mean---the first moment---between groups. 
+This computation results in a three dimensional tensor $\mathbf{\hat{X}}_{T \times N \times P}$ = $\{\hat{x}_{tij}\}_{T \times N \times P}$ where---in comparison to the original data matrix $\mathbf{X}_{N \times P}$---the additional dimension is given by the $T$ distribution moments that are considered in the anticlustering process. When defining $\hat{x}_{tij}$, the condition $t = 1$ is separately included to keep the unchanged original data as first entry in the "moment dimension" in $\mathbf{\hat{X}}_{T \times N \times P}$. It is used to equalize the mean---the first moment---between groups. 
 
 Using the tensor  $\mathbf{\hat{X}}_{T \times N \times P}$ and a vector of weights $\mathbf{w} = (w_1, \dots, w_T$), the generalized multicriterion for k-plus anticlustering $\mathit{SSE_{kplusGeneralized}}$ can be formalized:
 
@@ -315,10 +315,10 @@ Here, $w_t$ is the weight associated with the $t$'th moment and $\overline{x}_{t
 
 ## The unweighted sum approach for k-plus anticlustering
 
-Some simplifications in the computation of $\mathit{SSE_{kplusGeneralized}}$ can be arranged when ignoring the moment weights $\mathbf{w}$, e.g. by setting $w_t = 1$ ($t = 1, \dots, T$). This simplification leads to the *unweighted sum approach* for k-plus anticlustering. In this case, the additional dimension in $\mathbf{\hat{X}}_{T \times N \times P}$, representing distribution moments can be dropped; instead, the tensor is flattened into a two dimensional matrix, where the variables representing the additional distribution moments are appended to the original data matrix $\mathbf{X}_{N \times P}$, resulting in the augmented matrix $\mathbf{\hat{X}'}_{N \times \mathit{TP}}$:
+Some simplifications in the computation of $\mathit{SSE_{kplusGeneralized}}$ can be arranged when ignoring the moment weights $\mathbf{w}$, e.g. by setting $w_t = 1$ ($t = 1, \dots, T$). This simplification leads to the *unweighted sum approach* for k-plus anticlustering. In this case, the additional dimension in $\mathbf{\hat{X}}_{T \times N \times P}$, representing distribution moments can be dropped; instead, the tensor is flattened into a two dimensional matrix, where the variables representing the additional distribution moments are appended to the original data matrix $\mathbf{X}_{N \times P}$, resulting in the augmented matrix $\mathbf{X'}_{N \times \mathit{TP}}$:
 
 $$
-  \mathbf{\hat{X}'}_{N \times \mathit{TP}} =
+  \mathbf{X'}_{N \times \mathit{TP}} =
   \left[ {\begin{array}{ccc|ccc|c|ccc}
     x_{11} & \cdots & x_{1P} & 
         (x_{11} - \overline{\mathbf{x}}_1)^2 & \cdots & (x_{1P} - \overline{\mathbf{x}}_P)^2 & 
@@ -336,19 +336,19 @@ $$
   \end{array} } \right]
 $$
 
-When defining the row vectors of $\mathbf{\hat{X}'}_{N \times \mathit{TP}}$ with the notation $\hat{x}'_{i.} = (\hat{x}'_{i1}, \ldots, \hat{x}'_{i(TP)})$ for each $i = 1, \ldots, N$, the generalized criterion $\mathit{SSE_{kplusGeneralized}}$ can be computed as
+When defining the row vectors of $\mathbf{X'}_{N \times \mathit{TP}}$ with the notation $x'_{i.} = (x'_{i1}, \ldots, x'_{i(TP)})$ for each $i = 1, \ldots, N$, the criterion $\mathit{SSE_{kplusGeneralized}}$ can be computed as
 
 $$
 \mathit{SSE_{kplusGeneralized}} =
   \sum\limits_{j=1}^{\mathit{TP}}
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
-  (\hat{x}'_{ij} - \overline{\hat{x}'}_j ^{(k)})^2.
+  (x'_{ij} - \overline{x'}_j ^{(k)})^2.
 $$
 
-Thus, when setting all the weights for all moments to 1, the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$ again has the same form as the standard k-means criterion $\mathit{SSE}$, but it is computed on different data. Here, computing the k-plus criterion is done by first creating the additional $t$-moment variables, appending them as new columns to the original data matrix, and then computing $\mathit{SSE}$ on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged.
+Thus, when setting the weights for all moments to 1, the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$ again has the same form as the standard k-means criterion $\mathit{SSE}$, but it is computed on different data. Computing the k-plus criterion is then done by first creating the additional $t$-moment variables, appending them as new columns to the original data matrix, and computing $\mathit{SSE}$ on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged.
 
-Note that a problem may arise if the weights $\mathbf{w}$ are ignored when computing $\mathit{SSE_{kplusGeneralized}}$. Because the computation of the new $t$-moment variables involves exponentiation, their range of values is expected to be very different from the raw values $x_{ij}$ (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of the different moments when computing $\mathit{SSE_{kplusGeneralized}}$. To ensure an equal weight of all criteria, all attributes---i.e., the original data as well as the new $t$-moment variables---can be standardized before computing $\mathit{SSE_{kplusGeneralized}}$, e.g. via $z$-standardization. This approach will henceforth be referred to as the unweighted standardization approach for k-plus anticlustering.
+Note that a problem may arise if the weights $\mathbf{w}$ are ignored when computing $\mathit{SSE_{kplusGeneralized}}$. Because the computation of the new $t$-moment variables involves exponentiation, their range of values is expected to be very different from the raw values $x_{ij}$ (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of the different moments when computing $\mathit{SSE_{kplusGeneralized}}$. To ensure a comparable weight of all criteria, all attributes---i.e., the original data as well as the new $t$-moment variables---can be standardized before computing $\mathit{SSE_{kplusGeneralized}}$, e.g. via $z$-standardization. This approach will henceforth be referred to as the unweighted standardization approach for k-plus anticlustering.
 
 # Evaluation
 
@@ -371,7 +371,7 @@ for (file in files) {
 
 ```
 
-In general, the weighting scheme for k-plus anticlustering can become highly complex as it might encompass an arbitrary number of distribution moments, and hence, an arbitrary number of weights. While an exhaustive evaluation of the influence of weights is beyond the scope of the current paper, a small scale simulation study was conducted to investigate the influence of weights for a selected number of moments. The target was the optimization of $\mathit{SSE_{kplusGeneralized}}$ with $T = 4$, i.e. minizimizing differences with regard to means, variances, skew and kurtosis. Two unweighted approaches (using standardization vs. not using standardization) were implemented with $\mathbf{w} = (1, 1, 1, 1)$. The unweighted standardization approach implemented a $z$-standardization of all columns---the original as well as the augmented variables---of $\mathbf{\hat{X}'}_{N \times \mathit{TP}}$ before the criterion $\mathit{SSE_{kplusGeneralized}}$ was optimized. In the other case, the unstandardized matrix $\mathbf{\hat{X}'}_{N \times \mathit{TP}}$ was used. The four weighted approaches were implemented by giving a tenfold increased weight to only one of the four moments. That is, to compute $\mathit{SSE_{kplusGeneralized}}$ favoring similarity in means during the optimization process, I set $\mathbf{w} = (10, 1, 1, 1)$; the weights favoring similarity in variances, skewness and kurtosis, were defined as $\mathbf{w} = (1, 10, 1, 1)$, $\mathbf{w} = (1, 1, 10, 1)$, and $\mathbf{w} = (1, 1, 1, 10)$, repectively. The weighted approaches did not use standardization of the input data.
+In general, the weighting scheme for k-plus anticlustering can become highly complex as it might encompass an arbitrary number of distribution moments, and hence, an arbitrary number of weights. While an exhaustive evaluation of the influence of weights is beyond the scope of the current paper, a small scale simulation study was conducted to investigate the influence of weights for a selected number of moments. The target was the optimization of $\mathit{SSE_{kplusGeneralized}}$ with $T = 4$, i.e. minimizing differences with regard to means, variances, skew and kurtosis. Two unweighted approaches were implemented by defining $\mathbf{w} = (1, 1, 1, 1)$. The unweighted standardization approach implemented a $z$-standardization of all columns---the original as well as the augmented variables---of the input data $\mathbf{X'}_{N \times \mathit{TP}}$ before the criterion $\mathit{SSE_{kplusGeneralized}}$ was optimized. In the second case, the unstandardized matrix $\mathbf{X'}_{N \times \mathit{TP}}$ was used. Four weighted approaches were implemented by giving a tenfold increased weight to one of the four moments, respectively. That is, to compute $\mathit{SSE_{kplusGeneralized}}$ favoring similarity in means during the optimization process, I set $\mathbf{w} = (10, 1, 1, 1)$; the weights favoring similarity in variances, skewness and kurtosis, were defined as $\mathbf{w} = (1, 10, 1, 1)$, $\mathbf{w} = (1, 1, 10, 1)$, and $\mathbf{w} = (1, 1, 1, 10)$, repectively. The weighted approaches did not use a standardization of the input data.
 
 To compare the different weighting schemes, `r length(results)` data sets from were generated from a normal distribution ($M = 0$, $\mathit{SD} = 1$). The number of variables $P$ was determined randomly for each data set and varied between 1 and 5; the number of anticlusters $K$ was also determined randomly for each data set and varied between 2 and 4; the sample size $N$ randomly varied between 20 and 100 with the restriction that $N$ had to be divisible by $K$. For each data set, $\mathit{SSE_{kplusGeneralized}}$ was optimized using the local maximum algorithm, once for each of the six competing weighting schemes. 
 
@@ -406,9 +406,12 @@ apa_table(
 
 unstd_best <- sapply(results, function(x) names(which.max(x[, 5]))) == "unweighted_std"
 
+# significance test
+sig_test <- prop.test(x = sum(unstd_best), n = length(unstd_best), p = 1/6)
+
 ```
 
-Table 1 illustrates how well each of the six weighting schemes fulfilled each of the four constititung criteria, averaged across the `r length(results)` simulation runs. It is shown that for the weighted approaches, the criterion that received the highest weight was fulfilled to the highest degree, as should be expected. Interestingly, the unweighted approach including standardization had the best average performance across the four criteria. While the advantage over the other weighting schemes does not seem to be remarkable, this pattern was observed in an astonishing `r sum(unstd_best)` of all `r length(results)` simulation runs (`r mean(unstd_best) * 100`%). Among the competing weighting schemes, the unweighted standardization approach therefore seems preferable. It also yielded the best results with regard to maximizing the standard $\mathit{SSE}$. The unweighted standardization approach seemed to implicitly give high priority to minimizing differences in means. This is a pleasant result because, as discussed earlier, for the higher order moment $\mathit{SSE}$s to be valid, the group means have to be close to the overall mean, which is best accomplished if the standard $\mathit{SSE}$ has high priority. 
+Table 1 illustrates how well each of the six weighting schemes fulfilled each of the four constititung criteria, averaged across the `r length(results)` simulation runs. It is shown that for the weighted approaches, the criterion that received the highest weight was fulfilled to the highest degree, as should be expected. Interestingly, the unweighted standardization approach had the best average performance across the four criteria. While the degree of advantage over the other weighting schemes by itself does not seem to be remarkable, this pattern was observed in an astonishing `r mean(unstd_best) * 100`% of all simulation runs (the level of chance would have been `r 1/6 * 100`%, `r format_p(sig_test$p.value)`). Among the competing weighting schemes, the unweighted standardization approach therefore yielded the most promising results. It also yielded satisfying results with regard to maximizing the standard $\mathit{SSE}$, comparable to the weighting scheme explicitly favoring $\mathit{SSE}$ (**TODO**: CHECK IF THESE RESULTS HOLD WHEN ALL DATA IS IN!). Hence, the unweighted standardization approach seemed to implicitly give high priority to minimizing differences in means. This is a pleasant result because, as discussed earlier, for the higher order moment $\mathit{SSE}$s to be valid, the group means have to be close to the overall mean, which is best accomplished if the standard $\mathit{SSE}$ has high priority. 
 
 ## Simulation 2: Comparing k-plus anticlustering to other objectives
 
@@ -420,7 +423,7 @@ For Simulation 2, I generated 10,000 data sets following a normal distribution. 
 
 ### Evaluation criteria
 
-After the five anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness, kurtosis, and correlation between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$). Quantifying discrepancy in correlations ($\Delta \mathit{Cor}$) followed the same rule, but discrepancies in correlations had to be averaged across pairs of features instead of single features.
+After the five anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness and kurtosis between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$).
 
 ### Results
 
@@ -457,6 +460,8 @@ ldf <- pivot_longer(
 )
 
 ldf <- ldf[ldf$method != "k-plus-correlation", ] # removed because this deserves closer attention than what was given in the paper; check out the first version of the preprint for the previous results
+
+ldf$method[ldf$method == "k-plus-skew-kurtosis"] <- "k-plus generalized"
 
 ## Global results, aggregated across all simulation variables
 tab <- ldf %>% 
