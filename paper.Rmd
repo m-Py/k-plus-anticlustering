@@ -306,11 +306,18 @@ $$
   \sum\limits_{j=1}^{P} 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
-  (x_{tij} - \overline{x}_{tj} ^{(k)})^2
+  (\hat{x}_{tij} - \overline{x}_{tj} ^{(k)})^2
   \right)
 $$
 
-Here, $w_t$ is the weight associated with the $t$'th moment and $\overline{x}_{tj} ^{(k)}$ is the $k$'th group mean on the $j$'th $t$-moment variable. Maximizing $\mathit{SSE_{kplusGeneralized}}$ can be used to minimize differences with regard to the first $T$ distribution moments between $K$ groups. 
+Here, $w_t$ is the weight associated with the $t$'th moment and $\overline{\mathbf{X}}^{(k)}_{T \times P} = \{\overline{x}_{tj}^{(k)}\}_{T \times P}$ is a centroid matrix containing the mean values for all $t$-moment variables in the $k$'th group, i.e.
+
+$$
+\overline{x}_{tj}^{(k)} = \frac{1}{n_k} \sum_{i \in C_k} \hat{x}_{tij}
+$$
+
+
+Maximizing $\mathit{SSE_{kplusGeneralized}}$ can be used to minimize differences with regard to the first $T$ distribution moments between $K$ groups.
 
 ## The unweighted sum approach for k-plus anticlustering
 
