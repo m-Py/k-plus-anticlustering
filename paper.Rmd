@@ -397,7 +397,7 @@ note <- paste0("Cells indicate how well the maximization $\\mathit{SSE_{kplusGen
 apa_table(
   final_tab_sim1, 
   escape = FALSE, 
-  caption = "Relative performance of the competing weighting schemes in Simulation 1.",
+  caption = "Average relative performance of the competing weighting schemes in Simulation 1.",
   note = note,
   stub_indents = list("Unweighted approaches" = 1:2,
                       "Weighted approaches" = 3:6)
@@ -410,7 +410,7 @@ sig_test <- prop.test(x = sum(unstd_best), n = length(unstd_best), p = 1/6)
 
 ```
 
-Table 1 illustrates how well each of the six weighting schemes fulfilled each of the four constituting criteria, averaged across the `r length(results)` simulation runs. For the weighted approaches, the criterion that received the highest weight during the optimization was fulfilled to the highest degree, as should be expected. Interestingly, the unweighted standardization approach had the best average performance across the four criteria. While the degree of advantage over the other weighting schemes by itself does not seem to be remarkable, this pattern was observed in an astonishing `r mean(unstd_best) * 100`% of all simulation runs, while the level of chance would have been `r 1/6 * 100`% (`r format_p(sig_test$p.value)`). Among the competing weighting schemes, the unweighted standardization approach therefore yielded the most promising results. It also yielded satisfying results with regard to maximizing the standard $\mathit{SSE}$, comparable to the weighting scheme explicitly favoring $\mathit{SSE}$. Hence, the unweighted standardization approach seemed to implicitly give high priority to minimizing differences in means. This is a pleasant result because, as discussed earlier, for the higher order moment $\mathit{SSE}$s to be valid, the group means have to be close to the overall mean, which is best accomplished if the standard $\mathit{SSE}$ has high priority. 
+Table 1 illustrates how well each of the six weighting schemes fulfilled each of the four constituting criteria, averaged across the `r length(results)` simulation runs. For the weighted approaches, the criterion that received the highest weight during the optimization was fulfilled to the highest degree, as should be expected. Interestingly, the unweighted standardization approach had the best average performance across the four criteria. While the degree of advantage by itself does not seem to be remarkable, this pattern was observed in an astonishing `r mean(unstd_best) * 100`% of all simulation runs, while the level of chance would have been `r 1/6 * 100`% (`r format_p(sig_test$p.value)`). Among the competing weighting schemes, the unweighted standardization approach therefore yielded the most promising results. It also yielded satisfying results with regard to maximizing the standard $\mathit{SSE}$, even slightly outperforming the weighting scheme that explicitly favored $\mathit{SSE}$. Hence, the unweighted standardization approach seemed to implicitly give high priority to minimizing differences in means. This is a pleasant result because, as discussed earlier, for the higher order moment $\mathit{SSE}$s to be valid, the group means have to be close to the overall mean, which is best accomplished if the standard $\mathit{SSE}$ has high priority. 
 
 ## Simulation 2: Comparing k-plus anticlustering to other objectives
 
