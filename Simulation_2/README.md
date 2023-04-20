@@ -6,7 +6,7 @@
 
 ---
 
-This directory contains code and data to reproduce and analyze the simulation study reported in: 
+This directory contains code and data to reproduce and analyze the Simulation 2 reported in: 
 
 "k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity" (Papenberg, 2023).
 
