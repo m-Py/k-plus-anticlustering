@@ -38,7 +38,7 @@ clusters_for_all_methods <- function(data, K) {
   all_results <- list()
   repetitions <- 5
   method <- "local-maximum"
-  # antiweighted k-plus anticlustering really is just k-means anticlusteriung
+  # unweighted k-plus anticlustering really is just k-means anticlustering
   all_results[["unweighted_unstd"]] <- anticlustering(
     cbind(data, moment_features(data, 2), moment_features(data, 3), moment_features(data, 4)),
     K = K,
