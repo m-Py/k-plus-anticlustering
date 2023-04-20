@@ -1,7 +1,7 @@
 
 
 
-source("./Simulation_Study/Weight_Simulation/functions_weight_simulation.R")
+source("0_functions_weight_simulation.R")
 
 set.seed(6758) # random.org gave me this one 
 
@@ -20,4 +20,4 @@ for (i in 1:nsim) {
 }
 print(Sys.time() - start)
 
-save(results, file = paste0("./Simulation_Study/Weight_Simulation/Results Sim 1 ", date(), ".Rdata"))
+save(results, file = paste0("Results Sim 1 ", date(), ".Rdata"))
