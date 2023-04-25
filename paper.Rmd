@@ -153,7 +153,7 @@ Note that $\mathit{SSE_{Var}}$ has the same form as the standard $\mathit{SSE}$.
 
 ## A multicriterion optimization model: K-plus anticlustering {#kplus}
 
-An exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is not feasible---and most likely not interesting on its own---without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). Hence, when striving for similarity in group variances by maximizing $\mathit{SSE_{Var}}$, it is at the same time necessary and worthwhile to strive for similarity in means, and thus to maximize $\mathit{SSE}$ at the same time. The most simple approach for an optimization that considers multiple criteria at the same time is the weighted sum approach [@naidu2014; @marler2010]. That is, all criteria are computed independently from each other and are then combined into a single criterion through a weighted sum; a suitable optimization algorithm is then used to maximize the combined criterion. By combining $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ in a single criterion, we define the objective function for k-plus anticlustering: 
+An exclusive maximization of $\mathit{SSE_{Var}}$ (i.e., equalizing variances) is not feasible---and most likely not interesting on its own---without also considering the standard $\mathit{SSE}$ (i.e., equalizing means). The most simple approach for an optimization that considers multiple criteria at the same time is the weighted sum approach [@naidu2014; @marler2010]. That is, all criteria are computed independently from each other and are then combined into a single criterion through a weighted sum; a suitable optimization algorithm is then used to maximize the combined criterion. By combining $\mathit{SSE_{Var}}$ and $\mathit{SSE}$ in a single criterion, we define the objective function for k-plus anticlustering:
 
 $$
 \mathit{SSE_{kplus}} = 
@@ -279,7 +279,7 @@ $$
 \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^t.
 $$
 
-where $t = 2$ gives the variance, $t = 3$ the skewness, and $t = 4$ the kurtosis [@joanes1998]. Thus, by changing $t$---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. That is, we compute new variables for each original variable and for each distribution moment that should be considered in the anticlustering process. Analogously to the computation of $\mathit{SSE_{Var}}$, we could then define an $\mathit{SSE_{Skew}}$ using $t = 3$ or an $\mathit{SSE_{Kurtosis}}$ using $t = 4$. However, to formalize the computation of the k-plus criterion for an arbitrary number of distribution moments, some new notation has to be provided. 
+where $t = 2$ gives the variance, $t = 3$ the skewness, and $t = 4$ the kurtosis [@joanes1998]. Thus, by changing $t$---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. That is, we compute new variables for each original variable and for each distribution moment that should be considered in the anticlustering process. Analogously to the computation of $\mathit{SSE_{Var}}$, we could then define an $\mathit{SSE_{Skew}}$ using $t = 3$ or an $\mathit{SSE_{Kurtosis}}$ using $t = 4$. However, to formalize the computation of the k-plus criterion for an arbitrary number of distribution moments, some new notation has to be provided.
 
 We define the $j$'th column ($j = 1, \ldots, P$) of the original data matrix $\mathbf{X}_{N \times P}$ as $x_{.j} =  (x_{1j}, \ldots, x_{Nj})$ where the column mean is $\overline{\mathbf{x}}_j$. Let $T$ be the number of distribution moments that should be equalized between $K$ groups. For each moment $t$ ($t = 1, \ldots, T$) and for each variable $x_{.j}$, a new *t-moment variable* $\hat{x}_{t.j} = (\hat{x}_{t1j}, \ldots, \hat{x}_{tNj})$ is defined where
 
@@ -396,7 +396,7 @@ colnames(final_tab_sim1) <- c(
   "$\\mathit{SSE_{Kurtosis}}$",
   "Average"
 )
-note <- paste0("Cells indicate how well the maximization $\\mathit{SSE_{kplusGeneralized}}$ fulfilled each of the four constituting criteria $\\mathit{SSE}$, $\\mathit{SSE_{Var}}$, $\\mathit{SSE_{Skew}}$, and $\\mathit{SSE_{Kurtosis}}$, depending on the weighting scheme. For each simulation run, the relative performance was computed as the $\\mathit{SSE}$ that was obtained by the given weighting scheme, divided by the best $\\mathit{SSE}$ that was obtained by any weighting scheme in this simulation run. Cell values represent the average relative performance across all ", length(results), " simulation runs.")
+note <- paste0("Cells indicate how well the maximization of $\\mathit{SSE_{kplusGeneralized}}$ fulfilled each of the four constituting criteria $\\mathit{SSE}$, $\\mathit{SSE_{Var}}$, $\\mathit{SSE_{Skew}}$, and $\\mathit{SSE_{Kurtosis}}$, depending on the weighting scheme. For each simulation run, the relative performance was computed as the $\\mathit{SSE}$ that was obtained by the given weighting scheme, divided by the best $\\mathit{SSE}$ that was obtained by any weighting scheme in this simulation run. Cell values represent the average relative performance across all ", length(results), " simulation runs.")
 
 apa_table(
   final_tab_sim1, 
@@ -536,11 +536,13 @@ Generally, it should be noted that diversity anticlustering is a good all-rounde
 
 # Applying k-plus anticlustering using the R package anticlust 
 
-This section demonstrates how readers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020] using the function `kplus_anticlustering()`, which implements the unweighted sum approach for k-plus anticlustering. The package can be installed in the R environment using the `install.packages()` command:
+This section demonstrates how readers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020]. The package can be installed in the R environment using the `install.packages()` command.
 
 ```R
 install.packages("anticlust")
 ```
+
+The function `kplus_anticlustering()` available in `anticlust` implements the unweighted sum approach for k-plus anticlustering.
 
 ## Example Application I
 
