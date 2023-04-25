@@ -369,10 +369,11 @@ In both simulation studies, the same local maximum search was applied to optimiz
 ## Simulation 1: Selecting weights for k-plus anticlustering
 
 ```{r getresultsSim1}
-files <- list.files("./Simulation_Study/Weight_Simulation", pattern = ".Rdata")
+dir <- "./Simulation_1/"
+files <- list.files(dir, pattern = ".Rdata")
 results <- list()
 for (file in files) {
-  results <- c(results, get(load(paste0("Simulation_Study/Weight_Simulation/", file))))
+  results <- c(results, get(load(paste0(dir, file))))
 }
 
 ```
@@ -448,7 +449,7 @@ library(tidyr)
 ## Analyze data for K = 2 and K = 3 and K = 4
 simulation_results <- list()
 for (K in 2:4) {
-  filename <- paste0("./Simulation_Study/results-K", K, "-objectives-raw.csv")
+  filename <- paste0("./Simulation_2/results-K", K, "-objectives-raw.csv")
   df <- read.csv(filename, sep = ";", stringsAsFactors = FALSE)
   df$K <- K
   simulation_results[[paste0("K-", K)]] <- df
