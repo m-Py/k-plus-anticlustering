@@ -131,11 +131,7 @@ $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
 $$
 
-When defining a new variable $y = (y_1, \ldots, y_N)$ as the squared deviation of each observation from the mean $\overline{\mathbf{x}}$, the sample variance of $x$ can be reformulated as the mean of $y$:
-
-$$
-y_i = (x_i - \overline{\mathbf{x}})^2
-$$
+When defining a new variable $y = (y_1, \ldots, y_N)$ as the squared deviation of each observation from the mean $\overline{\mathbf{x}}$, i.e. $y_i = (x_i - \overline{\mathbf{x}})^2$, the sample variance of $x$ can be reformulated as the mean of $y$:
 
 $$
 \mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} y_i
