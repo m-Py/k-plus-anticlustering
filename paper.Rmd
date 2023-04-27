@@ -228,6 +228,23 @@ if (!file.exists(path)) {
   write.table(
     df, path, row.names = FALSE, sep = ","
   )
+  
+  # investigate the best 1% of k-means anticlustering partitions, for discussion
+  best_1percent_anticlusterings <- df$kmeans /max(df$kmeans) > .99
+  best_partitions <- partitions[best_1percent_anticlusterings]
+  
+  neighbor_matrix <- anticlust:::selection_matrix_from_clusters
+  neighbourhoods <- lapply(best_partitions, neighbor_matrix)
+  neighbourhoods <- lapply(neighbourhoods, function(x) as.integer(x[lower.tri(x)]))
+  pairs <- Reduce("+", neighbourhoods)
+  # length(pairs)
+  # length(neighbourhoods[[1]])
+  # choose(14, 2)
+  # min(pairs) # 131
+  # max(pairs) # 292
+  # length(best_partitions) # 453
+  # -> all items are grouped with one another, and no items are always grouped with one another
+  
 } else {
   df <- read.csv(path)
 }
@@ -802,6 +819,16 @@ The present paper focused on the new k-plus criterion for anticlustering, but on
 As an additional outlook, it should be noted that because the covariance is defined as an expected value, the k-plus logic can be extended to minimize differences with regard to covariances, a possibility that was not investigated in the current paper. In this case, an additional variable has to be computed for each pair of variables $x = (x_1, \dots, x_N)$ and $y = (y_1, \dots, y_N)$, computed as $(x_i - \overline{\mathbf{x}}) (y_i -\overline{\mathbf{y}})$. Future research should examine how the k-plus approach can be adapted to including covariances. The unweighted standardization approach presented here may serve as a starting point for investigation.
 
 [^clusterediting]: In their study, they used the term anticluster editing to refer to the maximization of the diversity criterion. This is because the diversity criterion is minimized as part of the cluster editing method [@shamir2004vf].
+
+## Closing remarks on the nature of anticlustering
+
+```{r}
+df <- read.csv("partition_objectives.csv")
+```
+
+Traditionally, anticlustering is implemented by reversing an objective function used in classical cluster analysis. Whereas cluster analysis seeks homogeneity within groups and separation between groups, this reversal leads to heterogeneity within groups and similarity between groups. While tightly linked in a mathematical sense, an important semantic difference is that cluster analysis is concerned with finding "true" structure in the data e.g., by defining a taxonomy on naturally occurring groups [@everitt1979]. Anticlustering instead imposes structure on the data, while the anticlusters have no underlying "true" meaning. An interesting side effect is that we are usually not concerned with the question of whether pairs of elements are assigned to the same anticluster or not. In cluster analysis, similar elements tend to be grouped in the same cluster, and in general this result will be observed across a variety of clustering approaches. In contrast, different anticlustering partitions tend to look very different. In Figure 1, for example, an astonishing `r mean(df$kmeans / max(df$kmeans) >.99) * 100`% of all partitions are within 1% of the global maximum in $\mathit{SSE}$ (i.e., the best k-means anticlustering solution). Among these `r sum(df$kmeans / max(df$kmeans) >.99)` partitions, every possible pair of elements is sometimes in the same group and sometimes not; the minimum amount of co-occurrence is 131 and the maximum amount of co-occurrence is 292. Thus, a high anticlustering objective does not depend on assigning individual items to the same or a different group. In contrast, there are only `r sum(min(df$kmeans)/ df$kmeans > .90)` partitions (`r mean(min(df$kmeans)/ df$kmeans > .90)*100`%) that approximate the global minimum in $\mathit{SSE}$ (i.e., the best k-means clustering solution) by even 10%. Thus, while there are many different high quality anticlustering partitions, there are only very few good clustering partitions, constituting another relevant difference between cluster analysis and anticlustering, despite them being directly and reversely related. Interestingly, the k-plus objective further loosens the link between cluster analysis and anticlustering. Reversing the k-plus anticlustering objective no longer yields a useful clustering interpretation, because identifying groups that are different with regard to higher order moments does not constitute a clustering in the usual sense. Thus, even though k-plus extends the classical k-means clustering criterion, it is a pure anticlustering objective.
+
+An interesting mixture of cluster analysis and anticlustering is fair clustering [e.g. @chhabra2021; @delBarrio2022]. Fair clustering performs a cluster analysis under the restriction that the distribution of a set of "protected" attributes---such as race, sex or age---should be similar between clusters. Thus, as compared to pure cluster analysis, fair clustering biases the identification of groups with regard to the protected attributes, striving for algorithmic fairness. However, a relevant difference to anticlustering is that fair clustering is still concerned with identifying "true" structure in the data [@delBarrio2022], while anticlustering is not concerned with identifying the underlying structure of a data set. However, these methods are similar because anticlustering logically corresponds to fair clustering when only the protected attributes are considered. Hence, a fruitful outlook for research might be to investigate if approaches stemming from the literature on fair clustering can be adopted for anticlustering, and vice versa.
 
 ## Conclusion
 
