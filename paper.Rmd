@@ -298,7 +298,7 @@ $$
 
 where $t = 2$ gives the variance, $t = 3$ the skewness, and $t = 4$ the kurtosis [@joanes1998]. Thus, by changing $t$---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. That is, we compute new variables for each original variable and for each distribution moment that should be considered in the anticlustering process. Analogously to the computation of $\mathit{SSE_{Var}}$, we could then define an $\mathit{SSE_{Skew}}$ using $t = 3$ or an $\mathit{SSE_{Kurtosis}}$ using $t = 4$. However, to formalize the computation of the k-plus criterion for an arbitrary number of distribution moments, some new notation has to be provided.
 
-We define the $j$'th column ($j = 1, \ldots, P$) of the original data matrix $\mathbf{X}_{N \times P}$ as $x_{\cdot j} =  (x_{1j}, \ldots, x_{Nj})$ where the column mean---the overall mean of the $j$'th attribute---is $\overline{\mathbf{x}}_j$. Let $T$ be the number of distribution moments that should be similar across $K$ groups. For each moment $t$ ($t = 1, \ldots, T$) and for each variable $x_{\cdot j}$ ($j = 1, \ldots, P$), a new *t-moment variable* $\hat{x}_{t \cdot j} = (\hat{x}_{t1j}, \ldots, \hat{x}_{tNj})$ is defined where
+We define the $j$'th column ($j = 1, \ldots, P$) of the original data matrix $\mathbf{X}_{N \times P}$ as $x_{\cdot j} =  (x_{1j}, \ldots, x_{Nj})$ where the column mean---the overall mean of the $j$'th attribute---is $\overline{\mathbf{x}}_j$. Let $T$ be the number of distribution moments that should be similar across $K$ groups. For each moment $t$ ($t = 1, \ldots, T$) and for each variable $x_{\cdot j}$ ($j = 1, \ldots, P$), a new *k-plus variable* $\hat{x}_{t \cdot j} = (\hat{x}_{t1j}, \ldots, \hat{x}_{tNj})$ is defined where
 
 $$
 \hat{x}_{tij} = 
@@ -323,7 +323,7 @@ $$
   \right)
 $$
 
-Here, $w_t$ is the weight associated with the $t$'th moment and $\overline{\mathbf{X}}^{(k)}_{T \times P} = \{\overline{x}_{tj}^{(k)}\}_{T \times P}$ is a centroid matrix containing the mean values for all $t$-moment variables in the $k$'th group, i.e.
+Here, $w_t$ is the weight associated with the $t$'th moment and $\overline{\mathbf{X}}^{(k)}_{T \times P} = \{\overline{x}_{tj}^{(k)}\}_{T \times P}$ is a centroid matrix containing the mean values for all k-plus variables in the $k$'th group, i.e.
 
 $$
 \overline{x}_{tj}^{(k)} = \frac{1}{n_k} \sum_{i \in C_k} \hat{x}_{tij}
@@ -364,9 +364,9 @@ $$
   (x'_{ij} - \overline{x'}_j ^{(k)})^2.
 $$
 
-Thus, when setting the weights for all moments to 1, the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$ has the same form as the standard k-means criterion $\mathit{SSE}$, but it is computed on different data. Computing the k-plus criterion is then done by first creating the additional $t$-moment variables, appending them as new columns to the original data matrix, and computing the $\mathit{SSE}$ on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged.
+Thus, when setting the weights for all moments to 1, the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$ has the same form as the standard k-means criterion $\mathit{SSE}$, but it is computed on different data. Computing the k-plus criterion is then done by first creating the additional k-plus variables, appending them as new columns to the original data matrix, and computing the $\mathit{SSE}$ on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged.
 
-Note that a problem may arise if the weights $\mathbf{w}$ are ignored when computing $\mathit{SSE_{kplusGeneralized}}$. Because the computation of the new $t$-moment variables involves exponentiation, their range of values is expected to be very different from the original variables. This imbalance can strongly and unpredictably influence the relative weight of the different moments when computing $\mathit{SSE_{kplusGeneralized}}$ (e.g., see Figure 1). To ensure a comparable weight of all criteria, all attributes---i.e., the original data as well as the new $t$-moment variables---can be standardized before computing $\mathit{SSE_{kplusGeneralized}}$, e.g. via $z$-standardization. This approach will henceforth be referred to as the unweighted standardization approach for k-plus anticlustering.
+Note that a problem may arise if the weights $\mathbf{w}$ are ignored when computing $\mathit{SSE_{kplusGeneralized}}$. Because the computation of the new k-plus variables involves exponentiation, their range of values is expected to be very different from the original variables. This imbalance can strongly and unpredictably influence the relative weight of the different moments when computing $\mathit{SSE_{kplusGeneralized}}$ (e.g., see Figure 1). To ensure a comparable weight of all criteria, all attributes---i.e., the original data as well as the new k-plus variables---can be standardized before computing $\mathit{SSE_{kplusGeneralized}}$, e.g. via $z$-standardization. This approach will henceforth be referred to as the unweighted standardization approach for k-plus anticlustering.
 
 # Evaluation
 
