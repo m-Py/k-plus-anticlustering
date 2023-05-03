@@ -372,7 +372,7 @@ Note that a problem may arise if the weights $\mathbf{w}$ are ignored when compu
 
 Two simulation studies were conducted to evaluate the new k-plus objective for anticlustering. A first small scale simulation compared different approaches for weight selection for the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$. In a second large scale simulation study, the k-plus objective was compared to other popular anticlustering objectives, i.e., the k-means and diversity objectives. 
 
-The simulation studies were implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during Simulation 2. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr] and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible in an accompanying OSF repository [@osf2023].
+The simulation studies were implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during Simulation 2. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr], `fossil` [Version 0.4.0, @R-fossil], and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible in an accompanying OSF repository [@osf2023].
 
 ## Optimization algorithm
 
@@ -444,6 +444,8 @@ For Simulation 2, I generated 10,000 data sets following a normal distribution. 
 
 After the four anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness and kurtosis between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$).
 
+As a secondary purpose of Simulation 2, I investigated the degree to which partitions identified by the different methods showed similarity. Specifically, I investigated whether different anticlustering solutions showed any overlap regarding the placement of individual elements in groups. In cluster analysis, high quality partitions according to different objectives tend to overlap to a large degree, but it is an open question whether this result also holds for different anticlustering partitions. To tackle this issue, I computed the adjusted Rand index (ARI) for each pair of partitions that were returned by the competing methods [@rand1971; @hubert1985]. The ARI is an index of the similarity between two partitions, where an index of 0 indicates no similarity and a value of 1 indicates the highest possible similarity (i.e., when two partitions are the same). The pairwise ARIs were computed for each data set and for each $K$, i.e., 30,000 times. 
+
 ### Results
 
 Table 2 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means ($\Delta \mathit{M}$), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating @papenberg2020, k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed $\Delta \mathit{M}$ almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$); both k-plus approaches strongly outperformed all other methods with regard to minimizing $\Delta \mathit{SD}$. 
@@ -497,7 +499,7 @@ colnames(tab) <- c("",
 
 apa_table(
   tab,
-  caption = "Results of Simulation study 2",
+  caption = "Results of Simulation 2.",
   note = "The global results of the simulation study aggregated across all conditions. Cells contain information about the average global between-group discrepancy with regard to means, standard deviations, skewness and kurtosis. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\\times$ $K = 2$, $K = 3$ or $K = 4$).",
   escape = FALSE,
   align = c("r")
@@ -549,6 +551,31 @@ It is maybe surprising that generalized k-plus does not seem to have performed m
 
 Generally, it should be noted that diversity anticlustering is a good all-rounder method that tends to address all distribution characteristics. For the specific objectives that are addressed by the k-plus methods, however, diversity anticlustering was outperformed. The Appendix includes additional figures splitting the simulation results according to the other variables that varied between simulation runs (number of features; correlation between features; standard deviation of features; number of groups).
 
+```{r}
+
+ARIs <- as.matrix(read.table("Simulation_2/global_results_ari.csv", sep = ","))
+colnames(ARIs) <- c(
+  "diversity", "k-means", "k-plus", "k-plus generalized", "random"
+)
+rownames(ARIs) <- colnames(ARIs)
+ARIs <- round(ARIs, 3)
+ARIs[upper.tri(ARIs)] <- ""
+
+# removing leading 0
+ARIs <- gsub("0.", ".", ARIs, fixed = TRUE)
+
+apa_table(
+  ARIs,
+  caption = "Average pairwise ARI returned by the competing methods in Simulation 2.",
+  note = "Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\\times$ $K = 2$, $K = 3$ or $K = 4$).",
+  escape = FALSE,
+  align = c("l")
+)
+
+```
+
+Table 3 illustrates the degree of overlap between anticlustering partitions that were identified in Simulation 2. Overall, it is shown that there was hardly any similarity between anticlustering partitions according to the different criteria. The average ARI was almost 0 in all cases---indicating no similarity of partitions whatsoever. This constitutes an interesting and novel result, illustrating that high between-group similarity can be achieved via very different partitionings.
+
 # Applying k-plus anticlustering using the R package anticlust 
 
 This section demonstrates how readers can easily employ k-plus anticlustering using the R package `anticlust` [@papenberg2020]. The package can be installed in the R environment using the `install.packages()` command.
@@ -580,7 +607,7 @@ kplus_anticlustering(
 
 The function call takes about 10 seconds on a contemporary personal computer. The function `kplus_anticlustering()` has three boolean arguments to specify whether variance, skewness and kurtosis should be included as part of the k-plus criterion. Only the argument `variance` is set to `TRUE` by default---corresponding to the understanding that k-plus is an extension to k-means that at least equalizes variances in addition to means. The arguments corresponding to skewness and kurtosis have to be specifically "turned on", i.e., by setting them to `TRUE` in the function call of `kplus_anticlustering()`. If other higher order moments should be included as part of the optimization, the optional argument `moments` can be used to specify the desired moments as an integer vector. The argument `method = "local-maximum"` ensures that the k-plus criterion is optimized using the local maximum search method described in the previous section. The argument `K` describes the number of groups. By default, the function ensures that all features---the original and the augmented variables---are standardized before the optimization starts. Thus, by default, the unweighted standardization approach is used. Whether standardization is used can be adjusted using the boolean argument `standardize`.
 
-Table 3 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 3 also contains the results after applying k-means anticlustering and diversity anticlustering. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations, and the skewness was also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---diversity anticlustering does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity.
+Table 4 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 4 also contains the results after applying k-means anticlustering and diversity anticlustering. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations, and the skewness was also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---diversity anticlustering does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity.
 
 ```{r}
 
@@ -692,7 +719,7 @@ apa_table(
 )
 ```
 
-Table 4 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for between-group similarity regardless of group size. Unequal group sizes can be requested by passing the different group sizes to the argument `K`. The following code was used to equalize means and variances between four groups using the k-plus approach:
+Table 5 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for between-group similarity regardless of group size. Unequal group sizes can be requested by passing the different group sizes to the argument `K`. The following code was used to equalize means and variances between four groups using the k-plus approach:
 
 ```R
 kplus_anticlustering(
@@ -771,7 +798,7 @@ The simulation study indicated that k-plus may show decreased performance for sm
 data(schaper2019)
 ```
 
-Table 5 illustrates the results that are obtained when using standard[^standardkplus] k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are similar enough for any practical purposes.
+Table 6 illustrates the results that are obtained when using standard[^standardkplus] k-plus anticlustering to divide the stimulus set into 6 groups of size `r nrow(schaper2019) / 6` each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are similar enough for any practical purposes.
 
 [^standardkplus]: I refer to *standard* k-plus anticlustering as the minimization of differences in means and variances, but not in higher order moments. 
 
@@ -825,7 +852,7 @@ As an additional outlook, it should be noted that because the covariance is defi
 df <- read.csv("partition_objectives.csv")
 ```
 
-Anticlustering is usually implemented by reversing an objective function used in classical cluster analysis. Whereas cluster analysis seeks homogeneity within groups and separation between groups, the reversal results in heterogeneity within groups and similarity between groups. While tightly linked in a mathematical sense, an important semantic difference is that cluster analysis is concerned with finding "true" structure in the data, e.g., by defining a taxonomy on naturally occurring groups [@everitt1979]. Anticlustering instead imposes structure on the data, while the anticlusters themselves do not represent any underlying "true" pattern. Correspondingly, different---but similarly adequate---anticlustering partitions tend to look very different, while good clustering solutions tend to look similar. A good clustering solution assigns similar elements into the same cluster and dissimilar elements into different clusters. A good anticlustering solution does not depend on assigning individual items either to the same or a different group, independent of their pairwise dissimilarity.[^dispersion] This pattern was observed in SImulation 2, where it was shown that partitions obtaining high between-group similarity according to different criteria were not at all similar; the ARI was usually close to 0. For different clustering methods, there is usually a considerable amount of overlap between partitions. This  distinction between cluster analysis and anticlustering can also be clarified using Figure 1, where we observe a high concentration of suitable anticlustering partitions but only few suitable clustering solutions. An astonishing `r mean(df$kmeans / max(df$kmeans) >.999) * 100`% of all partitions are within 0.1% of the global maximum in $\mathit{SSE}$, i.e., the best k-means anticlustering solution. Among these `r sum(df$kmeans / max(df$kmeans) >.999)` partitions, every possible pair of elements is sometimes assigned to the same group and sometimes not. In contrast, there are only `r sum(min(df$kmeans)/ df$kmeans > .90)` partitions (`r mean(min(df$kmeans)/ df$kmeans > .90)*100`%) that approximate the global minimum in $\mathit{SSE}$ (i.e., the best k-means clustering solution) by even 10%. Thus, even though the problems are based on the same objective function, cluster analysis and anticlustering exhibit a stark discrepancy with regard to the solution space of partitions. Interestingly, the k-plus objective introduces an additional distinction between cluster analysis and anticlustering. Reversing the k-plus anticlustering objective no longer yields a useful clustering interpretation, because identifying groups that are different with regard to higher order moments does not constitute a clustering. Thus, even though k-plus extends the classical k-means clustering criterion, it is a pure anticlustering objective.
+Anticlustering is usually implemented by reversing an objective function used in classical cluster analysis. Whereas cluster analysis seeks homogeneity within groups and separation between groups, the reversal results in heterogeneity within groups and similarity between groups. While tightly linked in a mathematical sense, an important semantic difference is that cluster analysis is concerned with finding "true" structure in the data, e.g., by defining a taxonomy on naturally occurring groups [@everitt1979]. Anticlustering instead imposes structure on the data, while the anticlusters themselves do not represent any underlying "true" pattern. Correspondingly, different---but similarly adequate---anticlustering partitions tend to look very different, as shown in Simulation 2. In contrast, good clustering solutions tend to look similar because a good clustering is characterized by assigning similar elements into the same cluster and dissimilar elements into different clusters. A good anticlustering solution however does not depend on assigning individual items either to the same or a different group, independent of their pairwise dissimilarity.[^dispersion] This distinction can also be clarified using Figure 1, where we observe a high concentration of suitable anticlustering partitions but only few suitable clustering solutions. An astonishing `r mean(df$kmeans / max(df$kmeans) >.999) * 100`% of all partitions are within 0.1% of the global maximum in $\mathit{SSE}$, i.e., the best k-means anticlustering solution. In contrast, there are only `r sum(min(df$kmeans)/ df$kmeans > .90)` partitions (`r mean(min(df$kmeans)/ df$kmeans > .90)*100`%) that approximate the global minimum in $\mathit{SSE}$ (i.e., the best k-means clustering solution) by even 10%. Thus, even though the problems are based on the same objective function, cluster analysis and anticlustering exhibit a stark discrepancy with regard to the solution space of partitions. Interestingly, the k-plus objective introduces an additional distinction between cluster analysis and anticlustering. Reversing the k-plus anticlustering objective no longer yields a useful clustering interpretation, because identifying groups that are different with regard to higher order moments does not constitute a clustering. Thus, even though k-plus extends the classical k-means clustering criterion, it is a pure anticlustering objective.
 
 [^dispersion]: An exception is given when using the dispersion objective, which ensures that the most similar elements are assigned to different clusters. However, anticlustering objectives striving for overall between-group similarity are mostly unaffected by the grouping of individual item pairs.
 
