@@ -442,12 +442,11 @@ For Simulation 2, I generated 10,000 data sets following a normal distribution. 
 
 ### Evaluation criteria
 
-After the five anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness and kurtosis between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$).
+After the four anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for $K = 2$, $K = 3$, $K = 4$, I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness and kurtosis between groups---for each data set for each $K$. To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means ($\Delta M$) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations ($\Delta \mathit{SD}$), skewness ($\Delta \mathit{Skew}$) and kurtosis ($\Delta \mathit{Kurtosis}$).
 
 ### Results
 
 Table 2 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means ($\Delta \mathit{M}$), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating @papenberg2020, k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed $\Delta \mathit{M}$ almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations ($\Delta \mathit{SD}$); both k-plus approaches strongly outperformed all other methods with regard to minimizing $\Delta \mathit{SD}$. 
-
 
 \begin{singlespace}
 
