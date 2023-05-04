@@ -115,7 +115,7 @@ $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Note that there is a direct connection between the $\mathit{SSE}$ and the location of the cluster centroids [@spath1986]. If the $\mathit{SSE}$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_j$ ($j = 1, \ldots, P$) is the overall mean value on the $j$th attribute:
+Note that there is a direct connection between the $\mathit{SSE}$ and the location of the cluster centroids [@spath1986]. If the $\mathit{SSE}$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_j$ ($j = 1, \ldots, P$) is the overall mean value on the $j$'th attribute:
 
 $$
 \overline{\mathbf{x}}_j = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ij}
