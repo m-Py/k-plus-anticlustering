@@ -7,3 +7,8 @@ paper.log
 .radian_profile
 .Rproj.user
 apa7.csl
+*.pdf
+*.dvi
+*.log
+*synctex.gz
+diff.tex
