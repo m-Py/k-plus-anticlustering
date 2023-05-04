@@ -1,0 +1,848 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  man,floatsintext]{apa7}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{english}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+% Manuscript styling
+\usepackage{upgreek}
+\captionsetup{font=singlespacing,justification=justified}
+
+% Table formatting
+\usepackage{longtable}
+\usepackage{lscape}
+% \usepackage[counterclockwise]{rotating}   % Landscape page setup for large tables
+\usepackage{multirow}		% Table styling
+\usepackage{tabularx}		% Control Column width
+\usepackage[flushleft]{threeparttable}	% Allows for three part tables with a specified notes section
+\usepackage{threeparttablex}            % Lets threeparttable work with longtable
+
+% Create new environments so endfloat can handle them
+% \newenvironment{ltable}
+%   {\begin{landscape}\centering\begin{threeparttable}}
+%   {\end{threeparttable}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\centering\begin{ThreePartTable}}{\end{ThreePartTable}\end{landscape}}
+
+% Enables adjusting longtable caption width to table width
+% Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
+\makeatletter
+\newcommand\LastLTentrywidth{1em}
+\newlength\longtablewidth
+\setlength{\longtablewidth}{1in}
+\newcommand{\getlongtablewidth}{\begingroup \ifcsname LT@\roman{LT@tables}\endcsname \global\longtablewidth=0pt \renewcommand{\LT@entry}[2]{\global\advance\longtablewidth by ##2\relax\gdef\LastLTentrywidth{##2}}\@nameuse{LT@\roman{LT@tables}} \fi \endgroup}
+
+% \setlength{\parindent}{0.5in}
+% \setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% Overwrite redefinition of paragraph and subparagraph by the default LaTeX template
+% See https://github.com/crsh/papaja/issues/292
+\makeatletter
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries\itshape\typesectitle}}
+
+\renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-\z@\relax}%
+  {\normalfont\normalsize\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+\makeatother
+
+% \usepackage{etoolbox}
+\makeatletter
+\patchcmd{\HyOrg@maketitle}
+  {\section{\normalfont\normalsize\abstractname}}
+  {\section*{\normalfont\normalsize\abstractname}}
+  {}{\typeout{Failed to patch abstract.}}
+\patchcmd{\HyOrg@maketitle}
+  {\section{\protect\normalfont{\@title}}}
+  {\section*{\protect\normalfont{\@title}}}
+  {}{\typeout{Failed to patch title.}}
+\makeatother
+
+\usepackage{xpatch}
+\makeatletter
+\xapptocmd\appendix
+  {\xapptocmd\section
+    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi\\: #1}}
+    {}{\InnerPatchFailed}%
+  }
+{}{\PatchFailed}
+\keywords{Anticlustering, k-means, k-plus, variance, covariance, skewness, kurtosis, stimulus selection\newline\indent Word count: 4992}
+\usepackage{csquotes}
+\usepackage{setspace}
+\usepackage{float}
+\floatstyle{plaintop}
+\restylefloat{figure}
+\makeatletter
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries\typesectitle}}
+
+\renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-\z@\relax}%
+  {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity},
+  pdfauthor={Martin Papenberg1},
+  pdflang={en-EN},
+  pdfkeywords={Anticlustering, k-means, k-plus, variance, covariance, skewness, kurtosis, stimulus selection},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity}
+\author{Martin Papenberg\textsuperscript{1}}
+\date{}
+
+
+\shorttitle{k-plus anticlustering}
+
+\authornote{
+
+Martin Papenberg, Department of Experimental Psychology, Heinrich Heine University Düsseldorf.
+
+Correspondence concerning this article should be addressed to Martin Papenberg, Heinrich-Heine-Universität Düsseldorf, Institut für Experimentelle Psychologie, Universitätsstraße 1, 40225 Düsseldorf, Germany. E-mail: \href{mailto:martin.papenberg@hhu.de}{\nolinkurl{martin.papenberg@hhu.de}}
+
+}
+
+\affiliation{\vspace{0.5cm}\textsuperscript{1} Heinrich Heine University Düsseldorf}
+
+\abstract{%
+Anticlustering refers to the process of partitioning elements into disjoint groups with the goal of obtaining high between-group similarity and high within-group heterogeneity. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---and is usually approached by maximizing instead of minimizing a clustering objective function. Introducing k-plus, this paper presents an extension of the classical k-means objective to maximize between-group similarity in anticlustering applications. The k-plus criterion represents between-group similarity as discrepancy in distribution moments (means, variance, higher order moments, and covariances), whereas the k-means criterion only reflects the degree to which groups differ in their means. While constituting a new criterion for anticlustering, it is surprisingly shown that k-plus anticlustering can be implemented by optimizing the original k-means criterion after the input data has been augmented with additional variables. A computer simulation and practical examples show that k-plus anticlustering achieves high between-group similarity with regard to multiple objectives. In particular, optimizing between-group similarity with regard to variances usually does not compromise similarity with regard to means; the k-plus extension is therefore generally preferred over classical k-means anticlustering. Examples are given on how k-plus anticlustering can be applied to real norming data using the open source R package \texttt{anticlust}, which is freely available via CRAN (\url{https://cran.r-project.org/package=anticlust}).
+}
+
+
+
+\begin{document}
+\maketitle
+
+Anticlustering refers to the process of partitioning elements into disjoint groups with the goal of obtaining high between-group similarity and high within-group heterogeneity (Brusco et al., 2020; Späth, 1986; Valev, 1983, 1998). Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and separation between clusters (Rokach \& Maimon, 2005). Anticlustering has many applications in research psychology (Brusco et al., 2020; Papenberg \& Klau, 2021; Steinley, 2006). Examples include splitting tests into parts of equal difficulty (Gierl et al., 2017), assigning students to work groups (Baker \& Powell, 2002), and assigning stimuli to different, but parallel experimental conditions (Lahl \& Pietrowsky, 2006). Solving anticlustering problems ``by hand'' is a tedious and time-consuming task, and the quality of manual partitioning is usually subpar. Fortunately, anticlustering problems can be formalized as mathematical optimization problems (e.g., Baker \& Powell, 2002; Brusco et al., 2020; Fernández et al., 2013; Späth, 1986) and accessible open source software solutions to tackling these problems exist (Papenberg \& Klau, 2021).
+
+Anticlustering methods are characterized by (a) an objective function that quantifies between-group similarity and/or within-group heterogeneity, and (b) an algorithm that determines how elements are assigned to groups to maximize the objective function. Several anticlustering objective functions use pairwise dissimilarity ratings such as the Euclidean distance as input. The most prominent criterion of this kind is the \emph{diversity}, which is the total sum of pairwise dissimilarities between elements within the same group (Brusco et al., 2020; Gallego et al., 2013). By considering pairwise dissimilarities between elements in the same group, the diversity criterion reflects the total degree of within-group heterogeneity. High within-group diversity simultaneously ensures high between-group similarity.\footnote{As will be shown later, the diversity objective only strictly equalizes within-group heterogeneity and between-group similarity when groups are equal-sized.} Another important anticlustering criterion based on the information in a dissimilarity matrix is the \emph{dispersion}, which is the minimum dissimilarity between any two elements within the same group (Fernández et al., 2013). Maximizing the dispersion increases within-group heterogeneity by ensuring that any two elements in the same group are as dissimilar from each other as possible. Brusco et al. (2020) convincingly argued that anticlustering applications striving for within-group heterogeneity should incorporate both dispersion and diversity, and they presented a bicriterion algorithm to approximate the Pareto efficient set of solutions according to both criteria.
+
+Oftentimes, partitioning applications in psychology are focused on between-group similarity rather than within-group heterogeneity, even though both goals oftentimes coincide. High between-group similarity is for example desirable when designing experimental conditions using different stimulus sets that should be as similar as possible with regard to response-relevant attributes (Lahl \& Pietrowsky, 2006). Such stimulus selection tasks are usually conducted on the basis of attribute data and not on pairwise (dis)similarity ratings. That is, individual stimuli are numerically coded on relevant dimensions (Dry \& Storms, 2009). For stimuli in psycholinguistic experiments, attributes may consist of ratings for imagery and concreteness, as well as orthographic variables (Friendly et al., 1982). In other cases, attributes are binary and may represent the presence or absence of a feature (Tversky, 1977). When attribute values are available, anticlustering approaches that do not require a dissimilarity matrix\footnote{It is still possible to convert the attribute data into a dissimilarity matrix, e.g.~by computing all pairwise Euclidean distances, and then optimize a distance-based anticlustering criterion to obtain a partitioning.} can be used to partition the data. K-means is probably the best-known clustering objective that can directly be computed on attribute values. In k-means clustering, the sum of the squared Euclidean distances between data points and their cluster centers is minimized, usually using the k-means heuristic (Brusco, 2006; Jain, 2010; Steinley, 2006). Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity (Aloise et al., 2009). Reversing the k-means objective function---using maximization instead of minimization---has been recognized as a useful approach when aiming for high between-group similarity (Späth, 1986; Valev, 1983, 1998). Specifically, as Späth (1986) noted, k-means anticlustering minimizes differences with regard to the means of the numeric attributes across clusters. However, other distribution characteristics---such as the variance---are not targeted. Papenberg and Klau (2021) showed that k-means anticlustering tends to over-optimize between-group similarity with regard to the mean at the cost of similarity in variance. However, when aiming for overall between-group similarity, neglecting all distribution characteristics other than the mean is misguided; similar means can be obtained even when the underlying distributions are clearly different (e.g., Anscombe, 1973).
+
+To optimize overall between-group similarity---and hence to overcome the limitations of k-means anticlustering---this paper introduces k-plus anticlustering. K-plus is an extension of the k-means objective that quantifies between-group similarity as discrepancy with regard to several distribution characteristics instead of only the mean. Specifically, k-plus offers the possibility to minimize differences with regard to the variance, covariances, and higher order moments such as skewness and kurtosis. After formally introducing the k-plus objective, a simulation study shows that k-plus anticlustering is well-suited to create groups having minimal differences according to multiple distribution characteristics. Practical examples illustrate how readers can easily apply k-plus anticlustering using the free and open source software package \texttt{anticlust} (Papenberg, 2019; Papenberg \& Klau, 2021), an extension to the popular statistical programming language R (R Core Team, 2022).
+
+\hypertarget{problem-formalization}{%
+\section{Problem formalization}\label{problem-formalization}}
+
+For the purpose of problem formalization, I adopt the notation Steinley (2006) provided in his comprehensive synthesis of half a century of research on k-means. K-means anticlustering is used to partition \(N\) elements each having \(P\) attributes into \(K\) groups \((C_1, \ldots, C_K)\). The partitioning is subject to the requirement that each element is assigned to exactly one group. In anticlustering applications, an additional constraint is usually imposed on the group sizes, with the most common restriction being that all groups have equal size (Papenberg \& Klau, 2021).
+
+For a data matrix \(\mathbf{X}_{N \times P} = \{x_{ij}\}_{N \times P}\), k-means anticlustering aims to maximize the error sum of squares (\(\mathit{SSE}\)), which is the sum of the squared Euclidean distances between each data point and its cluster centroid:
+
+\[
+\mathit{SSE} = 
+  \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (x_{ij} - \overline{x}_j ^{(k)})^2
+\]
+
+The \emph{k}'th centroid \(\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})\) is a vector of length \(P\), where each entry is the mean value of one of the \(P\) attributes, computed across all observations belonging to the \(k\)'th cluster \(C_k\) (\(k = 1, \ldots, K\)):
+
+\[
+\overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
+\]
+
+Note that there is a direct connection between the \(\mathit{SSE}\) and the location of the cluster centroids (Späth, 1986). If the \(\mathit{SSE}\) is minimal---which is the goal of k-means \emph{clustering}---, the centroid values \(\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)\) are as far away as possible from the overall data centroid \(\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P\)), where \(\overline{\mathbf{x}}_p\) is the overall mean value on the \(p\)th attribute:
+
+\[
+\overline{\mathbf{x}}_p = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ip}
+\]
+
+If the \(\mathit{SSE}\) is maximal---which is the goal of k-means \emph{anticlustering}---, the cluster centroids are as close as possible to the overall centroid \(\overline{\mathbf{x}}\) and therefore to each other (Späth, 1986). Thus, k-means anticlustering directly optimizes the similarity of the mean attribute values between clusters.
+
+\hypertarget{quantifying-differences-in-variance}{%
+\subsection{Quantifying differences in variance}\label{quantifying-differences-in-variance}}
+
+In the following, I present a variation of the \(\mathit{SSE}\) that quantifies how the variance of numeric data differs between groups. To motivate the new criterion, we first consider a set of one-dimensional observations. The sample variance of a set of \(N\) observations \(x = (x_1, \ldots, x_N)\) is computed as the mean of the squared distances between observations and their mean \(\overline{\mathbf{x}}\):
+
+\[
+\mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^2
+\]
+
+When defining a new variable \(y = (y_1, \ldots, y_N)\) as the squared deviation of each observation from the mean \(\overline{\mathbf{x}}\), the sample variance of \(x\) can be reformulated as the mean of \(y\):
+
+\[
+y_i = (x_i - \overline{\mathbf{x}})^2
+\]
+
+\[
+\mathit{Var(x)} = \frac{1}{N} \sum\limits_{i=1}^{N} y_i
+\]
+
+Because the sample variance is basically defined as an average---and k-means anticlustering minimizes differences with regard to averages---k-means anticlustering can be employed to equalize the variance across groups. This constitutes the central insight motivating the new k-plus criterion. Thus, to obtain an adaptation of the \(\mathit{SSE}\) that quantifies the degree to which the variance differs between groups, a new variable is computed for each original variable: The new variable represents the squared distance of each of the original values to the overall mean of the variable. We obtain a new data matrix \(\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}\) with \(y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2\). On the basis of \(\mathbf{Y}_{N \times P}\), we define the criterion \(\mathit{SSE_{Var}}\), reflecting how strongly the variances of all attributes vary across the \(K\) clusters:
+
+\[
+\mathit{SSE_{Var}} = 
+  \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (y_{ij} - \overline{y}_j ^{(k)})^2
+\]
+
+Note that \(\mathit{SSE_{Var}}\) has the same form as the standard \(\mathit{SSE}\). However, the input data reflects the squared difference between each data point and the attribute mean instead of the raw data points. Maximizing \(\mathit{SSE_{Var}}\) will lead to similar variances across the \(K\) groups in the \(P\) attributes.
+
+\hypertarget{kplus}{%
+\subsection{A bicriterion model: K-plus anticlustering}\label{kplus}}
+
+It is unlikely that an exclusive maximization of \(\mathit{SSE_{Var}}\) (i.e., equalizing variances) is of interest without also considering the standard \(\mathit{SSE}\) (i.e., equalizing means). A combination of \(\mathit{SSE_{Var}}\) and \(\mathit{SSE}\), however, can be employed to simultaneously optimize both criteria, which is a reasonable idea when striving for overall between-group similarity. The most simple approach for such a bicriterion optimization is the weighted sum approach (Marler \& Arora, 2010; Naidu et al., 2014). That is, both criteria are computed independently from each other and are then combined into a single criterion through a weighted sum:
+
+\[
+w_1 \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (x_{ij} - \overline{x}_j ^{(k)})^2 + 
+w_2 \sum\limits_{j=1}^{P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (y_{ij} - \overline{y}_j ^{(k)})^2
+\]
+
+The weights \(w_1\) and \(w_2\) can be chosen to adjust the relative importance of equalizing means and variances, respectively. Some simplifications can be arranged when ignoring the weights \(w_1\) and \(w_2\), e.g., by setting them both to 1. This simplification leads to the \emph{unweighted sum approach} for k-plus anticlustering: When defining a new data matrix \(\mathbf{Z}_{N \times 2P} = \{z_{ij}\}_{N \times 2P}\) as the augmentation of \(\mathbf{X}_{N \times P}\) with \(\mathbf{Y}_{N \times P}\), i.e.
+
+\[
+  \mathbf{Z}_{N \times 2P} =
+  \left[ {\begin{array}{cccc|cccc}
+    x_{11} & x_{12} & \cdots & x_{1P} & y_{11} & y_{12} & \cdots & y_{1P}\\
+    x_{21} & x_{22} & \cdots & x_{2P} & y_{21} & y_{22} & \cdots & y_{2P}\\
+    \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+    x_{N1} & x_{N2} & \cdots & x_{NP} & y_{N1} & y_{N2} & \cdots & y_{NP}\\
+  \end{array} } \right]
+\]
+
+and \(z_{i.} = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, y_{iP})\), the bicriterion \(\mathit{SSE_{kplus}}\) can be computed as
+
+\[
+\mathit{SSE_{kplus}} =
+  \sum\limits_{j=1}^{2 P} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (z_{ij} - \overline{z}_j ^{(k)})^2.
+\]
+
+This term again has the same form as \(\mathit{SSE}\) but is computed on different data. Hence, computing the k-plus criterion can be done by first computing the squared distances \(y_{ij}\), appending them as new columns to the original data matrix, and then computing \(\mathit{SSE}\) on the augmented data. Using the unweighted sum approach, k-plus anticlustering therefore leaves the original k-means criterion unchanged.
+
+Note that a problem may arise if the weights \(w_1\) and \(w_2\) are ignored when computing \(\mathit{SSE_{kplus}}\). Because the computation of the new attribute values \(y_{ij}\) involves squaring, their range of values is expected to be very different from the raw values \(x_{ij}\) (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of \(\mathit{SSE}\) and \(\mathit{SSE_{Var}}\) when computing \(\mathit{SSE_{kplus}}\). To ensure an equal weight of both criteria, all attributes (\(x_{ij}\) and \(y_{ij}\)) can be standardized before computing \(\mathit{SSE_{kplus}}\), e.g.~via \(z\)-standardization.
+
+Research on multiobjective optimization indicates that solutions oftentimes fail to satisfactorily address several criteria at the same time (Ferligoj \& Batagelj, 1992). It is therefore unclear whether optimizing a bicriterion objective such as \(\mathit{SSE_{kplus}}\) can yield a partitioning where both constituting criteria (mean and variance) are similar between groups. A motivating example illustrates that aiming to simultaneously optimize similarity of means and variances may be feasible. I created 14 data points following a univariate normal distribution (\(M = 15\), \(SD = 3\)) and then generated all 1716 possible ways to partition the 14 data points into \(K = 2\) equal-sized groups. Figure 1 shows the scatterplot of the criteria \(\mathit{SSE}\) and \(\mathit{SSE_{Var}}\) across partitions. The partition that is represented by the squared symbol has the overall best highest \(\mathit{SSE}\), but is outperformed by many other partitions with regard to \(\mathit{SSE_{Var}}\). Similarly, the partition that maximizes \(\mathit{SSE_{Var}}\) (represented by the triangular symbol) is not well-suited to optimize \(\mathit{SSE}\) at the same time. Thus, when only considering one of the objectives, the mathematically optimal partitioning fails to establish groups that are similar both with regard to their means and variances. The diamond symbol represents the partition that maximizes \(\mathit{SSE_{kplus}}\), which yields 99.99\% of the global maximum \(\mathit{SSE}\), and 99.93\% of the global maximum value of \(\mathit{SSE_{Var}}\). Thus, using the unweighted sum approach, the optimal partition according to \(\mathit{SSE_{kplus}}\) fulfills the two constituting criteria \(\mathit{SSE}\) and \(\mathit{SSE_{Var}}\) to an astonishing degree.
+
+\begin{figure}
+\centering
+\includegraphics{paper_files/figure-latex/unnamed-chunk-1-1.pdf}
+\caption{\label{fig:unnamed-chunk-1}The relationship between the objectives \(\mathit{SSE}\) and \(\mathit{SSE_{Var}}\) across all ways to partition \(N = 14\) normally distributed random values into \(K = 2\) groups. The partition represented by the square maximizes \(\mathit{SSE}\) and thus minimizes the difference in means between groups; the partition represented by the triangular maximizes \(\mathit{SSE_{Var}}\) and thus minimizes the difference in variances between groups. The partition represented by the diamond maximizes \(\mathit{SSE_{kplus}}\) and satisfies both constituting criteria to an almost optimal degree.}
+\end{figure}
+
+\hypertarget{skewness-kurtosis-and-higher-order-moments}{%
+\subsection{Skewness, kurtosis, and higher order moments}\label{skewness-kurtosis-and-higher-order-moments}}
+
+The k-plus approach to equalizing the variance can be generalized to higher order moments. The \emph{j}'th sample moment of a variable \(x = (x_1, \ldots, x_N)\) can be computed as
+
+\[
+\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^j.
+\]
+
+where \(j = 2\) gives the variance, \(j = 3\) the skewness, and \(j = 4\) the kurtosis (Joanes \& Gill, 1998). Thus, by changing \(j\)---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. For each moment \(j\) and for each variable \(x\), this is accomplished by adding a new variable \(y^{(j)} = (y^{(j)}_1, \ldots, y^{(j)}_N)\) with \(y^{(j)}_i = (x_i - \overline{\mathbf{x}})^j\) to the data set and subsequently applying standard k-means anticlustering. I expect this to be particularly interesting for the skewness and kurtosis when aiming to minimize differences with regard to distribution asymmetry (skewness) and the propensity to include outliers (kurtosis).
+
+\hypertarget{covariances}{%
+\subsection{Covariances}\label{covariances}}
+
+Because the covariance is also defined as an expected value, the k-plus logic can be extended to minimize differences with regard to covariance structure. The covariance between two variables \(x = (x_1, \ldots, x_N)\) and \(y = (y_1, \ldots, y_N)\) is defined as
+
+\[
+\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}}) (y_i -\overline{\mathbf{y}}).
+\]
+
+Thus, to maximize between-group similarity with regard to covariance structure, it is possible to augment the data set with an additional variable for each pair of variables \(x\) and \(y\), computed as \((x_i - \overline{\mathbf{x}}) (y_i -\overline{\mathbf{y}})\).
+
+\hypertarget{simulation-study}{%
+\section{Simulation study}\label{simulation-study}}
+
+To thoroughly evaluate the k-plus approach to anticlustering, three specific k-plus criteria were implemented in a simulation study: (i) ``standard'' k-plus anticlustering, minimizing differences with regard to group means and variances; (ii) k-plus \emph{skew/kurtosis}, minimizing differences with regard to group means, variances, skewness and kurtosis; (iii) k-plus \emph{correlation}, minimizing differences with regard to group means, variances and covariance structure. To implement all k-plus objectives, the unweighted sum approach was employed. Thus, to optimize a k-plus criterion, the original data set was augmented to incorporate the additional criteria and all variables---the original and the augmented variables---were \(z\)-standardized. Subsequently, the original k-means criterion \(\mathit{SSE}\) was maximized on the basis of the augmented data set. The three k-plus methods were compared to (i) k-means anticlustering, minimizing differences with regard to group means, (ii) diversity anticlustering, maximizing the sum of pairwise Euclidean distances within groups, (iii) a random allocation of elements to groups.
+
+The simulation was implemented using the statistical programming language R (Version 4.2, R Core Team, 2022). The R package \texttt{anticlust} (Version 0.6.1, Papenberg, 2019; Papenberg \& Klau, 2021) was used to optimize the anticlustering objectives. The R package \texttt{faux} (Version 1.1.0, DeBruine, 2021) was used to generate the multivariate normal data sets that were processed during the simulation. The R packages \texttt{dplyr} (Version 1.0.7, Wickham et al., 2019), \texttt{ggplot2} (Version 3.3.5, Wickham, 2016), \texttt{papaja} (Version 0.1.1.9001, Aust \& Barth, 2018), \texttt{tidyr} (Version 1.1.3, Wickham, 2021) and \texttt{DescTools} (Version 0.99.45, Signorell, 2022) were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible in an accompanying OSF repository (Papenberg, 2023).
+
+\hypertarget{optimization-algorithm}{%
+\subsection{Optimization algorithm}\label{optimization-algorithm}}
+
+The same local maximum search was applied to optimize each of the five competing anticlustering objectives (Method LCW, Weitz \& Lakshminarayanan, 1998). Building on an initial random allocation, the algorithm proceeds by swapping elements between groups in such a way that each swap improves the objective criterion by the largest possible margin. That is, it starts with the first element and simulates all exchanges with elements that are currently assigned to a different group. After each exchange has been evaluated, the one exchange is realized that improves the objective function the most. No exchange is realized if no improvement is possible. The exchange process is repeated for each element. After that, the procedure restarts at the beginning and is repeated until an iteration through the entire data set no longer yields an improvement. To obtain better results, this local maximum search may be initialized multiple times (Späth, 1986). In the simulation study five repetitions were used.
+
+\hypertarget{conditions}{%
+\subsection{Conditions}\label{conditions}}
+
+For the simulation, I generated 10,000 data sets following a normal distribution. The data sets were subsequently processed by the competing methods. The following properties were determined randomly for each data set: (a) the sample size \(N\) varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into \(K = 2\), \(3\), and \(4\) groups; (b) the number of features varied between 2 and 5; (c) the standard deviation of all features was set to 1, 2 or 3 (the mean was always zero); (d) the correlation between all features was \(r = 0\), \(r = .1\), \(r = .2\), \(r = .3\), \(r = .4\) or \(r = .5\). All anticlustering methods were applied to each of the 10,000 data sets using \(K = 2\), \(K = 3\) and \(K = 4\) (i.e., each method was applied 30,000 times). Groups sizes were always equal.
+
+\hypertarget{evaluation-criteria}{%
+\subsection{Evaluation criteria}\label{evaluation-criteria}}
+
+After the five anticlustering methods and the random allocation procedure had been applied to the 10,000 data sets for \(K = 2\), \(K = 3\), \(K = 4\), I investigated how well the competing methods were able to create similar groups. To this end, I analyzed the discrepancy in means, standard deviations, skewness, kurtosis, and correlation between groups---for each data set for each \(K\). To quantify the discrepancy in group means, the following computation was used: for each of the (2, 3, 4 or 5) features, all (2, 3 or 4) group means were computed. For each feature, the difference between the minimum and maximum group mean was used as a measure of discrepancy; the global discrepancy in means (\(\Delta M\)) was then determined as the average discrepancy across features. The same procedure was applied to compute the discrepancy in standard deviations (\(\Delta \mathit{SD}\)), skewness (\(\Delta \mathit{Skew}\)) and kurtosis (\(\Delta \mathit{Kurtosis}\)). Quantifying discrepancy in correlations (\(\Delta \mathit{Cor}\)) followed the same rule, but discrepancies in correlations had to be averaged across pairs of features instead of single features.
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+Table 1 displays the global simulation results aggregated across all conditions. Standard k-means performed best at minimizing discrepancy with regard to means (\(\Delta \mathit{M}\)), but did not outperform a random assignment with regard to all other distribution characteristics. Replicating Papenberg and Klau (2021), k-means' performance with regard to similarity in standard deviations was even below that of a random assignment. K-plus anticlustering addressed \(\Delta \mathit{M}\) almost as well as k-means, and at the same time minimized discrepancy with regard to the standard deviations (\(\Delta \mathit{SD}\)); all three k-plus approaches strongly outperformed all other methods with regard to minimizing \(\Delta \mathit{SD}\).
+
+\begin{singlespace}
+
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:Table1}Results of the simulation study}
+
+\begin{tabular}{rrrrrr}
+\toprule
+ & \multicolumn{1}{c}{$\Delta M$} & \multicolumn{1}{c}{$\Delta \mathit{SD}$} & \multicolumn{1}{c}{$\Delta \mathit{Skew}$} & \multicolumn{1}{c}{$\Delta \mathit{Kurtosis}$} & \multicolumn{1}{c}{$\Delta \mathit{Cor}$}\\
+\midrule
+diversity & 0.06 & 0.15 & 0.34 & 0.68 & 0.11\\
+k-means & 0.02 & 0.39 & 0.57 & 0.86 & 0.26\\
+k-plus & 0.03 & 0.03 & 0.62 & 1.03 & 0.24\\
+k-plus-correlation & 0.05 & 0.04 & 0.61 & 1.02 & 0.03\\
+k-plus-skew-kurtosis & 0.04 & 0.04 & 0.26 & 0.65 & 0.24\\
+random & 0.53 & 0.38 & 0.54 & 0.85 & 0.25\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} The global results of the simulation study aggregated across all conditions. Cells contain information about the average global between-group discrepancy with regard to means, standard deviations, skewness, kurtosis, and correlations. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\times$ $K = 2$, $K = 3$ or $K = 4$).}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+\end{singlespace}
+
+\begin{figure}
+\centering
+\includegraphics{paper_files/figure-latex/Figure1-1.pdf}
+\caption{\label{fig:Figure1}Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by \(N\), averaged across the remaining variables that varied in the simulation).}
+\end{figure}
+
+Figure 2 shows that with increasing \(N\), k-means and the k-plus methods converged on the same level with regard to minimizing \(\Delta \mathit{M}\). This is an important observation because it shows that k-plus anticlustering is capable of addressing multiple objectives at the same time---especially when \(N\) increases. However, while k-plus anticlustering was capable of addressing multiple objectives simultaneously, increasing the number of optimization criteria made it more difficult to fulfill each single criterion: k-plus skew/kurtosis and k-plus correlation performed worse at minimizing \(\Delta \mathit{M}\) and \(\Delta \mathit{SD}\) than standard k-plus. However, every k-plus method did what it was supposed to do: k-plus skew/kurtosis was best at minimizing \(\Delta \mathit{Skew}\) and \(\Delta \mathit{Kurtosis}\), k-plus correlation was best at minimizing discrepancy with regard to \(\Delta \mathit{Cor}\). At the same time, these two k-plus objectives maintained a comparably good level of addressing \(\Delta \mathit{M}\) and \(\Delta \mathit{SD}\), outperforming diversity anticlustering.
+
+It is maybe surprising that k-plus skew/kurtosis does not seem to have performed much better than diversity anticlustering with regard to skewness and kurtosis, even though the method has been specifically tailored to these criteria. Figure 2 gives a more fine grained assessment of this observation: Surprisingly, for small \(N\), k-plus skew/kurtosis was even worse than diversity anticlustering at minimizing \(\Delta \mathit{Skew}\) and \(\Delta \mathit{Kurtosis}\). However, with increasing \(N\), it clearly outperformed diversity anticlustering. These results illustrate the cost of optimizing several criteria at the same time: For low \(N\), k-plus skew/kurtosis was apparently preoccupied with fulfilling the objectives \(\Delta \mathit{M}\) and \(\Delta \mathit{SD}\). Increasing \(N\) then facilitated to also address \(\Delta \mathit{Skew}\) and \(\Delta \mathit{Kurtosis}\).
+
+Generally, it should be noted that diversity anticlustering is a good all-rounder method that tends to address all distribution characteristics. For the specific objectives that are addressed by the k-plus methods, however, diversity anticlustering was outperformed. As as side note, apart from k-plus correlation, diversity anticlustering was the only method that equalized correlation structure among groups. To the best of my knowledge, this observation has not been made previously, even though the maximum diversity problem has been widely studied.
+
+The Appendix includes additional figures splitting the simulation results according to the other variables that varied between simulation runs (number of features; correlation between features; standard deviation of features; number of groups). Here, the only meaningful moderating effect on anticlustering performance was that k-plus correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features.
+
+\hypertarget{applying-k-plus-anticlustering-using-the-r-package-anticlust}{%
+\section{Applying k-plus anticlustering using the R package anticlust}\label{applying-k-plus-anticlustering-using-the-r-package-anticlust}}
+
+This section demonstrates how readers can easily employ k-plus anticlustering using the R package \texttt{anticlust} (Papenberg \& Klau, 2021) using the function \texttt{kplus\_anticlustering()}, which is available from version 0.6.3 onward. The package can be installed in the R environment using the \texttt{install.packages()} command:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"anticlust"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{example-application-i}{%
+\subsection{Example Application I}\label{example-application-i}}
+
+In the first example, I used the OASIS norming data that is freely available online (Kurdi et al., 2017). Kurdi et al.~assembled 900 open-access color images and collected ratings on two affective dimensions: arousal and valence. Brielmann and Pelli (2019) measured how the same 900 images were rated with regard to beauty. I used the function \texttt{kplus\_anticlustering()} to divide all images into 9 groups of 100 images each. The first argument of the function call is a variable named \texttt{features}, which contains the image data as a table: 900 rows representing images and 3 columns representing the features beauty, arousal, and valence. An OSF repository accompanying this manuscript contains the full code to reproduce the example (Papenberg, 2023).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(anticlust) }\CommentTok{\# load the package anticlust}
+
+\FunctionTok{kplus\_anticlustering}\NormalTok{(}
+\NormalTok{  features,}
+  \AttributeTok{K =} \DecValTok{9}\NormalTok{,}
+  \AttributeTok{variance =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{skew =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{kurtosis =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{covariances =} \ConstantTok{FALSE}\NormalTok{,}
+  \AttributeTok{moments =} \ConstantTok{NULL}\NormalTok{,}
+  \AttributeTok{method =} \StringTok{"local{-}maximum"}\NormalTok{,}
+  \AttributeTok{standardize =} \ConstantTok{TRUE}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+The function call takes about 10 seconds on a contemporary personal computer. The function \texttt{kplus\_anticlustering()} has four boolean arguments to specify whether variance, skewness, kurtosis and covariances should be included as part of the k-plus criterion. Only the argument \texttt{variance} is set to \texttt{TRUE} by default---corresponding to the understanding that k-plus is an extension to k-means that at least equalizes variances in addition to means. The arguments corresponding to skewness, kurtosis and covariance have to be specifically ``turned on'', i.e., by setting them to \texttt{TRUE} in the function call of \texttt{kplus\_anticlustering()}. If other higher order moments should be included as part of the optimization, the optional argument \texttt{moments} can be used to specify the desired moments as an integer vector. The argument \texttt{method\ =\ "local-maximum"} ensures that the k-plus criterion is optimized using the local maximum search method described in the previous section. The argument \texttt{K} describes the number of groups. By default, the function ensures that all features are standardized before the optimization starts; in particular, this option enforces that all k-plus criteria receive the same weight during the optimization process. This behaviour can be adjusted using the boolean argument \texttt{standardize}.
+
+Table 2 shows the results of the anticlustering application by listing the descriptive statistics (means, standard deviations and skewness) for each of the 9 groups and for each of the 3 features. Table 2 also contains the results after applying k-means anticlustering and diversity anticlustering. It is shown that---up to two decimals---k-plus anticlustering perfectly matched all groups with regard to the features' means and standard deviations, and the skewness was also very evenly matched. K-means anticlustering also perfectly matched the mean values, but showed decreased performance with regard to similarity in standard deviations and skewness. Diversity anticlustering was well-suited to match means, standard deviations and skew, but was slightly outperformed by k-plus. The latter result is not surprising because---unlike k-plus anticlustering---diversity anticlustering does not directly maximize similarity with regard to these criteria, but instead maximizes within-group heterogeneity.
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:unnamed-chunk-2}Descriptive statistics for OASIS features by group and anticlustering method.}
+
+\begin{tabular}{crrrrrrrrr}
+\toprule
+ & \multicolumn{3}{c}{Beauty} & \multicolumn{3}{c}{Valence} & \multicolumn{3}{c}{Arousal} \\
+\cmidrule(r){2-4} \cmidrule(r){5-7} \cmidrule(r){8-10}
+Group & \multicolumn{1}{c}{$M$} & \multicolumn{1}{c}{$\mathit{SD}$} & \multicolumn{1}{c}{Skew} & \multicolumn{1}{c}{$M$} & \multicolumn{1}{c}{$\mathit{SD}$} & \multicolumn{1}{c}{Skew} & \multicolumn{1}{c}{$M$} & \multicolumn{1}{c}{$\mathit{SD}$} & \multicolumn{1}{c}{Skew}\\
+\midrule
+\textbf{K-plus anticlustering} &  &  &  &  &  &  &  &  & \\
+\ \ \ 1 & 4.34 & 1.13 & -0.28 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.32\\
+\ \ \ 2 & 4.34 & 1.13 & -0.29 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\ \ \ 3 & 4.34 & 1.13 & -0.29 & 4.33 & 1.23 & -0.48 & 3.67 & 0.84 & -0.34\\
+\ \ \ 4 & 4.34 & 1.13 & -0.28 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\ \ \ 5 & 4.34 & 1.13 & -0.28 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\ \ \ 6 & 4.34 & 1.13 & -0.29 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\ \ \ 7 & 4.34 & 1.13 & -0.29 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\ \ \ 8 & 4.34 & 1.13 & -0.28 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\ \ \ 9 & 4.34 & 1.13 & -0.28 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.33\\
+\textbf{K-means anticlustering} &  &  &  &  &  &  &  &  & \\
+\ \ \ 1 & 4.34 & 1.20 & -0.41 & 4.33 & 1.17 & -0.46 & 3.67 & 0.79 & -0.26\\
+\ \ \ 2 & 4.34 & 1.18 & -0.27 & 4.33 & 1.32 & -0.50 & 3.67 & 0.79 & -0.48\\
+\ \ \ 3 & 4.34 & 1.14 & -0.29 & 4.33 & 1.28 & -0.48 & 3.67 & 0.84 & -0.40\\
+\ \ \ 4 & 4.34 & 1.19 & -0.12 & 4.33 & 1.20 & -0.32 & 3.67 & 0.83 & -0.51\\
+\ \ \ 5 & 4.34 & 1.00 & 0.02 & 4.33 & 1.14 & -0.34 & 3.67 & 0.92 & -0.28\\
+\ \ \ 6 & 4.34 & 1.02 & -0.40 & 4.33 & 1.12 & -0.43 & 3.67 & 0.91 & -0.33\\
+\ \ \ 7 & 4.34 & 1.11 & -0.51 & 4.33 & 1.21 & -0.78 & 3.67 & 0.89 & -0.30\\
+\ \ \ 8 & 4.34 & 1.18 & -0.32 & 4.33 & 1.30 & -0.50 & 3.67 & 0.78 & -0.31\\
+\ \ \ 9 & 4.34 & 1.11 & -0.22 & 4.33 & 1.34 & -0.52 & 3.67 & 0.80 & -0.07\\
+\textbf{Diversity anticlustering} &  &  &  &  &  &  &  &  & \\
+\ \ \ 1 & 4.34 & 1.14 & -0.30 & 4.34 & 1.23 & -0.47 & 3.67 & 0.84 & -0.33\\
+\ \ \ 2 & 4.34 & 1.12 & -0.27 & 4.33 & 1.23 & -0.49 & 3.67 & 0.85 & -0.25\\
+\ \ \ 3 & 4.34 & 1.12 & -0.27 & 4.33 & 1.24 & -0.50 & 3.67 & 0.84 & -0.36\\
+\ \ \ 4 & 4.34 & 1.13 & -0.29 & 4.33 & 1.23 & -0.49 & 3.67 & 0.84 & -0.32\\
+\ \ \ 5 & 4.34 & 1.13 & -0.30 & 4.33 & 1.23 & -0.47 & 3.67 & 0.84 & -0.33\\
+\ \ \ 6 & 4.34 & 1.14 & -0.34 & 4.33 & 1.23 & -0.47 & 3.67 & 0.84 & -0.39\\
+\ \ \ 7 & 4.34 & 1.12 & -0.26 & 4.33 & 1.24 & -0.51 & 3.67 & 0.84 & -0.34\\
+\ \ \ 8 & 4.35 & 1.13 & -0.29 & 4.33 & 1.24 & -0.50 & 3.67 & 0.84 & -0.32\\
+\ \ \ 9 & 4.34 & 1.12 & -0.25 & 4.33 & 1.23 & -0.50 & 3.67 & 0.84 & -0.33\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} The k-plus criterion that was optimized included a term to minimize differences with regard to means, variances, and skewness.}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+Table 3 illustrates another advantage of k-plus anticlustering over diversity anticlustering: When creating groups of unequal size, diversity anticlustering tends to increase the spread of the data in the largest group in comparison to the other groups. K-plus anticlustering strives for between-group similarity regardless of group size. Unequal group sizes can be requested by passing the different group sizes to the argument \texttt{K}. The following code was used to equalize means and variances between four groups using the k-plus approach:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kplus\_anticlustering}\NormalTok{(}
+\NormalTok{  features,}
+  \AttributeTok{K =} \FunctionTok{c}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{600}\NormalTok{),}
+  \AttributeTok{method =} \StringTok{"local{-}maximum"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:unnamed-chunk-3}Performance of the diversity and k-plus objectives for unequal group sizes.}
+
+\begin{tabular}{rrrrr}
+\toprule
+Group & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Beauty} & \multicolumn{1}{c}{Valence} & \multicolumn{1}{c}{Arousal}\\
+\midrule
+\textbf{K-plus anticlustering} &  &  &  & \\
+\ \ \ 1 & 100 & 4.34 (1.13) & 4.33 (1.23) & 3.67 (0.84)\\
+\ \ \ 2 & 100 & 4.34 (1.13) & 4.33 (1.23) & 3.67 (0.84)\\
+\ \ \ 3 & 100 & 4.34 (1.13) & 4.33 (1.23) & 3.67 (0.84)\\
+\ \ \ 4 & 600 & 4.34 (1.12) & 4.33 (1.23) & 3.67 (0.84)\\
+\textbf{K-means anticlustering} &  &  &  & \\
+\ \ \ 1 & 100 & 4.34 (1.11) & 4.33 (1.20) & 3.67 (0.94)\\
+\ \ \ 2 & 100 & 4.34 (1.12) & 4.33 (1.14) & 3.67 (0.81)\\
+\ \ \ 3 & 100 & 4.34 (1.12) & 4.33 (1.20) & 3.67 (0.76)\\
+\ \ \ 4 & 600 & 4.34 (1.13) & 4.33 (1.25) & 3.67 (0.84)\\
+\textbf{Diversity anticlustering} &  &  &  & \\
+\ \ \ 1 & 100 & 4.43 (0.62) & 4.53 (0.76) & 3.64 (0.45)\\
+\ \ \ 2 & 100 & 4.43 (0.61) & 4.54 (0.76) & 3.64 (0.45)\\
+\ \ \ 3 & 100 & 4.43 (0.62) & 4.53 (0.76) & 3.64 (0.45)\\
+\ \ \ 4 & 600 & 4.30 (1.30) & 4.23 (1.39) & 3.68 (0.98)\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} The cells contain mean values by cluster and the standard deviation (in parentheses).}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+\hypertarget{example-application-ii-small-data-set-n-96}{%
+\subsection{\texorpdfstring{Example Application II: Small data set (\(N = 96\))}{Example Application II: Small data set (N = 96)}}\label{example-application-ii-small-data-set-n-96}}
+
+The simulation study indicated that k-plus may show decreased performance for smaller group sizes. Therefore, a second application illustrates that k-plus anticlustering yields satisfactory results in practice even when group sizes are smaller. I make use of a norming data set of 96 word stimuli that was contributed to the \texttt{anticlust} package by Marie L. Schaper (Schaper et al., 2019a, 2019b). After loading the \texttt{anticlust} package, the data set can be accessed as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(schaper2019)}
+\end{Highlighting}
+\end{Shaded}
+
+Table 4 illustrates the results that are obtained when using standard\footnote{I refer to \emph{standard} k-plus anticlustering as the minimization of differences in means and variances, but not in higher order moments or covariances.} k-plus anticlustering to divide the stimulus set into 6 groups of size 16 each. Even though the means and standard deviations are no longer perfectly matched between groups, arguably they are similar enough for any practical purposes.
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:unnamed-chunk-6}Descriptive statistics by group for the Schaper et al. (2019a; 2019b) data set, after applying k-plus anticlustering.}
+
+\begin{tabular}{rrrrrr}
+\toprule
+Group & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Typicality} & \multicolumn{1}{c}{Atypicality} & \multicolumn{1}{c}{Syllables} & \multicolumn{1}{c}{Frequency}\\
+\midrule
+1 & 16 & 4.49 (0.25) & 1.10 (0.07) & 3.44 (0.96) & 18.38 (2.45)\\
+2 & 16 & 4.49 (0.26) & 1.10 (0.07) & 3.38 (0.96) & 18.38 (2.45)\\
+3 & 16 & 4.49 (0.26) & 1.11 (0.07) & 3.44 (0.96) & 18.25 (2.44)\\
+4 & 16 & 4.49 (0.26) & 1.10 (0.07) & 3.44 (0.89) & 18.25 (2.46)\\
+5 & 16 & 4.50 (0.25) & 1.10 (0.07) & 3.38 (0.96) & 18.38 (2.42)\\
+6 & 16 & 4.49 (0.25) & 1.10 (0.07) & 3.44 (0.96) & 18.25 (2.49)\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} The cells contain mean values by cluster and the standard deviation (in parentheses).}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+Anticlustering is a partitioning method that aims for high between-group similarity and high within-group heterogeneity. In this paper, I presented the k-plus criterion for anticlustering, which focuses on maximizing between-group similarity. K-plus represents between-group similarity as discrepancies in distribution moments between groups: means, variances, skewness, kurtosis, higher order moments, and covariances. Depending on the application, a different subset of these objectives can be included in the anticlustering process. The k-plus criterion is an extension of the classical k-means criterion, which only reflects how similar groups are with regard to their means. Interestingly, however, the k-plus extension does not change the original k-means criterion because additional criteria can be incorporated by augmenting the input data.
+
+A simulation study and examples on real norming data showed that the k-plus criterion is well-suited to maximize between-group similarity with regard to multiple criteria. Given that similarity with regard to variances was achieved with almost no sacrifice to similarity in means, k-plus anticlustering should be considered as the default replacement of classical k-means when striving for between-group similarity.\footnote{A reasonable exception is given when the input data consists of binary variables because for binary data, the mean and the variance are directly dependent.} The results did however show that fulfilling multiple criteria at the same time can be challenging in small data sets. In practice, users can try out different objectives and see which specification fulfills their needs. A reasonable approach is to start ``greedy'', e.g.~by specifying that multiple distribution moments should equalized. If the results of such a greedy setup are not satisfying, users can reduce their requirements by opting for fewer criteria (e.g., only the mean and variance). Using the open source R package \texttt{anticlust}, the (repeated) application of k-plus anticlustering is easily accessible and free.
+
+\hypertarget{limitations-and-outlook}{%
+\subsection{Limitations and outlook}\label{limitations-and-outlook}}
+
+The present paper focused on the new k-plus criterion for anticlustering, but only superficially considered the multicriterion nature of this criterion. A simple unweighted sum approach was used to optimize the k-plus objective, while more sophisticated algorithmic procedures exist to tackle multicriterion optimization problems (e.g., Brusco \& Steinley, 2009). The sole focus on the objective function followed two reasonings. First, the applications showed that the local maximum search, maximizing the unweighted k-plus sum, yielded satisfying results that probably suffice in most applications. It is possible that k-plus anticlustering has a fortunate solution space where many suitable partitions exist that fulfill multiple criteria to a satisfactory degree (as suggested by Figure 1). Still, more sophisticated approaches may yield theoretically improved results, as well as the opportunity to deliberately select among partitionings that may be preferred according to different k-plus objectives. Brusco et al. (2020) gave an example of how direct algorithms can be employed to optimize multiple criteria in anticlustering applications aiming for high within-group heterogeneity. Future research should investigate if k-plus anticlustering may profit from similar algorithmic treatment. A second reason for focusing on the k-plus objective per se---independently from the algorithm that is used to optimize it---was to obtain a fair comparison to existing anticlustering objectives. In the simulation study, differences in performance could not have been interpreted if the objective function as well as the algorithm used to optimize it had differed between anticlustering methods. It was of particular interest to compare the k-plus objective with the popular diversity objective. Papenberg and Klau (2021) compared k-means anticlustering and diversity anticlustering\footnote{In their study, they used the term anticluster editing to refer to the maximization of the diversity criterion. This is because the diversity criterion is minimized as part of the cluster editing method (Shamir et al., 2004).} in a simulation study and concluded that the diversity criterion should be preferred because k-means does not equalize the spread of the distribution between groups. In contrast, maximizing the diversity leads to an appropriate balance between location and spread. Using the k-plus extension, however, the k-means criterion has regained attractivity: When opting for similarity in means and variances---and for increasing \(N\), skewness and kurtosis as well---, k-plus anticlustering clearly outperformed diversity anticlustering.
+
+\hypertarget{conclusion}{%
+\subsection{Conclusion}\label{conclusion}}
+
+This paper introduced k-plus anticlustering for maximizing between-group similarity, improving the classical k-means approach. K-plus anticlustering can be adopted whenever a group of elements has to be partitioned into equivalent parts. The method is accessible and easily usable via the R package \texttt{anticlust}.
+
+\newpage
+
+\hypertarget{references}{%
+\section{References}\label{references}}
+
+\begingroup
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-aloise2009np}{}}%
+Aloise, D., Deshpande, A., Hansen, P., \& Popat, P. (2009). NP-hardness of euclidean sum-of-squares clustering. \emph{Machine Learning}, \emph{75}(2), 245--248. \url{https://doi.org/10.1007/s10994-009-5103-0}
+
+\leavevmode\vadjust pre{\hypertarget{ref-anscombe1973}{}}%
+Anscombe, F. J. (1973). Graphs in statistical analysis. \emph{The American Statistician}, \emph{27}(1), 17--21. \url{https://doi.org/10.1080/00031305.1973.10478966}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-papaja}{}}%
+Aust, F., \& Barth, M. (2018). \emph{{papaja}: {Create} {APA} manuscripts with {R Markdown}}. \url{https://github.com/crsh/papaja}
+
+\leavevmode\vadjust pre{\hypertarget{ref-baker2002}{}}%
+Baker, K. R., \& Powell, S. G. (2002). Methods for assigning students to groups: A study of alternative objective functions. \emph{Journal of the Operational Research Society}, \emph{53}(4), 397--404. \url{https://doi.org/10.1057/palgrave.jors.2601307}
+
+\leavevmode\vadjust pre{\hypertarget{ref-brielmann2019intense}{}}%
+Brielmann, A. A., \& Pelli, D. G. (2019). Intense beauty requires intense pleasure. \emph{Frontiers in Psychology}, \emph{10}, Article 2420. \url{https://doi.org/10.3389/fpsyg.2019.02420}
+
+\leavevmode\vadjust pre{\hypertarget{ref-brusco2006branch}{}}%
+Brusco, M. J. (2006). A repetitive branch-and-bound procedure for minimum within-cluster sums of squares partitioning. \emph{Psychometrika}, \emph{71}(2), 347--363. \url{https://doi.org/10.1007/s11336-004-1218-1}
+
+\leavevmode\vadjust pre{\hypertarget{ref-brusco2019}{}}%
+Brusco, M. J., Cradit, J. D., \& Steinley, D. (2020). Combining diversity and dispersion criteria for anticlustering: A bicriterion approach. \emph{British Journal of Mathematical and Statistical Psychology}, \emph{73}(3), 375--396. \url{https://doi.org/10.1111/bmsp.12186}
+
+\leavevmode\vadjust pre{\hypertarget{ref-brusco2009cross}{}}%
+Brusco, M. J., \& Steinley, D. (2009). Cross validation issues in multiobjective clustering. \emph{British Journal of Mathematical and Statistical Psychology}, \emph{62}(2), 349--368. \url{https://doi.org/10.1348/000711008X304385}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-faux}{}}%
+DeBruine, L. (2021). \emph{Faux: Simulation for factorial designs}. Zenodo. \url{https://doi.org/10.5281/zenodo.2669586}
+
+\leavevmode\vadjust pre{\hypertarget{ref-dry2009}{}}%
+Dry, M. J., \& Storms, G. (2009). Similar but not the same: A comparison of the utility of directly rated and feature-based similarity measures for generating spatial models of conceptual data. \emph{Behavior Research Methods}, \emph{41}(3), 889--900. \url{https://doi.org/10.3758/BRM.41.3.889}
+
+\leavevmode\vadjust pre{\hypertarget{ref-ferligoj1992direct}{}}%
+Ferligoj, A., \& Batagelj, V. (1992). Direct multicriteria clustering algorithms. \emph{Journal of Classification}, \emph{9}(1), 43--61. \url{https://doi.org/10.1007/BF02618467}
+
+\leavevmode\vadjust pre{\hypertarget{ref-fernandez2013}{}}%
+Fernández, E., Kalcsics, J., \& Nickel, S. (2013). The maximum dispersion problem. \emph{Omega}, \emph{41}(4), 721--730. \url{https://doi.org/10.1016/j.omega.2012.09.005}
+
+\leavevmode\vadjust pre{\hypertarget{ref-friendly1982}{}}%
+Friendly, M., Franklin, P. E., Hoffman, D., \& Rubin, D. C. (1982). The {Toronto} word pool: Norms for imagery, concreteness, orthographic variables, and grammatical usage for 1,080 words. \emph{Behavior Research Methods \& Instrumentation}, \emph{14}(4), 375--399. \url{https://doi.org/10.3758/BF03203275}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gallego2013}{}}%
+Gallego, M., Laguna, M., Marti, R., \& Duarte, A. (2013). Tabu search with strategic oscillation for the maximally diverse grouping problem. \emph{Journal of the Operational Research Society}, \emph{64}(5), 724--734. \url{https://doi.org/10.1057/jors.2012.66}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gierl2017}{}}%
+Gierl, M., Daniels, L., \& Zhang, X. (2017). Creating parallel forms to support on-demand testing for undergraduate students in psychology. \emph{Journal of Measurement and Evaluation in Education and Psychology}, \emph{8}(3), 288--302. \url{https://doi.org/10.21031/epod.305350}
+
+\leavevmode\vadjust pre{\hypertarget{ref-jain2010}{}}%
+Jain, A. K. (2010). Data clustering: 50 years beyond k-means. \emph{Pattern Recognition Letters}, \emph{31}(8), 651--666. \url{https://doi.org/10.1016/j.patrec.2009.09.011}
+
+\leavevmode\vadjust pre{\hypertarget{ref-joanes1998}{}}%
+Joanes, D. N., \& Gill, C. A. (1998). Comparing measures of sample skewness and kurtosis. \emph{Journal of the Royal Statistical Society: Series D (The Statistician)}, \emph{47}(1), 183--189. \url{https://doi.org/10.1111/1467-9884.00122}
+
+\leavevmode\vadjust pre{\hypertarget{ref-kurdi2017introducing}{}}%
+Kurdi, B., Lozano, S., \& Banaji, M. R. (2017). Introducing the open affective standardized image set (OASIS). \emph{Behavior Research Methods}, \emph{49}(2), 457--470. \url{https://doi.org/10.3758/s13428-016-0715-3}
+
+\leavevmode\vadjust pre{\hypertarget{ref-lahl2006}{}}%
+Lahl, O., \& Pietrowsky, R. (2006). EQUIWORD: A software application for the automatic creation of truly equivalent word lists. \emph{Behavior Research Methods}, \emph{38}(1), 146--152. \url{https://doi.org/10.3758/BF03192760}
+
+\leavevmode\vadjust pre{\hypertarget{ref-marler2010}{}}%
+Marler, R. T., \& Arora, J. S. (2010). The weighted sum method for multi-objective optimization: New insights. \emph{Structural and Multidisciplinary Optimization}, \emph{41}(6), 853--862. \url{https://doi.org/10.1007/s00158-009-0460-7}
+
+\leavevmode\vadjust pre{\hypertarget{ref-naidu2014}{}}%
+Naidu, K., Mokhlis, H., \& Bakar, A. A. (2014). Multiobjective optimization using weighted sum artificial bee colony algorithm for load frequency control. \emph{International Journal of Electrical Power \& Energy Systems}, \emph{55}, 657--667. \url{https://doi.org/10.1016/j.ijepes.2013.10.022}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-anticlust}{}}%
+Papenberg, M. (2019). \emph{Anticlust: Subset partitioning via anticlustering}. \url{https://cran.r-project.org/package=anticlust}
+
+\leavevmode\vadjust pre{\hypertarget{ref-osf2023}{}}%
+Papenberg, M. (2023). \emph{K-plus anticlustering {[}{Open Science Framework Repository}{]}}. \url{https://doi.org/10.17605/OSF.IO/7G3K2}
+
+\leavevmode\vadjust pre{\hypertarget{ref-papenberg2020}{}}%
+Papenberg, M., \& Klau, G. W. (2021). Using anticlustering to partition data sets into equivalent parts. \emph{Psychological Methods}, \emph{26}(2), 161--174. \url{https://doi.org/10.1037/met0000301}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-base}{}}%
+R Core Team. (2022). \emph{R: A language and environment for statistical computing}. \url{https://www.R-project.org/}
+
+\leavevmode\vadjust pre{\hypertarget{ref-rokach2005}{}}%
+Rokach, L., \& Maimon, O. (2005). Clustering methods. In O. Maimon \& L. Rokach (Eds.), \emph{Data mining and knowledge discovery handbook} (pp. 321--352). Springer. \url{https://doi.org/10.1007/0-387-25465-X_15}
+
+\leavevmode\vadjust pre{\hypertarget{ref-schaper2019metacognitive}{}}%
+Schaper, M. L., Kuhlmann, B. G., \& Bayen, U. J. (2019a). Metacognitive expectancy effects in source monitoring: Beliefs, in-the-moment experiences, or both? \emph{Journal of Memory and Language}, \emph{107}, 95--110. \url{https://doi.org/10.1016/j.jml.2019.03.009}
+
+\leavevmode\vadjust pre{\hypertarget{ref-schaper2019metamory}{}}%
+Schaper, M. L., Kuhlmann, B. G., \& Bayen, U. J. (2019b). Metamemory expectancy illusion and schema-consistent guessing in source monitoring. \emph{Journal of Experimental Psychology: Learning, Memory, and Cognition}, \emph{45}(3), 470--496. \url{https://doi.org/10.1037/xlm0000602}
+
+\leavevmode\vadjust pre{\hypertarget{ref-shamir2004vf}{}}%
+Shamir, R., Sharan, R., \& Tsur, D. (2004). {Cluster graph modification problems}. \emph{Discrete Applied Mathematics}, \emph{144}, 173--182. \url{https://doi.org/10.1016/j.dam.2004.01.007}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-desctools}{}}%
+Signorell, A. (2022). \emph{{DescTools}: Tools for descriptive statistics}. \url{https://cran.r-project.org/package=DescTools}
+
+\leavevmode\vadjust pre{\hypertarget{ref-spath1986}{}}%
+Späth, H. (1986). Anticlustering: Maximizing the variance criterion. \emph{Control and Cybernetics}, \emph{15}(2), 213--218.
+
+\leavevmode\vadjust pre{\hypertarget{ref-steinley2006}{}}%
+Steinley, D. (2006). K-means clustering: A half-century synthesis. \emph{British Journal of Mathematical and Statistical Psychology}, \emph{59}(1), 1--34. \url{https://doi.org/10.1348/000711005X48266}
+
+\leavevmode\vadjust pre{\hypertarget{ref-tversky1977}{}}%
+Tversky, A. (1977). Features of similarity. \emph{Psychological Review}, \emph{84}(4), 327--352. \url{https://doi.org/10.1037/0033-295X.84.4.327}
+
+\leavevmode\vadjust pre{\hypertarget{ref-valev1983}{}}%
+Valev, V. (1983). Set partition principles. In J. Kozesnik (Ed.), \emph{Transactions of the ninth {Prague} conference on information theory, statistical decision functions, and random processes ({Prague}, 1982)} (pp. 251--256). Springer Netherlands.
+
+\leavevmode\vadjust pre{\hypertarget{ref-valev1998}{}}%
+Valev, V. (1998). Set partition principles revisited. In A. Amin, D. Dori, P. Pudil, \& H. Freeman (Eds.), \emph{Advances in pattern recognition. {SSPR /SPR 1998}. Lecture notes in computer science} (pp. 875--881). Springer.
+
+\leavevmode\vadjust pre{\hypertarget{ref-weitz1998}{}}%
+Weitz, R., \& Lakshminarayanan, S. (1998). An empirical comparison of heuristic methods for creating maximally diverse groups. \emph{Journal of the Operational Research Society}, \emph{49}(6), 635--646. \url{https://doi.org/10.1057/palgrave.jors.2600510}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-ggplot2}{}}%
+Wickham, H. (2016). \emph{ggplot2: Elegant graphics for data analysis}. Springer-Verlag New York. \url{https://ggplot2.tidyverse.org}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-tidyr}{}}%
+Wickham, H. (2021). \emph{Tidyr: Tidy messy data}. \url{https://CRAN.R-project.org/package=tidyr}
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-dplyr}{}}%
+Wickham, H., François, R., Henry, L., \& Müller, K. (2019). \emph{Dplyr: A grammar of data manipulation}. \url{https://CRAN.R-project.org/package=dplyr}
+
+\end{CSLReferences}
+
+\endgroup
+
+\newpage
+
+\hypertarget{appendix-appendix}{%
+\appendix}
+
+
+\hypertarget{section}{%
+\section{}\label{section}}
+
+\begin{figure}
+\centering
+\includegraphics{paper_files/figure-latex/Figure2-1.pdf}
+\caption{\label{fig:Figure2}Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by the number of features, averaged across the remaining variables that varied in the simulation).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{paper_files/figure-latex/Figure3-1.pdf}
+\caption{\label{fig:Figure3}Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by \emph{SD}, averaged across the remaining variables that varied in the simulation).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{paper_files/figure-latex/Figure4-1.pdf}
+\caption{\label{fig:Figure4}Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by \emph{K}, averaged across the remaining variables that varied in the simulation).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{paper_files/figure-latex/Figure5-1.pdf}
+\caption{\label{fig:Figure5}Results of the simulation study: Depicts the performance of the anticlustering methods with regard to minimizing discrepancy in means, variances, skewness, kurtosis and correlations (split by \emph{r}, averaged across the remaining variables that varied in the simulation).}
+\end{figure}
+
+
+\end{document}
