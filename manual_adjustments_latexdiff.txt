@@ -1,0 +1,36 @@
+- manual adjustment of the latexdiff:
+
+\DIFdelbeginFL \DIFdelFL{correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features}\DIFdelendFL -> is misplaced in a table, should not be here, use
+
+\DIFdelbegin \DIFdel{Here, the only meaningful moderating effect on anticlustering performance was that k-plus correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features.}\DIFdelendFL}\DIFdelend \DIFaddbegin 
+
+-> The overall results table is broken, just use the one from the revision (there are no changes anyway!); so manually replace this one: 
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:Table1}Results of Simulation 2.}
+
+\begin{tabular}{rrrrr}
+\toprule
+ & \multicolumn{1}{c}{$\Delta M$} & \multicolumn{1}{c}{$\Delta \mathit{SD}$} & \multicolumn{1}{c}{$\Delta \mathit{Skew}$} & \multicolumn{1}{c}{$\Delta \mathit{Kurtosis}$}\\
+\midrule
+diversity & 0.06 & 0.15 & 0.34 & 0.68\\
+k-means & 0.02 & 0.39 & 0.57 & 0.86\\
+k-plus & 0.03 & 0.03 & 0.62 & 1.03\\
+k-plus generalized & 0.04 & 0.04 & 0.26 & 0.65\\
+random & 0.53 & 0.38 & 0.54 & 0.85\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} The global results of the simulation study aggregated across all conditions. Cells contain information about the average global between-group discrepancy with regard to means, standard deviations, skewness and kurtosis. Lower values indicate less discrepancy, i.e., higher between-group similarity. Each cell value is the result of averaging across 30,000 data points (10,000 data sets $\times$ $K = 2$, $K = 3$ or $K = 4$).}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
