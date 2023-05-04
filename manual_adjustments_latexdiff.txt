@@ -1,3 +1,5 @@
+latexdiff -p preamble.tex  paper_submission.tex paper.tex > diff.tex
+
 - manual adjustment of the latexdiff:
 
 ## 1
@@ -7,6 +9,8 @@
 \DIFdelbegin \DIFdel{Here, the only meaningful moderating effect on anticlustering performance was that k-plus correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features.}\DIFdelendFL}\DIFdelend \DIFaddbegin 
 
 ## 2
+
+line ~720
 
 -> The overall results table is broken, just use the one from the revision (there are no changes anyway!); so manually replace this one: 
 
@@ -42,4 +46,15 @@ random & 0.53 & 0.38 & 0.54 & 0.85\\
 
 ## 3
 
-The SSE_kplus is broken
+The SSE_kplus is broken (but not so bad, leave it as is)
+
+## 4
+
+The section "A bicriterion model: K-plus anticlustering" has two broken within sentence new line breaks. 
+
+First: before "; a suitable optimization algorithm is then used to maximize the combined criterion." -> just delete everything in between the parts (I do not keep the removed parts anyway) (line 436)
+
+Second: before "will lead to similar means and variances between K groups, [...]" -> do the same (line 461):
+
+\DIFdel{and \(z_{i.} = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, y_{iP})\), the bicriterion }\DIFdelend \DIFaddbegin \DIFadd{Maximizing }\DIFaddend \(\mathit{SSE_{kplus}}\) \DIFdelend \DIFaddbegin \DIFadd{will lead to similar means and variances between \(K\) groups, while }\DIFaddend the weights \(w_1\) and \(w_2\) \DIFdelbegin \DIFdel{are ignored when computing \(\mathit{SSE_{kplus}}\). Because the computation of the new attribute values \(y_{ij}\) involves squaring, their range of values is expected to be very different from the raw values \(x_{ij}\) (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of \(\mathit{SSE}\) and \(\mathit{SSE_{Var}}\) when computing \(\mathit{SSE_{kplus}}\). To ensure an equal weight of both criteria, all attributes (\(x_{ij}\) and \(y_{ij}\)) can be standardized before computing \(\mathit{SSE_{kplus}}\), e.g.~via \(z\)-standardization}\DIFdelend \DIFaddbegin \DIFadd{can be chosen to adjust the relative importance of equalizing means and variances, respectively}\DIFaddend .
+
