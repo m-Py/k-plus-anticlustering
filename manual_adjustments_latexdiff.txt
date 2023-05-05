@@ -52,9 +52,10 @@ The SSE_kplus is broken (but not so bad, leave it as is)
 
 The section "A bicriterion model: K-plus anticlustering" has two broken within sentence new line breaks. 
 
-First: before "; a suitable optimization algorithm is then used to maximize the combined criterion." -> just delete everything in between the parts (I do not keep the removed parts anyway) (line 436)
+First: before "; a suitable optimization algorithm is then used to maximize the combined criterion." -> just delete everything in between the parts (I do not keep the removed parts anyway) (line 436) ("\DIFdelbegin" in line 436 to "; a suitable...")
 
 Second: before "will lead to similar means and variances between K groups, [...]" -> do the same (line 461):
 
 \DIFdel{and \(z_{i.} = (x_{i1}, \ldots, x_{iP}, y_{i1}, \ldots, y_{iP})\), the bicriterion }\DIFdelend \DIFaddbegin \DIFadd{Maximizing }\DIFaddend \(\mathit{SSE_{kplus}}\) \DIFdelend \DIFaddbegin \DIFadd{will lead to similar means and variances between \(K\) groups, while }\DIFaddend the weights \(w_1\) and \(w_2\) \DIFdelbegin \DIFdel{are ignored when computing \(\mathit{SSE_{kplus}}\). Because the computation of the new attribute values \(y_{ij}\) involves squaring, their range of values is expected to be very different from the raw values \(x_{ij}\) (e.g., see Figure 1). This imbalance can strongly and unpredictably influence the relative weight of \(\mathit{SSE}\) and \(\mathit{SSE_{Var}}\) when computing \(\mathit{SSE_{kplus}}\). To ensure an equal weight of both criteria, all attributes (\(x_{ij}\) and \(y_{ij}\)) can be standardized before computing \(\mathit{SSE_{kplus}}\), e.g.~via \(z\)-standardization}\DIFdelend \DIFaddbegin \DIFadd{can be chosen to adjust the relative importance of equalizing means and variances, respectively}\DIFaddend .
 
+(replace till line 479)
