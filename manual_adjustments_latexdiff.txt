@@ -2,13 +2,7 @@ latexdiff -p preamble.tex  paper_submission.tex paper.tex > diff.tex
 
 - manual adjustment of the latexdiff:
 
-## 1
-
-\DIFdelbeginFL \DIFdelFL{correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features}\DIFdelendFL -> is misplaced in a table, should not be here, use
-
-\DIFdelbegin \DIFdel{Here, the only meaningful moderating effect on anticlustering performance was that k-plus correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features.}\DIFdelendFL}\DIFdelend \DIFaddbegin 
-
-## 2
+## 3
 
 line ~720
 
@@ -43,16 +37,23 @@ random & 0.53 & 0.38 & 0.54 & 0.85\\
 
 \end{table}
 
+## 2
+remove the "correlation was more strongly impaired " stuff
+
+~line 779
+
+\DIFdelbeginFL \DIFdelFL{correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features}\DIFdelendFL -> is misplaced in a table, should not be here, use
+
+\DIFdelbegin \DIFdel{Here, the only meaningful moderating effect on anticlustering performance was that k-plus correlation was more strongly impaired than other methods when the number of features increased. Because the number of covariances increases quadratically when the number of features increases, it gets comparatively more difficult to fulfill the correlation objective with a higher number of features.}\DIFdelendFL}\DIFdelend \DIFaddbegin 
 
 ## 3
 
-The SSE_kplus is broken (but not so bad, leave it as is)
-
-## 4
-
 The section "A bicriterion model: K-plus anticlustering" has two broken within sentence new line breaks. 
 
-First: before "; a suitable optimization algorithm is then used to maximize the combined criterion." -> just delete everything in between the parts (I do not keep the removed parts anyway) (line 436) ("\DIFdelbegin" in line 436 to "; a suitable...")
+First: after "That is, all criteria are computed independently from each other and are then
+combined into a single criterion through a weighted sum"
+
+before "; a suitable optimization algorithm is then used to maximize the combined criterion." -> just delete everything in between the parts (I do not keep the removed parts anyway) (line 436) ("\DIFdelbegin" in line 436 to "; a suitable...")
 
 Second: before "will lead to similar means and variances between K groups, [...]" -> do the same (line 461):
 
