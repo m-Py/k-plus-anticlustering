@@ -19,7 +19,7 @@ authornote: |
 
 abstract: |
 
-    Anticlustering refers to the process of partitioning elements into disjoint groups with the goal of obtaining high between-group similarity and high within-group heterogeneity. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---and is usually approached by maximizing instead of minimizing a clustering objective function. Introducing k-plus, this paper presents an extension of the classical k-means objective to maximize between-group similarity in anticlustering applications. The k-plus criterion represents between-group similarity as discrepancy in distribution moments (means, variance, skewness, and higher order moments), whereas the k-means criterion only reflects the degree to which groups differ in their means. While constituting a new criterion for anticlustering, it is surprisingly shown that k-plus anticlustering can be implemented by optimizing the original k-means criterion after the input data has been augmented with additional variables. A computer simulation and practical examples show that k-plus anticlustering achieves high between-group similarity with regard to multiple objectives. In particular, optimizing between-group similarity with regard to variances usually does not compromise similarity with regard to means; the k-plus extension is therefore generally preferred over classical k-means anticlustering. Examples are given on how k-plus anticlustering can be applied to real norming data using the open source R package `anticlust`, which is freely available via CRAN (https://cran.r-project.org/package=anticlust).
+    Anticlustering refers to the process of partitioning elements into disjoint groups with the goal of obtaining high between-group similarity and high within-group heterogeneity. Anticlustering thereby reverses the logic of its better known twin—cluster analysis—and is usually approached by maximizing instead of minimizing a clustering objective function. This paper presents k-plus, an extension of the classical k-means objective to maximize between-group similarity in anticlustering applications. K-plus represents between-group similarity as discrepancy in distribution moments (means, variance, and higher order moments), whereas the k-means criterion only reflects groups differences with regard to means. While constituting a new criterion for anticlustering, it is shown that k-plus anticlustering can be implemented by optimizing the original k-means criterion after the input data has been augmented with additional variables. A computer simulation and practical examples show that k-plus anticlustering achieves high between-group similarity with regard to multiple objectives. In particular, optimizing between-group similarity with regard to variances usually does not compromise similarity with regard to means; the k-plus extension is therefore generally preferred over classical k-means anticlustering. Examples are given on how k-plus anticlustering can be applied to real norming data using the open source R package anticlust, which is freely available via CRAN.
   
 bibliography      : ["lit.bib"]
   
@@ -562,7 +562,7 @@ ARIs <- gsub("0.", ".", ARIs, fixed = TRUE)
 # remove diagonal
 diag(ARIs) <- ""
 ARIs <- ARIs[, -ncol(ARIs)]
-
+ARIs <- ARIs[-1, ]
 
 apa_table(
   ARIs,
