@@ -24,7 +24,7 @@ abstract: |
 bibliography      : ["lit.bib"]
   
 keywords          : "Anticlustering, k-means, k-plus, variance, skewness, kurtosis, stimulus selection"
-wordcount         : "4992"
+wordcount         : "6825"
 
 floatsintext      : yes
 figurelist        : no
