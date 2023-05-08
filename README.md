@@ -10,4 +10,4 @@ The manuscript has been uploaded to the PsyArXiv preprint server (available via 
   * ... ensure that the packages that are loaded in the first R code chunk are installed (in particular, use the development version of [papaja](https://github.com/crsh/papaja) to render it in APA 7th ed. style)
   * ... use `rmarkdown::render("paper.Rmd")` in the R console or the Knit button in the RStudio IDE
 - The Rmd file paper.Rmd contains all required code to reproduce the anticlustering examples in the paper
-- The directory `./Simulation_Study` contains the code and all information needed to to reproduce the simulation study reported in the manuscript
+- The directories `./Simulation_1` and `./Simulation_2` contain the code and all information needed to to reproduce the simulation studies reported in the manuscript
