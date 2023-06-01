@@ -22,10 +22,12 @@ rownames(df) <- NULL
 length(unique(df$ID))
 table(table(df$ID))
 
+df <- rename(df, range_obj = diff_range)
+
 # Make long format
 ldf <- pivot_longer(
   df,
-  cols = paste0(c("means", "sd", "skew", "kur", "cor"), "_obj"),
+  cols = paste0(c("means", "sd", "skew", "kur", "cor", "range"), "_obj"),
   names_to = "Objective",
   names_pattern = "(.*)_obj"
 )
@@ -35,7 +37,7 @@ ldf %>%
   group_by(method, Objective) %>% 
   summarise(Mean = round(mean(value), 2)) %>% 
   pivot_wider(names_from = Objective, values_from = Mean) %>% 
-  select(c(means, sd, skew, kur, cor))
+  select(c(means, sd, skew, kur, cor, range))
 
 
 # Plot the results, by N
@@ -58,8 +60,8 @@ ldf %>%
   mutate(
     Objective = ordered(
       Objective, 
-      levels = c("means", "sd", "skew", "kur", "cor"),
-      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation"))
+      levels = c("means", "sd", "skew", "kur", "cor", "range"),
+      labels = c("M", "SD", "Skew", "Kurtosis", "Correlation", "Range"))
   ) %>% 
   ggplot(aes(x = M, y = Mean, colour = method)) + 
   geom_line(aes(linetype = method), size = .85) + 

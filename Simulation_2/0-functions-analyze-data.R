@@ -21,6 +21,7 @@ compute_objectives <- function(row, K) {
   skew_obj <- var_skew(anticlusters, data)
   kur_obj <- var_kurtosis(anticlusters, data)
   cor_obj <- var_cors(anticlusters, data)
+  diff_range <- total_range_diff_by_cluster(data, anticlusters)
   
   return(c(
     row["ID"],
@@ -29,7 +30,8 @@ compute_objectives <- function(row, K) {
     sd_obj = sd_obj,
     skew_obj = skew_obj,
     kur_obj = kur_obj,
-    cor_obj = cor_obj
+    cor_obj = cor_obj,
+    diff_range = diff_range
   ))
 }
 
@@ -102,4 +104,11 @@ range_diff <- function(x) {
 # Compute features for k-means-extended criterion
 squared_from_mean <- function(data) {
   apply(data, 2, function(x) (x - mean(x))^2)
+}
+
+# compare difference in range by cluster on original data, not descriptives! 
+total_range_diff_by_cluster <- function(features, clusters) {
+  tt <- by(features, clusters, function(x) apply(x, 2, range))
+  tt <- lapply(tt, function(x) x[2, ] - x[1, ])
+  mean(apply(simplify2array(tt), 1, range_diff))
 }
