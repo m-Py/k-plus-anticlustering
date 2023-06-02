@@ -22,12 +22,12 @@ rownames(df) <- NULL
 length(unique(df$ID))
 table(table(df$ID))
 
-df <- rename(df, range_obj = diff_range)
+df <- rename(df, mean_diff_range_obj = mean_diff_range, sum_range_obj = sum_range)
 
 # Make long format
 ldf <- pivot_longer(
   df,
-  cols = paste0(c("means", "sd", "skew", "kur", "cor", "range"), "_obj"),
+  cols = paste0(c("means", "sd", "skew", "kur", "cor", "mean_diff_range", "sum_range"), "_obj"),
   names_to = "Objective",
   names_pattern = "(.*)_obj"
 )
@@ -37,7 +37,7 @@ ldf %>%
   group_by(method, Objective) %>% 
   summarise(Mean = round(mean(value), 2)) %>% 
   pivot_wider(names_from = Objective, values_from = Mean) %>% 
-  select(c(means, sd, skew, kur, cor, range))
+  select(c(means, sd, skew, kur, cor, mean_diff_range, sum_range))
 
 
 # Plot the results, by N
