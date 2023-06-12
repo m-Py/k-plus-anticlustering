@@ -2,7 +2,7 @@
 
 This repository contains materials for the manuscript
 
-k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity. *British Journal of Mathematical and Statistical Psychology*.
+Papenberg, M. (in press). k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity. *British Journal of Mathematical and Statistical Psychology*.
 
 The preprint of the manuscript is available from the PsyArXiv preprint server: https://psyarxiv.com/7jw6v.
 
