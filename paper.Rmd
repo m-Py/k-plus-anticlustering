@@ -117,10 +117,10 @@ $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Note that there is a direct connection between the $\mathit{SSE}$ and the location of the cluster centroids [@spath1986]. If the $\mathit{SSE}$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{\mathbf{x}}_1, \overline{\mathbf{x}}_2, \ldots, \overline{\mathbf{x}}_P$), where $\overline{\mathbf{x}}_j$ ($j = 1, \ldots, P$) is the overall mean value on the $j$'th attribute:
+Note that there is a direct connection between the $\mathit{SSE}$ and the location of the cluster centroids [@spath1986]. If the $\mathit{SSE}$ is minimal---which is the goal of k-means *clustering*---, the centroid values $\overline{\mathbf{x}}^{(k)} (k = 1, \ldots, K)$ are as far away as possible from the overall data centroid $\overline{\mathbf{x}} = (\overline{x}_1, \overline{x}_2, \ldots, \overline{x}_P)$, where $\overline{x}_j$ ($j = 1, \ldots, P$) is the overall mean value on the $j$'th attribute:
 
 $$
-\overline{\mathbf{x}}_j = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ij}
+\overline{x}_j = \frac{1}{N} \sum\limits_{i=1}^{N} x_{ij}
 $$
 
 If the $\mathit{SSE}$ is maximal---which is the goal of k-means *anticlustering*---, the cluster centroids are as close as possible to the overall centroid $\overline{\mathbf{x}}$ and therefore to each other [@spath1986]. Thus, k-means anticlustering directly optimizes the similarity of the mean attribute values between clusters.
@@ -141,7 +141,7 @@ $$
 
 Because the sample variance is basically defined as an average---and k-means anticlustering minimizes differences with regard to averages---k-means anticlustering can be employed to equalize the variance across groups. This constitutes the central insight motivating the new k-plus criterion. 
 
-Thus, to obtain an adaptation of the $\mathit{SSE}$ whose maximization can minimize differences in variances between groups, a new variable is computed for each original variable: The new variable represents the squared distance of each of the original values to the overall mean of the variable. We obtain a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{\mathbf{x}}_j)^2$. On the basis of $\mathbf{Y}_{N \times P}$, we define the criterion $\mathit{SSE_{Var}}$:
+Thus, to obtain an adaptation of the $\mathit{SSE}$ whose maximization can minimize differences in variances between groups, a new variable is computed for each original variable: The new variable represents the squared distance of each of the original values to the overall mean of the variable. We obtain a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$. On the basis of $\mathbf{Y}_{N \times P}$, we define the criterion $\mathit{SSE_{Var}}$:
 
 $$
 \mathit{SSE_{Var}} = 
@@ -294,18 +294,18 @@ points(
 The k-plus logic to equalizing group variances as well as group means can be seamlessly generalized to higher order moments. The *t*'th sample moment of a variable $x = (x_1, \ldots, x_N)$ can be computed as 
 
 $$
-\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{\mathbf{x}})^t.
+\frac{1}{N} \sum\limits_{i=1}^{N} (x_i - \overline{x})^t.
 $$
 
 where $t = 2$ gives the variance, $t = 3$ the skewness, and $t = 4$ the kurtosis [@joanes1998]. Thus, by changing $t$---the power of the deviation between mean and data points---we can use the k-plus logic to equalize any desired sample moment between groups. That is, to extend the k-plus criterion to higher order moments, we compute a new variable for each original variable and for each distribution moment that should be considered in the anticlustering process. Analogously to the computation of $\mathit{SSE_{Var}}$, we could then define an $\mathit{SSE_{Skew}}$ using $t = 3$ or an $\mathit{SSE_{Kurtosis}}$ using $t = 4$. However, to formalize the computation of the k-plus criterion for an arbitrary number of distribution moments, some new notation has to be provided.
 
-We define the $j$'th column ($j = 1, \ldots, P$) of the original data matrix $\mathbf{X}_{N \times P}$ as $x_{\cdot j} =  (x_{1j}, \ldots, x_{Nj})$ where the column mean---the overall mean of the $j$'th attribute---is $\overline{\mathbf{x}}_j$. Let $T$ be the number of distribution moments that should be similar across $K$ groups. For each moment $t$ ($t = 1, \ldots, T$) and for each variable $x_{\cdot j}$ ($j = 1, \ldots, P$), a new *k-plus variable* $\hat{x}_{t \cdot j} = (\hat{x}_{t1j}, \ldots, \hat{x}_{tNj})$ is defined where
+We define the $j$'th column ($j = 1, \ldots, P$) of the original data matrix $\mathbf{X}_{N \times P}$ as $x_{\cdot j} =  (x_{1j}, \ldots, x_{Nj})$ where the column mean---the overall mean of the $j$'th attribute---is $\overline{x}_j$. Let $T$ be the number of distribution moments that should be similar across $K$ groups. For each moment $t$ ($t = 1, \ldots, T$) and for each variable $x_{\cdot j}$ ($j = 1, \ldots, P$), a new *k-plus variable* $\hat{x}_{t \cdot j} = (\hat{x}_{t1j}, \ldots, \hat{x}_{tNj})$ is defined where
 
 $$
 \hat{x}_{tij} = 
 \begin{cases}
     x_{ij} & \text{if } t = 1\\
-    (x_{ij} - \overline{\mathbf{x}}_j)^t, & \text{if } t > 1.
+    (x_{ij} - \overline{x}_j)^t, & \text{if } t > 1.
 \end{cases}
 $$
 
@@ -338,18 +338,18 @@ $$
   \mathbf{X'}_{N \times \mathit{TP}} =
   \left[ {\begin{array}{ccc|ccc|c|ccc}
     x_{11} & \cdots & x_{1P} & 
-        (x_{11} - \overline{\mathbf{x}}_1)^2 & \cdots & (x_{1P} - \overline{\mathbf{x}}_P)^2 & 
+        (x_{11} - \overline{x}_1)^2 & \cdots & (x_{1P} - \overline{x}_P)^2 & 
         \cdots & 
-        (x_{11} - \overline{\mathbf{x}}_1)^T & \cdots & (x_{1P} - \overline{\mathbf{x}}_P)^T \\
+        (x_{11} - \overline{x}_1)^T & \cdots & (x_{1P} - \overline{x}_P)^T \\
     x_{21} & \cdots & x_{2P} & 
-        (x_{21} - \overline{\mathbf{x}}_1)^2 & \cdots & (x_{2P} - \overline{\mathbf{x}}_P)^2 & 
+        (x_{21} - \overline{x}_1)^2 & \cdots & (x_{2P} - \overline{x}_P)^2 & 
         \cdots & 
-        (x_{21} - \overline{\mathbf{x}}_1)^T & \cdots & (x_{2P} - \overline{\mathbf{x}}_P)^T \\
+        (x_{21} - \overline{x}_1)^T & \cdots & (x_{2P} - \overline{x}_P)^T \\
     \vdots & \ddots & \vdots & \vdots & \ddots & \vdots & \cdots & \vdots & \ddots & \vdots\\
     x_{N1} & \cdots & x_{NP} & 
-        (x_{N1} - \overline{\mathbf{x}}_1)^2 & \cdots & (x_{NP} - \overline{\mathbf{x}}_P)^2 & 
+        (x_{N1} - \overline{x}_1)^2 & \cdots & (x_{NP} - \overline{x}_P)^2 & 
         \cdots & 
-        (x_{N1} - \overline{\mathbf{x}}_1)^T & \cdots & (x_{NP} - \overline{\mathbf{x}}_P)^T \\
+        (x_{N1} - \overline{x}_1)^T & \cdots & (x_{NP} - \overline{x}_P)^T \\
   \end{array} } \right]
 $$
 
