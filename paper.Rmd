@@ -42,6 +42,7 @@ header-includes:
   - \usepackage{setspace}
   - \usepackage{float}
   - \usepackage{amsmath}
+  - \usepackage{hyperref}
   - \floatstyle{plaintop}
   - \restylefloat{figure}
   - |
@@ -66,8 +67,7 @@ header-includes:
 
 csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
 documentclass     : "apa7"
-note              : "\\begin{flushleft} This is the preprint of a paper that is now in press at the British Journal of Mathematical and Statistical Psychology. The DOI will be made available as soon as it is exists. \\newline \\newline Papenberg, M. (in press). k-plus Anticlustering: An Improved k-means Criterion for Maximizing Between-Group Similarity. \\textit{British Journal of Mathematical and Statistical Psychology}.  \\end{flushleft}"
-
+note              : "\\begin{flushleft} This paper is not the copy of record and may not exactly replicate the final, authoritative version of the article. The final article is available from the \\emph{British Journal of Mathematical and Statistical Psychology} via its DOI: \\href{https://doi.org/10.1111/bmsp.12315}{10.1111/bmsp.12315} \\end{flushleft}"
 ---
 
 ```{r setup, include = FALSE}
