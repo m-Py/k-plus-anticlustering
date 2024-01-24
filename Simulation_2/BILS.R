@@ -1,9 +1,12 @@
 
+# I suggest running this script on the command line via Rscript "BILS.R"
+# Repeat until all data sets were processed
+
 library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
-BATCH_SIZE_SIMULATION <- 5
+BATCH_SIZE_SIMULATION <- 25
 
 files <- list.files("./datasets", full.names = FALSE)
 
@@ -26,6 +29,7 @@ for (i in 1:length(files)) {
     for (separate_dispersion_distances in c(FALSE, TRUE)) {
       if (separate_dispersion_distances) { # optimize dispersion on other distances
         N <- nrow(data)
+        # randomly select other file with the same N, compute distances based on this
         other_file <- sample(list.files("./datasets", pattern = paste0("N", N, "_"), full.names = TRUE), 1)
         dispersion_distances <- dist(read.csv(other_file))
       } else {
@@ -35,29 +39,34 @@ for (i in 1:length(files)) {
       opt <- optimal_dispersion(dispersion_distances, K = K, npartitions = RUNS_MBPI)
       end <- Sys.time()
       
+      start_vanilla <- Sys.time()
       GROUPS_BILS_VANILLA <- BILS_VANILLA(
         data, 
         K = K, 
         RUNS_MBPI = RUNS_MBPI, 
         dispersion_distances = dispersion_distances
       )
+      end_vanilla <- Sys.time()
       # Rerun BILS_VANILLA if the dispersion it returns is not optimal
       # do 10, 100, 1000, 10000
       
       if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) != opt$dispersion) {
         for (RUNS in c(10, 100, 1000, 10000)) {
+          start_vanilla <- Sys.time()
           GROUPS_BILS_VANILLA_REPEATED <- BILS_VANILLA(
             data, 
             K = K, 
             RUNS_MBPI = RUNS, 
             dispersion_distances = dispersion_distances
           )
+          end_vanilla <- Sys.time()
+          # test if optimum was found
           if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA_REPEATED) == opt$dispersion) {
             RUNS_TILL_OPTIMUM <- RUNS
             break
           } else {
             if (RUNS == 10000) {
-              RUNS_TILL_OPTIMUM <- -1
+              RUNS_TILL_OPTIMUM <- -1 # encode that no optimum was found even with 10000 repetitions
             }
           }
         }
@@ -76,6 +85,12 @@ for (i in 1:length(files)) {
         init_partitions = opt$groups, 
         dispersion_distances = dispersion_distances
       )
+      GROUPS_BILS_E_ALL_RESTRICTED <- BILS_E_ALL_RESTRICTED(
+        data, 
+        init_partitions = opt$groups, 
+        cannot_link = opt$edges,
+        dispersion_distances = dispersion_distances
+      )
       
       # store data associated with simulation run
       assign(paste0("df", K, separate_dispersion_distances), data.frame(
@@ -88,11 +103,14 @@ for (i in 1:length(files)) {
         DISP_VANILLA = dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA),
         DISP_E_1 = dispersion_objective(dispersion_distances, GROUPS_BILS_E_1),
         DISP_E_ALL = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL),
+        DISP_E_ALL_RESTRICTED = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL_RESTRICTED),
         DIV_VANILLA = diversity_objective(data, GROUPS_BILS_VANILLA),
         DIV_E_1 = diversity_objective(data, GROUPS_BILS_E_1),
         DIV_E_ALL = diversity_objective(data, GROUPS_BILS_E_ALL),
+        DIV_E_ALL_RESTRICTED = diversity_objective(data, GROUPS_BILS_E_ALL_RESTRICTED),
         RUNS_BILS_VANILLA = RUNS_TILL_OPTIMUM,
-        time_optimal_s = as.numeric(difftime(end, start, units = "s"))
+        time_optimal_s = as.numeric(difftime(end, start, units = "s")),
+        time_vanilla_s = as.numeric(difftime(end_vanilla, start_vanilla, units = "s"))
       ))
     }
   }
