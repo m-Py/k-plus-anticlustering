@@ -9,12 +9,15 @@ nrow(df)
 
 length(unique(df$file)) # number of simulation runs / files
 
-# Both E methods have optimal solution?
+# All E methods have optimal solution?
 sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
+sum(df$DISP_E_1 != df$DISP_E_ALL_RESTRICTED)
 
 # Time to solve optimally
 max(df$time_optimal_s)
+max(df$time_vanilla_s)
 tapply(df$time_optimal_s, list(df$N, df$K), median) |> round(2)
+tapply(df$time_vanilla_s, list(df$N, df$K), median) |> round(2)
 
 table(df$RUNS_BILS_VANILLA)
 table(df$RUNS_BILS_VANILLA, df$K)
@@ -36,16 +39,19 @@ tt <- df[df$VANILLA_FOUND_OPTIMUM, ]
 
 t.test(tt$DIV_VANILLA, tt$DIV_E_1, paired = TRUE)
 t.test(tt$DIV_VANILLA, tt$DIV_E_ALL, paired = TRUE)
+t.test(tt$DIV_VANILLA, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
 t.test(tt$DIV_E_1, tt$DIV_E_ALL, paired = TRUE)
+t.test(tt$DIV_E_1, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
+t.test(tt$DIV_E_ALL, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
+# VANILLA seems to best optimize the diversity, but does not always find the optimal dispersion. so this analysis is actually flawes because of systematic missing values... what is the most appropriate analysis? BILS-E with restrictions may even be better with regard to max diversity! (even in flawed analysis with dropouts)
 
-# VANILLA seems to best optimize the diversity, but does not always find the optimal dispersion. so this analysis is actually flawes because of systematic missing values... what is the most appropriate analysis?
+# Important take aways (preliminary)
 
-# Important take aways
-
-# Diversity is actually higher if the dispersion is optimized on the basis of different data (IS THAT SO?????)
+# Diversity is lower if the dispersion is optimized on the basis of different data (that makes sense I guess)
 # E_ALL is better than E_1 (it seems...)
 # VANILLA BILS has more difficulties finding the optimal solution if the dispersion is optimized on the basis of a different data set
 # The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets (N = 300, K = 4)
+# Restricted method may be best (?). This would indicate that using LCW is just as effective as BILS
 
 
 lf <- pivot_longer(df, cols = starts_with(c("DIV", "DISP")))
