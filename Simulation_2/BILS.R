@@ -3,7 +3,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
-BATCH_SIZE_SIMULATION <- 20
+BATCH_SIZE_SIMULATION <- 5
 
 files <- list.files("./datasets", full.names = FALSE)
 
@@ -15,7 +15,7 @@ if (file.exists("results_bils.csv")) {
 }
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
-files <- sample(files, size = max(BATCH_SIZE_SIMULATION, length(files)))
+files <- sample(files, size = min(BATCH_SIZE_SIMULATION, length(files)))
 
 for (i in 1:length(files)) {
   file <- files[i]
