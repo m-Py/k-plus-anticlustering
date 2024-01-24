@@ -3,16 +3,19 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
+BATCH_SIZE_SIMULATION <- 20
 
-# adjust "size" to not do the simulation at once
-files <- sample(list.files("./datasets", full.names = FALSE), size = 5)
+files <- list.files("./datasets", full.names = FALSE)
 
-# do not replicate previous files:
+# Do not replicate previous files:
 if (file.exists("results_bils.csv")) {
   files_processed <- read.csv("results_bils.csv", sep = ";")$file
   already_processed <- gsub(".csv", replacement = "", x = files) %in% files_processed
   files <- files[!already_processed]
 }
+
+# Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
+files <- sample(files, size = max(BATCH_SIZE_SIMULATION, length(files)))
 
 for (i in 1:length(files)) {
   file <- files[i]
@@ -23,7 +26,7 @@ for (i in 1:length(files)) {
     for (separate_dispersion_distances in c(FALSE, TRUE)) {
       if (separate_dispersion_distances) { # optimize dispersion on other distances
         N <- nrow(data)
-        other_file <- sample(list.files("./datasets", pattern = paste0("N", N), full.names = TRUE), 1)
+        other_file <- sample(list.files("./datasets", pattern = paste0("N", N, "_"), full.names = TRUE), 1)
         dispersion_distances <- dist(read.csv(other_file))
       } else {
         dispersion_distances <- dist(data)
