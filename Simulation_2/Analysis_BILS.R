@@ -9,6 +9,8 @@ nrow(df)
 
 length(unique(df$file)) # number of simulation runs / files
 
+table(table(df$file)) # all 6!
+
 # All E methods have optimal solution?
 sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
 sum(df$DISP_E_1 != df$DISP_E_ALL_RESTRICTED)
