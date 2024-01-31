@@ -6,7 +6,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
-BATCH_SIZE_SIMULATION <- 250
+BATCH_SIZE_SIMULATION <- 500
 
 files <- list.files("./datasets", full.names = FALSE)
 

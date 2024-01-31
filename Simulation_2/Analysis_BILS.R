@@ -24,6 +24,8 @@ tapply(df$time_vanilla_s, list(df$N, df$K), median) |> round(2)
 table(df$RUNS_BILS_VANILLA)
 table(df$RUNS_BILS_VANILLA, df$K)
 
+(table(df$RUNS_BILS_VANILLA, df$K) / sum(table(df$RUNS_BILS_VANILLA))) |> round(3) * 100
+
 # this is highly interesting: time to solve max dispersion problem optimally is related to the number of runs the heuristic requires to find optimal solution (not surprising, but nice)
 tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
 
