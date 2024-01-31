@@ -34,6 +34,8 @@ mean(df$VANILLA_FOUND_OPTIMUM)
 tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean) |> round(2)
 tapply(df$VANILLA_FOUND_OPTIMUM, list(df$K, df$separate_dispersion_distances), mean) |> round(2)
 
+chisq.test(table(df$VANILLA_FOUND_OPTIMUM, df$separate_dispersion_distances))
+
 # not sure if this analysis makes sense:
 colMeans(df[df$VANILLA_FOUND_OPTIMUM & df$separate_dispersion_distances == 0, grepl("DIV", colnames(df))])
 
