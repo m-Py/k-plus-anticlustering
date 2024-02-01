@@ -36,10 +36,30 @@ tapply(df$VANILLA_FOUND_OPTIMUM, list(df$K, df$separate_dispersion_distances), m
 
 chisq.test(table(df$VANILLA_FOUND_OPTIMUM, df$separate_dispersion_distances))
 
-# not sure if this analysis makes sense:
-colMeans(df[df$VANILLA_FOUND_OPTIMUM & df$separate_dispersion_distances == 0, grepl("DIV", colnames(df))])
+# Descriptives:
+df |>
+  filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
+  group_by(separate_dispersion_distances, K) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    VANILLA = mean(DIV_VANILLA)
+  )
 
-colMeans(df[df$VANILLA_FOUND_OPTIMUM & df$separate_dispersion_distances == 1, grepl("DIV", colnames(df))])
+
+# Descriptives without bias, only Extended versions
+df |>
+  group_by(separate_dispersion_distances, K) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED)
+  )
+
+
+
+
 
 tt <- df[df$VANILLA_FOUND_OPTIMUM, ]
 
@@ -53,11 +73,11 @@ t.test(tt$DIV_E_ALL, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
 
 # Important take aways (preliminary)
 
-# Diversity is lower if the dispersion is optimized on the basis of different data (that makes sense I guess)
-# E_ALL is better than E_1 (it seems...)
-# VANILLA BILS has more difficulties finding the optimal solution if the dispersion is optimized on the basis of a different data set
-# The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets (N = 300, K = 4)
-# Restricted method may be best (?). This would indicate that using LCW is just as effective as BILS
+# - Diversity is lower if the dispersion is optimized on the basis of different data (that makes sense I guess)
+# - E_ALL is better than E_1
+# - VANILLA BILS has more difficulties finding the optimal diversity if the dispersion is optimized on the basis of a different data set
+# - The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets (N = 300, K = 4) (current maximum solving time 200 seconds)
+# - Restricted method is the best extension that ensures the maximum dispersion (This would indicate that using unicriterion LCW is just as effective as BILS)
 
 
 lf <- pivot_longer(df, cols = starts_with(c("DIV", "DISP")))
