@@ -1,6 +1,8 @@
 # https://osf.io/w8jzn/ # OFS project page for paper
 # https://osf.io/y7efm
 
+library(anticlust)
+
 file <- ifelse(file.exists("Materials Experiment 3.csv"), "Materials Experiment 3.csv", "https://osf.io/download/y7efm/")
 
 df <- read.csv(file)
@@ -55,6 +57,8 @@ opt <- optimal_dispersion( # E ALL NOT GOOD HERE?!
   bathroom_dists,
   K = 3
 )
+
+1:nrow(bathroom) %in% unique(opt$edges) # !!
 
 features <- bathroom[, c("ConsistencyRating", "InconsistencyRating_Bedroom",
                          "InconsistencyRating_Kitchen", "Syllables", "Frequency")]
@@ -130,6 +134,11 @@ points(
 legend("bottomleft", legend = c("VANILLA", "E_1", "E_1_RESTRICTED"),
        pch = c(19, 17, 25), col = c("red", "#ABCDEF", "orange"),
        pt.bg = c("red", "#ABCDEF", "orange"), cex = 3)
+
+# Do all methods have optimal dispersion?
+max(dispersions_pareto1) == opt$dispersion
+max(dispersions_pareto2) == opt$dispersion
+max(dispersions_pareto3) == opt$dispersion
 
 # Select partition!
 all_sets <- list(diversities_pareto1, diversities_pareto2, diversities_pareto3)
