@@ -40,19 +40,6 @@ positions_by_value <- function(x, fun = min, value = NULL) {
   which(tt == fun(tt, na.rm = TRUE), arr.ind = TRUE)
 }
 
-lt <- Levenshtein_Dist(df$Item)
-hist(lt)
-
-min(lt)
-
-# observe pairs of similar orthography
-df[t(positions_min_dist(lt)),]
-df[t(positions_by_value(lt, value = sort(lt)[2])), ]
-df[t(positions_by_value(lt, value = sort(lt)[4])), ]
-df[t(positions_by_value(lt, value = sort(lt)[5])), ]
-df[t(positions_by_value(lt, value = sort(lt)[7])), ]
-# Definition of Levenshtein normalization as done above seems to be reasonable
-
 bathroom <- subset(df, Scene == "bathroom")
 bathroom_dists <- as.matrix(Levenshtein_Dist(bathroom$Item))
 runs <- 5000
@@ -67,43 +54,44 @@ features <- bathroom[, c("ConsistencyRating", "InconsistencyRating_Bedroom",
                          "InconsistencyRating_Kitchen", "Syllables", "Frequency")]
 
 kplus_features <- kplus_moment_variables(features, 2)
+kplus_distances <- as.matrix(dist(kplus_features)^2)
 
 pareto_set_E_1 <- bicriterion_anticlustering( # E_1
-  kplus_features,
+  kplus_distances,
   K = opt$groups,
   R = c(runs, runs),
   dispersion_distances = bathroom_dists
 )
 
-diversities_pareto1 <- apply(pareto_set_E_1, 1, diversity_objective, x = kplus_features)
+diversities_pareto1 <- apply(pareto_set_E_1, 1, diversity_objective, x = kplus_distances)
 dispersions_pareto1 <- apply(pareto_set_E_1, 1, dispersion_objective, x = bathroom_dists)
 
 pareto_set_VANILLA <- bicriterion_anticlustering(
-  kplus_features,
+  kplus_distances,
   K = 3,
   R = c(runs, runs),
   dispersion_distances = bathroom_dists
 )
 
-diversities_pareto2 <- apply(pareto_set_VANILLA, 1, diversity_objective, x = kplus_features)
+diversities_pareto2 <- apply(pareto_set_VANILLA, 1, diversity_objective, x = kplus_distances)
 dispersions_pareto2 <- apply(pareto_set_VANILLA, 1, dispersion_objective, x = bathroom_dists)
 
 tmp_dists <- as.matrix(bathroom_dists)
 tmp_dists[rbind(opt$edges, t(apply(opt$edges, 1, rev)))] <- -99999999999999
 
 pareto_set_E_RESTRICTED <- bicriterion_anticlustering(
-  kplus_features,
+  kplus_distances,
   K = opt$groups,
   R = c(runs, runs),
   dispersion_distances = tmp_dists
 )
 
-diversities_pareto3 <- apply(pareto_set_E_RESTRICTED, 1, diversity_objective, x = kplus_features)
+diversities_pareto3 <- apply(pareto_set_E_RESTRICTED, 1, diversity_objective, x = kplus_distances)
 dispersions_pareto3 <- apply(pareto_set_E_RESTRICTED, 1, dispersion_objective, x = bathroom_dists)
 
 # Do all methods have optimal dispersion?
 max(dispersions_pareto1) == opt$dispersion
-max(dispersions_pareto2) == opt$dispersion
+max(dispersions_pareto2) == opt$dispersion # even VANILLA that does not know about optimum
 max(dispersions_pareto3) == opt$dispersion
 
 # Plot the pareto set
@@ -167,10 +155,10 @@ paretosets <- data.frame(
 
 paretosets |> arrange(-Diversity)
 
-diversity_objective(kplus_features, opt$groups)
+diversity_objective(kplus_distances, opt$groups)
 
 target_grouping <- paretosets |> 
-  filter(Diversity >= 864) |> 
+  filter(Diversity >= 4188) |> 
   filter(Dispersion == max(Dispersion)) 
 
 target_method <- target_grouping[1, "Method"]
@@ -184,7 +172,7 @@ worst_cases$Match <- 1:2
 worst_cases[, c("Item", "Match")] # not at all similar to each other
 
 dispersion_objective(bathroom_dists, selected_partition) # minimum
-diversity_objective(kplus_features, selected_partition)
+diversity_objective(kplus_distances, selected_partition)
 
 mean_sd_tab(features, selected_partition)
 
@@ -199,20 +187,35 @@ target_method <- best_grouping[1, "Method"]
 target_index <- best_grouping[1, "Index"]
 target_dispersion <- best_grouping[1, "Dispersion"]
 
-selected_partition <- all_partitions[[target_method]][target_index, ]
+selected_partition_diversity <- all_partitions[[target_method]][target_index, ]
 
 worst_cases <- bathroom[t(positions_by_value(bathroom_dists, value = target_dispersion)), ] # seems a good value
 worst_cases$Match <- 1:2
 worst_cases[, c("Item", "Match")] # not at all similar to each other
 
-dispersion_objective(bathroom_dists, selected_partition) # minimum
-diversity_objective(kplus_features, selected_partition)
+dispersion_objective(bathroom_dists, selected_partition_diversity) 
+diversity_objective(kplus_distances, selected_partition_diversity)
 
 # Rather similar, best diversity maximizing partition slightly better
 # with regard to consistency / inconsistency ratings
-mean_sd_tab(features, selected_partition, return_diff = TRUE)
+mean_sd_tab(features, selected_partition_diversity, return_diff = TRUE)
 mean_sd_tab(features, selected_partition_bicriterion, return_diff = TRUE)
 mean_sd_tab(features, sample(selected_partition_bicriterion), return_diff = TRUE)
+
+# compare to best partition with optimum DISPERSION
+best_grouping <- paretosets |>  
+  filter(Dispersion == max(Dispersion)) |> # Vanilla and E_1 better than restricted!
+  filter(Diversity == max(Diversity))
+
+target_method <- best_grouping[1, "Method"]
+target_index <- best_grouping[1, "Index"]
+target_dispersion <- best_grouping[1, "Dispersion"]
+
+selected_partition_dispersion <- all_partitions[[target_method]][target_index, ]
+
+mean_sd_tab(features, selected_partition_diversity, return_diff = TRUE)
+# mean_sd_tab(features, selected_partition_dispersion, return_diff = TRUE) 
+mean_sd_tab(features, selected_partition_bicriterion, return_diff = TRUE) ## GOOD!
 
 # Arguably: Optimal dispersion not needed here! But: Using k-plus and pairwise orthographic
 # dissimilarity is neat! Using partition with improved dispersion does not really come at
