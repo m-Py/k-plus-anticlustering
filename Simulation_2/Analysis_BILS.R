@@ -78,6 +78,9 @@ t.test(tt$DIV_E_ALL, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
 # - VANILLA BILS has more difficulties finding the optimal diversity if the dispersion is optimized on the basis of a different data set
 # - The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets (N = 300, K = 4) (current maximum solving time 200 seconds)
 # - Restricted method is the best extension that ensures the maximum dispersion (This would indicate that using unicriterion LCW is just as effective as BILS)
+# - Interpretation: Best for optimizing diversity while maintaining the global optimum in dispersion: restricted version if there are many init partitions that have the optimal value in dispersion. Worst: Only pass 1 init partition. Vanilla is usually good, but does not necessarily find global optimum (this can be checked using the optimal_dispersion() function). If the global optimum is needed, use restricted version.
+# RESTRICTED METHOD IS NOT GOOD IF THE NUMBER OF UNIQUE PARTITIONS IS SMALL (shown in example application)
+
 
 
 lf <- pivot_longer(df, cols = starts_with(c("DIV", "DISP")))
