@@ -6,7 +6,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
-BATCH_SIZE_SIMULATION <- 500
+BATCH_SIZE_SIMULATION <- 5
 
 files <- list.files("./datasets", full.names = FALSE)
 
@@ -53,7 +53,7 @@ for (i in 1:length(files)) {
       if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) != opt$dispersion) {
         for (RUNS in c(10, 100, 1000, 10000)) {
           start_vanilla <- Sys.time()
-          GROUPS_BILS_VANILLA_REPEATED <- BILS_VANILLA(
+          GROUPS_BILS_VANILLA <- BILS_VANILLA(
             data, 
             K = K, 
             RUNS_MBPI = RUNS, 
@@ -61,7 +61,7 @@ for (i in 1:length(files)) {
           )
           end_vanilla <- Sys.time()
           # test if optimum was found
-          if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA_REPEATED) == opt$dispersion) {
+          if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) == opt$dispersion) {
             RUNS_TILL_OPTIMUM <- RUNS
             break
           } else {
@@ -74,10 +74,15 @@ for (i in 1:length(files)) {
         RUNS_TILL_OPTIMUM <- RUNS_MBPI
       }
       
+      if (RUNS_TILL_OPTIMUM > RUNS_MBPI) {
+        opt <- optimal_dispersion(data, K = K, npartitions = RUNS_TILL_OPTIMUM)
+        # repeat to obtain additional partitions for BILS-E methods
+      }
+      
       GROUPS_BILS_E_1 <- BILS_E_1(
         data, 
         init_partition = opt$groups[1, ], 
-        RUNS_MBPI = RUNS_MBPI, 
+        RUNS_MBPI = max(RUNS_TILL_OPTIMUM, RUNS_MBPI), # also run if vanilla found no optimal solution
         dispersion_distances = dispersion_distances
       )
       GROUPS_BILS_E_ALL <- BILS_E_ALL(
@@ -110,7 +115,8 @@ for (i in 1:length(files)) {
         DIV_E_ALL_RESTRICTED = diversity_objective(data, GROUPS_BILS_E_ALL_RESTRICTED),
         RUNS_BILS_VANILLA = RUNS_TILL_OPTIMUM,
         time_optimal_s = as.numeric(difftime(end, start, units = "s")),
-        time_vanilla_s = as.numeric(difftime(end_vanilla, start_vanilla, units = "s"))
+        time_vanilla_s = as.numeric(difftime(end_vanilla, start_vanilla, units = "s")),
+        N_DUPLICATE_PARTITIONS = sum(duplicated(opt$groups))
       ))
     }
   }
