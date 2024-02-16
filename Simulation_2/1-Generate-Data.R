@@ -15,9 +15,6 @@ for (K in 2:7) {
   SD <- sample(c(1, 2, 3), replace = TRUE, size = nsets)
   # Store data sets as files
   for (i in 1:nsets) {
-    generate_data(N[i], M[i], SD[i], dir = paste0("./datasets/K", K))
+    generate_data(N[i], M[i], SD[i], dir = paste0("./datasets/K", K, "/"))
   }
 }
-
-
-

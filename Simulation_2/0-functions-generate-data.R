@@ -15,11 +15,11 @@
 #'     the input parameters that generated the data. 
 #'     
 
-generate_data <- function(N, M, sd, r, dir = "datasets-K2/") {
-  data <- faux::rnorm_multi(N, M, sd = sd, r = r)
+generate_data <- function(N, M, sd, dir = "datasets-K2/") {
+  data <- faux::rnorm_multi(N, M, sd = sd)
   file_name <- paste0(
     dir,
-    "N", N, "_M", M, "_", "SD", sd, "_", "r", r, "_",
+    "N", N, "_M", M, "_", "SD", sd, "_", 
     paste0(sample(LETTERS, 4), sample(0:9, 4), collapse = ""),
     ".csv")
   write.table(data, file_name, row.names = FALSE, sep = ",")
