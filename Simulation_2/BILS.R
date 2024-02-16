@@ -6,31 +6,27 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
-BATCH_SIZE_SIMULATION <- 5
-
-files <- list.files("./datasets", full.names = FALSE)
-
-# Do not replicate previous files:
-if (file.exists("results_bils.csv")) {
-  files_processed <- read.csv("results_bils.csv", sep = ";")$file
-  already_processed <- gsub(".csv", replacement = "", x = files) %in% files_processed
-  files <- files[!already_processed]
-}
+BATCH_SIZE_SIMULATION <- 1
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
-files <- sample(files, size = min(BATCH_SIZE_SIMULATION, length(files)))
 
-for (i in 1:length(files)) {
-  file <- files[i]
-  cat(i, "'th iteration, working on ", file, "\n")
-  data <- read.csv(paste0("./datasets/", file))
-  
-  for (K in 2:4) {
+for (K in 2:7) {
+  files <- list.files(paste0("./datasets/K", K, "/"), full.names = FALSE)
+  # Do not replicate previous files:
+  if (file.exists("results_bils.csv")) {
+    files_processed <- read.csv("results_bils.csv", sep = ";")$file
+    already_processed <- gsub(".csv", replacement = "", x = files) %in% files_processed
+    files <- files[!already_processed]
+  }
+  files <- sample(files, size = min(BATCH_SIZE_SIMULATION, length(files)))
+  for (i in 1:length(files)) {
+    file <- files[i]
+    data <- read.csv(paste0("./datasets/K", K, "/", file))
     for (separate_dispersion_distances in c(FALSE, TRUE)) {
       if (separate_dispersion_distances) { # optimize dispersion on other distances
         N <- nrow(data)
         # randomly select other file with the same N, compute distances based on this
-        other_file <- sample(list.files("./datasets", pattern = paste0("N", N, "_"), full.names = TRUE), 1)
+        other_file <- sample(list.files(paste0("./datasets/K", K, "/"), pattern = paste0("N", N, "_"), full.names = TRUE), 1)
         dispersion_distances <- dist(read.csv(other_file))
       } else {
         dispersion_distances <- dist(data)
@@ -98,7 +94,7 @@ for (i in 1:length(files)) {
       )
       
       # store data associated with simulation run
-      assign(paste0("df", K, separate_dispersion_distances), data.frame(
+      assign(paste0("df", separate_dispersion_distances), data.frame(
         file = gsub(".csv", replacement = "", x = file), 
         N = nrow(data),
         M = ncol(data),
@@ -119,19 +115,20 @@ for (i in 1:length(files)) {
         N_DUPLICATE_PARTITIONS = sum(duplicated(opt$groups))
       ))
     }
+    df <- rbind(dfFALSE, dfTRUE)
+    results_file_exists <- FALSE
+    if (file.exists("results_bils.csv")) {
+      results_file_exists <- TRUE
+    }
+    write.table(
+      df, 
+      file = "results_bils.csv", 
+      append = results_file_exists, 
+      col.names = !results_file_exists,
+      row.names = FALSE, 
+      quote = FALSE,
+      sep = ";"
+    )
   }
-  df <- rbind(df2FALSE, df2TRUE, df3FALSE, df3TRUE, df4FALSE, df4TRUE)
-  results_file_exists <- FALSE
-  if (file.exists("results_bils.csv")) {
-    results_file_exists <- TRUE
-  }
-  write.table(
-    df, 
-    file = "results_bils.csv", 
-    append = results_file_exists, 
-    col.names = !results_file_exists,
-    row.names = FALSE, 
-    quote = FALSE,
-    sep = ";"
-  )
 }
+
