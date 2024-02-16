@@ -75,8 +75,8 @@ for (i in 1:length(files)) {
       }
       
       if (RUNS_TILL_OPTIMUM > RUNS_MBPI) {
-        opt <- optimal_dispersion(data, K = K, npartitions = RUNS_TILL_OPTIMUM)
-        # repeat to obtain additional partitions for BILS-E methods
+        # create new partitions, some elements are fixed through max dispersion constraints (seen in opt$group_fixated)
+        opt$groups <- t(replicate(RUNS_TILL_OPTIMUM, anticlust:::add_unassigned_elements(rep(N/K, K), opt$group_fixated, N, K)))
       }
       
       GROUPS_BILS_E_1 <- BILS_E_1(
