@@ -22,18 +22,16 @@ for (K in 2:7) {
   for (i in 1:length(files)) {
     file <- files[i]
     data <- read.csv(paste0("./datasets/K", K, "/", file))
+    cat("Working on file ", file, ", K =", K, "\n")
     for (separate_dispersion_distances in c(FALSE, TRUE)) {
+      N <- nrow(data)
       if (separate_dispersion_distances) { # optimize dispersion on other distances
-        N <- nrow(data)
         # randomly select other file with the same N, compute distances based on this
         other_file <- sample(list.files(paste0("./datasets/K", K, "/"), pattern = paste0("N", N, "_"), full.names = TRUE), 1)
         dispersion_distances <- dist(read.csv(other_file))
       } else {
         dispersion_distances <- dist(data)
       }
-      start <- Sys.time()
-      opt <- optimal_dispersion(dispersion_distances, K = K, npartitions = RUNS_MBPI)
-      end <- Sys.time()
       
       start_vanilla <- Sys.time()
       GROUPS_BILS_VANILLA <- BILS_VANILLA(
@@ -43,6 +41,19 @@ for (K in 2:7) {
         dispersion_distances = dispersion_distances
       )
       end_vanilla <- Sys.time()
+      
+      solver <- ifelse(K < 5, "symphony", "Gecode")
+      start <- Sys.time()
+      opt <- optimal_dispersion(
+        dispersion_distances, 
+        K = K, 
+        npartitions = RUNS_MBPI, 
+        solver = solver, 
+        min_dispersion_considered = dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA)
+      )
+      end <- Sys.time()
+      cat("   Found optimal solution!\n")
+
       # Rerun BILS_VANILLA if the dispersion it returns is not optimal
       # do 10, 100, 1000, 10000
       
@@ -71,8 +82,8 @@ for (K in 2:7) {
       }
       
       if (RUNS_TILL_OPTIMUM > RUNS_MBPI) {
-        # create new partitions, some elements are fixed through max dispersion constraints (seen in opt$group_fixated)
-        opt$groups <- t(replicate(RUNS_TILL_OPTIMUM, anticlust:::add_unassigned_elements(rep(N/K, K), opt$group_fixated, N, K)))
+        # create new partitions, some elements are fixed through max dispersion constraints (seen in opt$groups_fixated)
+        opt$groups <- t(replicate(RUNS_TILL_OPTIMUM, anticlust:::add_unassigned_elements(rep(N/K, K), opt$groups_fixated, N, K)))
       }
       
       GROUPS_BILS_E_1 <- BILS_E_1(
@@ -131,4 +142,3 @@ for (K in 2:7) {
     )
   }
 }
-
