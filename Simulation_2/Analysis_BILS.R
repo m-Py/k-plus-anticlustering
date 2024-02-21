@@ -9,7 +9,7 @@ nrow(df)
 
 length(unique(df$file)) # number of simulation runs / files
 
-table(table(df$file)) # all 6!
+table(table(df$file)) # all 2!
 
 # All E methods have optimal solution?
 sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
@@ -18,8 +18,13 @@ sum(df$DISP_E_1 != df$DISP_E_ALL_RESTRICTED)
 # Time to solve optimally
 max(df$time_optimal_s)
 max(df$time_vanilla_s)
-tapply(df$time_optimal_s, list(df$N, df$K), median) |> round(2)
-tapply(df$time_vanilla_s, list(df$N, df$K), median) |> round(2)
+tapply(df$time_optimal_s, list(df$K), median) |> round(2)
+tapply(df$time_vanilla_s, list(df$K), median) |> round(2)
+
+tapply(df$time_optimal_s, list(df$K), max) |> round(2)
+tapply(df$time_vanilla_s, list(df$K), max) |> round(2)
+
+# plot(tapply(df$time_vanilla_s, list(df$N), median))
 
 table(df$RUNS_BILS_VANILLA)
 table(df$RUNS_BILS_VANILLA, df$K)
@@ -29,17 +34,21 @@ table(df$RUNS_BILS_VANILLA, df$K)
 # this is highly interesting: time to solve max dispersion problem optimally is related to the number of runs the heuristic requires to find optimal solution (not surprising, but nice)
 tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
 
-df$VANILLA_FOUND_OPTIMUM <- df$DISP_VANILLA == df$DISP_E_1
-mean(df$VANILLA_FOUND_OPTIMUM)
-tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean) |> round(2)
-tapply(df$VANILLA_FOUND_OPTIMUM, list(df$K, df$separate_dispersion_distances), mean) |> round(2)
+df$VANILLA_FOUND_OPTIMUM <- df$RUNS_BILS_VANILLA != -1
+tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean)
 
-chisq.test(table(df$VANILLA_FOUND_OPTIMUM, df$separate_dispersion_distances))
+
+df$VANILLA_FOUND_OPTIMUM_AFTER_5 <- df$RUNS_BILS_VANILLA == 5
+mean(df$VANILLA_FOUND_OPTIMUM_AFTER_5)
+tapply(df$VANILLA_FOUND_OPTIMUM_AFTER_5, df$K, mean) |> round(2)
+tapply(df$VANILLA_FOUND_OPTIMUM_AFTER_5, list(df$K, df$separate_dispersion_distances), mean) |> round(2)
+
+chisq.test(table(df$VANILLA_FOUND_OPTIMUM_AFTER_5, df$separate_dispersion_distances))
 
 # Descriptives:
 df |>
   filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
-  group_by(separate_dispersion_distances, K) |>
+  group_by(K) |>
   summarize(
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
@@ -47,10 +56,21 @@ df |>
     VANILLA = mean(DIV_VANILLA)
   )
 
+table(df$N_DUPLICATE_PARTITIONS > 0, df$K) # also check out results in dependence of duplicate partitions!
+
+df |>
+  filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
+  group_by(K, N_DUPLICATE_PARTITIONS > 0) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    VANILLA = mean(DIV_VANILLA)
+  )
 
 # Descriptives without bias, only Extended versions
 df |>
-  group_by(separate_dispersion_distances, K) |>
+  group_by(K) |>
   summarize(
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
