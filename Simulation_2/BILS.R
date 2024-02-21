@@ -6,7 +6,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 5
-BATCH_SIZE_SIMULATION <- 1
+BATCH_SIZE_SIMULATION <- 5
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
 
