@@ -29,7 +29,7 @@ tapply(df$time_vanilla_s, list(df$K), max) |> round(2)
 table(df$RUNS_BILS_VANILLA)
 table(df$RUNS_BILS_VANILLA, df$K)
 
-(table(df$RUNS_BILS_VANILLA, df$K) / sum(table(df$RUNS_BILS_VANILLA))) |> round(3) * 100
+prop.table(table(df$RUNS_BILS_VANILLA, df$K), margin = 2) |> round(3) * 100
 
 # this is highly interesting: time to solve max dispersion problem optimally is related to the number of runs the heuristic requires to find optimal solution (not surprising, but nice)
 tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
@@ -37,6 +37,7 @@ tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
 df$VANILLA_FOUND_OPTIMUM <- df$RUNS_BILS_VANILLA != -1
 tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean)
 
+sum(df$N_DUPLICATE_PARTITIONS == (df$RUNS_BILS_VANILLA - 1)) # !!!!
 
 df$VANILLA_FOUND_OPTIMUM_AFTER_5 <- df$RUNS_BILS_VANILLA == 5
 mean(df$VANILLA_FOUND_OPTIMUM_AFTER_5)
@@ -58,9 +59,11 @@ df |>
 
 table(df$N_DUPLICATE_PARTITIONS > 0, df$K) # also check out results in dependence of duplicate partitions!
 
+df$MAXIMUM_RESTRICTION <- df$N_DUPLICATE_PARTITIONS == (df$RUNS_BILS_VANILLA - 1)
+
 df |>
   filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
-  group_by(K, N_DUPLICATE_PARTITIONS > 0) |>
+  group_by(K, MAXIMUM_RESTRICTION) |>
   summarize(
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
@@ -68,6 +71,9 @@ df |>
     VANILLA = mean(DIV_VANILLA)
   )
 
+# if there is only one unique input partition, VANILLA is better than RESTRICTED,
+# but otherwise not!
+  
 # Descriptives without bias, only Extended versions
 df |>
   group_by(K) |>
