@@ -53,7 +53,7 @@ df |>
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    VANILLA = mean(DIV_VANILLA)
+    VANILLA = mean(DIV_VANILLA) # also add N per row to illustrate bias!
   ) |>
   as.data.frame()
 
