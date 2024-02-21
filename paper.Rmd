@@ -113,10 +113,9 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
     * How to maintain optimal dispersion while the BILS runs? Outline three approaches!
   * Different distance matrices: does not change algorithm, just computation / implementation
   * Extend towards k-means: Use squared Euclidean distance (not really extension, just different input); compute "average" diversity if group sizes are unequal (k-plus is basically the same, but do not use the additional k-plus variables for the dispersion distance matrix)
-- Simulation Study 1: Two research questions
+- Simulation Study
   (1) How often does vanilla BILS find optimal solutions
   (2) Which of the three extension is best for optimizing between-group similarity while maintaining optimal dispersion?
-- Simulation Study 2: More difficult conditions (do not continuous data; K > 4 groups)
 - Application (presenting R code)
   * Optimize k-plus criterion using norming data; dispersion is based on pairwise orthographic dissimilarity between words
 - Discussion
