@@ -1,6 +1,7 @@
 library(anticlust)
 library(tidyr)
 library(dplyr)
+library(santoku)
 
 df <- read.csv("results_bils.csv", sep = ";")
 sum(!complete.cases(df)) # =)
@@ -42,6 +43,10 @@ runs_vanilla_formatted <- t(apply(runs_vanilla, 1, paste0, "%"))
 runs_vanilla_formatted <- formatC(runs_vanilla_formatted, width = 4)
 colnames(runs_vanilla_formatted) <- 2:7
 runs_vanilla_formatted
+
+## ALSO SPLIT BY N; BUT USE CATEGORIES
+df$N_Category <- santoku::chop(df$N, breaks = c(20, 60, 100))
+prop.table(table(df$RUNS_BILS_VANILLA, df$N_Category), margin = 2) |> round(3) * 100
 
 # this is highly interesting: time to solve max dispersion problem optimally is related to the number of runs the heuristic requires to find optimal solution (not surprising, but nice)
 tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
