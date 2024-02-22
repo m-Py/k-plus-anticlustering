@@ -76,7 +76,8 @@ df |>
     VANILLA = mean(DIV_VANILLA), # also add N per row to illustrate bias!
     N = n()
   ) |>
-  as.data.frame()
+  as.data.frame()|>
+  round(2)
 
 table(df$N_DUPLICATE_PARTITIONS > 0, df$K) # also check out results in dependence of duplicate partitions!
 
@@ -126,6 +127,6 @@ t.test(tt$DIV_E_ALL, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
 # - Diversity in general is lower if the dispersion is optimized on the basis of different data (that makes sense I guess)
 # - The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets and K
 # - Restricted method is the best extension that ensures the maximum dispersion (This would indicate that using unicriterion LCW is just as effective as BILS)
-# - Interpretation: Best for optimizing diversity while maintaining the global optimum in dispersion: restricted version if there are many init partitions that have the optimal value in dispersion. Worst: Only pass 1 init partition. Vanilla is usually good, but does not necessarily find global optimum (this can be checked using the optimal_dispersion() function). If the global optimum is needed, use restricted version.
+# - Interpretation: Best for optimizing diversity while maintaining the global optimum in dispersion: restricted version if there are many init partitions that have the optimal value in dispersion. Worst: Only pass 1 init partition. Vanilla is usually good, but does not necessarily find global optimum (this can be checked using the optimal_dispersion() function). If the global optimum is needed, use restricted version; if there are no duplicates: stick with it.
 # - RESTRICTED METHOD IS NOT GOOD IF THE NUMBER OF UNIQUE PARTITIONS IS SMALL 
 # - Duplicate partitions more likely arise for smaller group sizes (i.e., larger K, and smaller N)
