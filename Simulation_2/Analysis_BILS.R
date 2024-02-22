@@ -23,12 +23,25 @@ tapply(df$time_vanilla_s, list(df$K), median) |> round(2)
 tapply(df$time_optimal_s, list(df$K), max) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), max) |> round(2)
 
+plot(tapply(df$time_optimal_s, list(df$N), median) |> round(2), xlab = "N", ylab = "Time (s)")
+plot(tapply(df$time_vanilla_s, list(df$N), median) |> round(2), xlab = "N", ylab = "Time (s)")
+
 # plot(tapply(df$time_vanilla_s, list(df$N), median))
 
 table(df$RUNS_BILS_VANILLA)
 table(df$RUNS_BILS_VANILLA, df$K)
 
-prop.table(table(df$RUNS_BILS_VANILLA, df$K), margin = 2) |> round(3) * 100
+runs_vanilla <- prop.table(table(df$RUNS_BILS_VANILLA, df$K), margin = 2) |> round(3) * 100
+runs_vanilla <- rbind(runs_vanilla, runs_vanilla[1, ])
+runs_vanilla <- runs_vanilla[-1, ]
+rownames(runs_vanilla)[nrow(runs_vanilla)] <- "-1"
+store <- rownames(runs_vanilla)
+runs_vanilla <- apply(runs_vanilla, 2, prmisc::force_decimals, 1)
+rownames(runs_vanilla) <- store
+runs_vanilla_formatted <- t(apply(runs_vanilla, 1, paste0, "%"))
+runs_vanilla_formatted <- formatC(runs_vanilla_formatted, width = 4)
+colnames(runs_vanilla_formatted) <- 2:7
+runs_vanilla_formatted
 
 # this is highly interesting: time to solve max dispersion problem optimally is related to the number of runs the heuristic requires to find optimal solution (not surprising, but nice)
 tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
@@ -76,7 +89,8 @@ df |>
   round(2)
 
 prop.table(table(df$MAXIMUM_RESTRICTION, df$K, df$N > 50), margin = c(2, 3)) |> round(2) #!!!!!!
-  
+# probability of duplicates increases with K and decreases with N (small group sizes lead to duplicates)
+
 # if there is only one unique input partition, VANILLA is better than RESTRICTED,
 # but otherwise not!
   
@@ -100,10 +114,10 @@ t.test(tt$DIV_E_ALL, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
 
 # Important take aways (preliminary)
 
-# - Diversity is lower if the dispersion is optimized on the basis of different data (that makes sense I guess)
-# - E_ALL is better than E_1
+# - E_ALL is better than E_1; E_ALL_RESTRICTED is usually best extension 
 # - VANILLA BILS has more difficulties finding the optimal diversity if the dispersion is optimized on the basis of a different data set
-# - The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets (N = 300, K = 4; N = 120, K = 7)
+# - Diversity in general is lower if the dispersion is optimized on the basis of different data (that makes sense I guess)
+# - The max dispersion problem can be solved in reasonable time using an open source solver (!) for rather large data sets and K
 # - Restricted method is the best extension that ensures the maximum dispersion (This would indicate that using unicriterion LCW is just as effective as BILS)
 # - Interpretation: Best for optimizing diversity while maintaining the global optimum in dispersion: restricted version if there are many init partitions that have the optimal value in dispersion. Worst: Only pass 1 init partition. Vanilla is usually good, but does not necessarily find global optimum (this can be checked using the optimal_dispersion() function). If the global optimum is needed, use restricted version.
 # - RESTRICTED METHOD IS NOT GOOD IF THE NUMBER OF UNIQUE PARTITIONS IS SMALL 
