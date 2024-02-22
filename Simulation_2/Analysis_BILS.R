@@ -24,9 +24,6 @@ tapply(df$time_vanilla_s, list(df$K), median) |> round(2)
 tapply(df$time_optimal_s, list(df$K), max) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), max) |> round(2)
 
-plot(tapply(df$time_optimal_s, list(df$N), median) |> round(2), xlab = "N", ylab = "Time (s)")
-plot(tapply(df$time_vanilla_s, list(df$N), median) |> round(2), xlab = "N", ylab = "Time (s)")
-
 # plot(tapply(df$time_vanilla_s, list(df$N), median))
 
 table(df$RUNS_BILS_VANILLA)
@@ -47,6 +44,11 @@ runs_vanilla_formatted
 ## ALSO SPLIT BY N; BUT USE CATEGORIES
 df$N_Category <- santoku::chop(df$N, breaks = c(20, 60, 100))
 prop.table(table(df$RUNS_BILS_VANILLA, df$N_Category), margin = 2) |> round(3) * 100
+
+
+plot(tapply(df$time_optimal_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
+plot(tapply(df$time_vanilla_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
+
 
 # this is highly interesting: time to solve max dispersion problem optimally is related to the number of runs the heuristic requires to find optimal solution (not surprising, but nice)
 tapply(df$time_optimal_s, list(df$RUNS_BILS_VANILLA), median) |> round(2)
