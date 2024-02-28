@@ -41,6 +41,9 @@ runs_vanilla_formatted <- formatC(runs_vanilla_formatted, width = 4)
 colnames(runs_vanilla_formatted) <- 2:7
 runs_vanilla_formatted
 
+# SPLIT BY M
+prop.table(table(df$RUNS_BILS_VANILLA, df$M), margin = 2) |> round(2) # also strongly affects the performance, use larger M in simulation?
+
 ## ALSO SPLIT BY N; BUT USE CATEGORIES
 df$N_Category <- santoku::chop(df$N, breaks = c(20, 60, 100))
 prop.table(table(df$RUNS_BILS_VANILLA, df$N_Category), margin = 2) |> round(3) * 100
