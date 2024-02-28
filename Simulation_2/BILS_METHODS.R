@@ -37,7 +37,7 @@ BILS_E_ALL_RESTRICTED <- function(data, init_partitions, cannot_link, dispersion
   # set cannot-link distances to large negative value so they cannot be linked
   # during the local maximum search (no exchanges will be conducted that put
   # these into the same group)
-  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1)
+  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1) * 999999999
   
   PARTITIONS <- bicriterion_anticlustering(
     distances, 
@@ -47,4 +47,34 @@ BILS_E_ALL_RESTRICTED <- function(data, init_partitions, cannot_link, dispersion
     dispersion_distances = dispersion_distances
   )
   PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = dispersion_distances)), ]
+}
+
+
+# this one uses one half for MBPI, other half for ILS
+BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, dispersion_distances = dist(data)) {
+  distances <- as.matrix(dist(data))
+  
+  copy_distances <- distances
+  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1) * 999999999
+  
+  half_runs <- nrow(init_partitions)/2
+  
+  PARTITIONS <- bicriterion_anticlustering(
+    distances, 
+    K = init_partitions[1, ], # mostly irrelevant if `init_partitions` is passed
+    R = rep(half_runs, 2),
+    init_partitions = init_partitions[1:half_runs, ],
+    dispersion_distances = dispersion_distances
+  )
+  
+  # rerun with ILS, using pareto set of first phase as input
+  PARTITIONS2 <- bicriterion_anticlustering(
+    copy_distances, 
+    K = PARTITIONS[1,], # 
+    R = c(nrow(PARTITIONS), nrow(init_partitions)/2),
+    init_partitions = PARTITIONS,
+    dispersion_distances = dispersion_distances
+  )
+  
+  PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = dispersion_distances)), ]
 }

@@ -11,15 +11,18 @@ length(unique(df$file)) # number of simulation runs / files
 
 table(table(df$file)) # all 2!
 
-# All E methods have optimal solution?
+# All optimal dispersion methods have optimal solution?
 sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
 sum(df$DISP_E_1 != df$DISP_E_ALL_RESTRICTED)
+sum(df$DISP_LCW != df$DISP_E_ALL) # =)
 
 # Time to solve optimally
 max(df$time_optimal_s)
 max(df$time_vanilla_s)
+max(df$time_lcw_s)
 tapply(df$time_optimal_s, list(df$K), median) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), median) |> round(2)
+tapply(df$time_lcw_s, list(df$K), median) |> round(2)
 
 tapply(df$time_optimal_s, list(df$K), max) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), max) |> round(2)
@@ -61,12 +64,12 @@ tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean)
 
 mean(df$N_DUPLICATE_PARTITIONS == (df$RUNS_BILS_VANILLA - 1)) # !!!!
 
-df$VANILLA_FOUND_OPTIMUM_AFTER_5 <- df$RUNS_BILS_VANILLA == 5
-mean(df$VANILLA_FOUND_OPTIMUM_AFTER_5)
-tapply(df$VANILLA_FOUND_OPTIMUM_AFTER_5, df$K, mean) |> round(2)
-tapply(df$VANILLA_FOUND_OPTIMUM_AFTER_5, list(df$K, df$separate_dispersion_distances), mean) |> round(2)
+df$VANILLA_FOUND_OPTIMUM_AFTER_10 <- df$RUNS_BILS_VANILLA == 10
+mean(df$VANILLA_FOUND_OPTIMUM_AFTER_10)
+tapply(df$VANILLA_FOUND_OPTIMUM_AFTER_10, df$K, mean) |> round(2)
+tapply(df$VANILLA_FOUND_OPTIMUM_AFTER_10, list(df$K, df$separate_dispersion_distances), mean) |> round(2)
 
-chisq.test(table(df$VANILLA_FOUND_OPTIMUM_AFTER_5, df$separate_dispersion_distances))
+chisq.test(table(df$VANILLA_FOUND_OPTIMUM_AFTER_10, df$separate_dispersion_distances))
 
 # Descriptives:
 df |>
@@ -76,6 +79,8 @@ df |>
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
     VANILLA = mean(DIV_VANILLA), # also add N per row to illustrate bias!
     N = n()
   ) |>
@@ -93,6 +98,8 @@ df |>
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
     VANILLA = mean(DIV_VANILLA),
     N = n()
   ) |>

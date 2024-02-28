@@ -5,7 +5,7 @@
 library(anticlust)
 source("BILS_METHODS.R")
 
-RUNS_MBPI <- 5
+RUNS_MBPI <- 10
 BATCH_SIZE_SIMULATION <- 5
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
@@ -55,10 +55,10 @@ for (K in 2:7) {
       cat("   Found optimal solution!\n")
 
       # Rerun BILS_VANILLA if the dispersion it returns is not optimal
-      # do 10, 100, 1000, 10000
+      # do 100, 1000, 10000
       
       if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) != opt$dispersion) {
-        for (RUNS in c(10, 100, 1000, 10000)) {
+        for (RUNS in c(100, 1000, 10000)) {
           start_vanilla <- Sys.time()
           GROUPS_BILS_VANILLA <- BILS_VANILLA(
             data, 
@@ -103,6 +103,21 @@ for (K in 2:7) {
         cannot_link = opt$edges,
         dispersion_distances = dispersion_distances
       )
+      GROUPS_BILS_E_ALL_RESTRICTED_ALT <- BILS_E_ALL_RESTRICTED_ALT(
+        data, 
+        init_partitions = opt$groups, 
+        cannot_link = opt$edges,
+        dispersion_distances = dispersion_distances
+      )
+      start_lcw <- Sys.time()
+      GROUPS_LCW <- anticlustering(
+        data, 
+        K = K, 
+        method = "local-maximum",
+        repetitions = RUNS_MBPI,
+        cannot_link = opt$edges
+      )
+      end_lcw <- Sys.time()
       
       # store data associated with simulation run
       assign(paste0("df", separate_dispersion_distances), data.frame(
@@ -116,13 +131,18 @@ for (K in 2:7) {
         DISP_E_1 = dispersion_objective(dispersion_distances, GROUPS_BILS_E_1),
         DISP_E_ALL = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL),
         DISP_E_ALL_RESTRICTED = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL_RESTRICTED),
+        DISP_E_ALL_RESTRICTED_ALT = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL_RESTRICTED_ALT),
+        DISP_LCW = dispersion_objective(dispersion_distances, GROUPS_LCW),
         DIV_VANILLA = diversity_objective(data, GROUPS_BILS_VANILLA),
         DIV_E_1 = diversity_objective(data, GROUPS_BILS_E_1),
         DIV_E_ALL = diversity_objective(data, GROUPS_BILS_E_ALL),
         DIV_E_ALL_RESTRICTED = diversity_objective(data, GROUPS_BILS_E_ALL_RESTRICTED),
+        DIV_E_ALL_RESTRICTED_ALT = diversity_objective(data, GROUPS_BILS_E_ALL_RESTRICTED_ALT),
+        DIV_LCW = diversity_objective(data, GROUPS_LCW),
         RUNS_BILS_VANILLA = RUNS_TILL_OPTIMUM,
         time_optimal_s = as.numeric(difftime(end, start, units = "s")),
         time_vanilla_s = as.numeric(difftime(end_vanilla, start_vanilla, units = "s")),
+        time_lcw_s = as.numeric(difftime(end_lcw, start_lcw, units = "s")),
         N_DUPLICATE_PARTITIONS = sum(duplicated(opt$groups))
       ))
     }
