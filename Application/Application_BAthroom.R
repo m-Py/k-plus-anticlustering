@@ -63,6 +63,14 @@ pareto_set_E_1 <- bicriterion_anticlustering( # E_1
   dispersion_distances = bathroom_dists
 )
 
+# gopt <- anticlustering(kplus_distances, K = 3, method = "ilp", cannot_link = opt$edges)
+### OPTIMAL SOLVING IS POSSIBLE
+
+# gopt has the optimal diversity with regard to the kplus_distances, under 
+# the restriction of optimal dispersion
+gopt <- c(1, 2, 1, 2, 3, 1, 3, 1, 3, 2, 1, 3, 3, 2, 2, 3, 1, 1, 3, 1, 
+          3, 3, 2, 2, 2, 1, 3, 1, 2, 2, 3, 2, 3, 1, 1, 2)
+
 diversities_pareto1 <- apply(pareto_set_E_1, 1, diversity_objective, x = kplus_distances)
 dispersions_pareto1 <- apply(pareto_set_E_1, 1, dispersion_objective, x = bathroom_dists)
 
@@ -132,6 +140,12 @@ points(
   bg = "orange"
 )
 
+points(
+  dispersion_objective(bathroom_dists, gopt),
+  diversity_objective(kplus_distances, gopt),
+  pch = 19
+) # vanilla and E_1 find optimal value for diversity given restriction of max dispersion
+
 legend("bottomleft", legend = c("VANILLA", "E_1", "E_1_RESTRICTED"),
        pch = c(19, 17, 25), col = c("red", "#ABCDEF", "orange"),
        pt.bg = c("red", "#ABCDEF", "orange"), cex = 1.2)
@@ -142,6 +156,9 @@ all_partitions <- list(
   E1_RESTRICTED = pareto_set_E_RESTRICTED
 )
 
+
+
+###################
 # Select partition!
 all_sets <- list(E_1 = diversities_pareto1, VANILLA = diversities_pareto2, E1_RESTRICTED = diversities_pareto3)
 
