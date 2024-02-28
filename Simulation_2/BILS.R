@@ -115,7 +115,7 @@ for (K in 2:7) {
         data, 
         K = K, 
         method = "local-maximum",
-        repetitions = RUNS_MBPI,
+        repetitions = max(RUNS_TILL_OPTIMUM, RUNS_MBPI),
         cannot_link = opt$edges
       )
       end_lcw <- Sys.time()
