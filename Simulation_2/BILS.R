@@ -59,6 +59,7 @@ for (K in 2:7) {
       
       if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) != opt$dispersion) {
         for (RUNS in c(100, 1000, 10000)) {
+          cat("Trying", RUNS, "repetitions for each heuristic\n")
           start_vanilla <- Sys.time()
           GROUPS_BILS_VANILLA <- BILS_VANILLA(
             data, 
