@@ -6,7 +6,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 10
-BATCH_SIZE_SIMULATION <- 5
+BATCH_SIZE_SIMULATION <- 300
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
 
@@ -32,7 +32,7 @@ for (K in 2:7) {
       } else {
         dispersion_distances <- dist(data)
       }
-      
+      cat("   Running VANILLA with", RUNS_MBPI, "repetitions\n")
       start_vanilla <- Sys.time()
       GROUPS_BILS_VANILLA <- BILS_VANILLA(
         data, 
@@ -52,14 +52,14 @@ for (K in 2:7) {
         min_dispersion_considered = dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA)
       )
       end <- Sys.time()
-      cat("   Found optimal solution!\n")
+      cat("   Exact method found optimal solution!\n")
 
       # Rerun BILS_VANILLA if the dispersion it returns is not optimal
       # do 100, 1000, 10000
       
       if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) != opt$dispersion) {
         for (RUNS in c(100, 1000, 10000)) {
-          cat("Trying", RUNS, "repetitions for each heuristic\n")
+          cat("   VANILLA did not find optimal dispersion. Trying", RUNS, "repetitions for VANILLA.\n")
           start_vanilla <- Sys.time()
           GROUPS_BILS_VANILLA <- BILS_VANILLA(
             data, 
@@ -70,15 +70,18 @@ for (K in 2:7) {
           end_vanilla <- Sys.time()
           # test if optimum was found
           if (dispersion_objective(dispersion_distances, GROUPS_BILS_VANILLA) == opt$dispersion) {
+            cat("   VANILLA FOUND OPTIMAL SOLUTION\n")
             RUNS_TILL_OPTIMUM <- RUNS
             break
           } else {
             if (RUNS == 10000) {
+              cat("   Vanilla found no optimal solution\n")
               RUNS_TILL_OPTIMUM <- -1 # encode that no optimum was found even with 10000 repetitions
             }
           }
         }
       } else {
+        cat("   VANILLA FOUND OPTIMAL SOLUTION\n")
         RUNS_TILL_OPTIMUM <- RUNS_MBPI
       }
       
@@ -87,29 +90,35 @@ for (K in 2:7) {
         opt$groups <- t(replicate(RUNS_TILL_OPTIMUM, anticlust:::add_unassigned_elements(rep(N/K, K), opt$groups_fixated, N, K)))
       }
       
+      
+      cat("   Running E_1 with", max(RUNS_TILL_OPTIMUM, RUNS_MBPI), "repetitions\n")
       GROUPS_BILS_E_1 <- BILS_E_1(
         data, 
         init_partition = opt$groups[1, ], 
         RUNS_MBPI = max(RUNS_TILL_OPTIMUM, RUNS_MBPI), # also run if vanilla found no optimal solution
         dispersion_distances = dispersion_distances
       )
+      cat("   Running E_ALL with", RUNS_TILL_OPTIMUM, "repetitions\n")
       GROUPS_BILS_E_ALL <- BILS_E_ALL(
         data, 
         init_partitions = opt$groups, 
         dispersion_distances = dispersion_distances
       )
+      cat("   Running E_ALL_RESTRICTED with", RUNS_TILL_OPTIMUM, "repetitions\n")
       GROUPS_BILS_E_ALL_RESTRICTED <- BILS_E_ALL_RESTRICTED(
         data, 
         init_partitions = opt$groups, 
         cannot_link = opt$edges,
         dispersion_distances = dispersion_distances
       )
+      cat("   Running E_ALL_RESTRICTED_ALT with", RUNS_TILL_OPTIMUM, "repetitions\n")
       GROUPS_BILS_E_ALL_RESTRICTED_ALT <- BILS_E_ALL_RESTRICTED_ALT(
         data, 
         init_partitions = opt$groups, 
         cannot_link = opt$edges,
         dispersion_distances = dispersion_distances
       )
+      cat("   Running LCW_RESTRICTED with", RUNS_TILL_OPTIMUM, "repetitions\n")
       start_lcw <- Sys.time()
       GROUPS_LCW <- anticlustering(
         data, 
