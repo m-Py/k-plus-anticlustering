@@ -55,14 +55,14 @@ BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, disper
   distances <- as.matrix(dist(data))
   
   copy_distances <- distances
-  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1) * 999999999
+  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1)
   
   half_runs <- nrow(init_partitions)/2
   
   PARTITIONS <- bicriterion_anticlustering(
     distances, 
     K = init_partitions[1, ], # mostly irrelevant if `init_partitions` is passed
-    R = rep(half_runs, 2),
+    R = c(half_runs, 0),
     init_partitions = init_partitions[1:half_runs, ],
     dispersion_distances = dispersion_distances
   )
@@ -71,7 +71,7 @@ BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, disper
   PARTITIONS2 <- bicriterion_anticlustering(
     copy_distances, 
     K = PARTITIONS[1,], # 
-    R = c(nrow(PARTITIONS), nrow(init_partitions)/2),
+    R = c(nrow(PARTITIONS), half_runs),
     init_partitions = PARTITIONS,
     dispersion_distances = dispersion_distances
   )
