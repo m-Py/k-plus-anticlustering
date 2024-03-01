@@ -51,6 +51,8 @@ prop.table(table(df$RUNS_BILS_VANILLA, df$M), margin = 2) |> round(2) # also str
 df$N_Category <- santoku::chop(df$N, breaks = c(20, 60, 100))
 prop.table(table(df$RUNS_BILS_VANILLA, df$N_Category), margin = 2) |> round(3) * 100
 
+tapply(df$time_optimal_s, list(df$K, df$N_Category), median) |> round(2)
+
 
 plot(tapply(df$time_optimal_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
 plot(tapply(df$time_vanilla_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
@@ -106,29 +108,50 @@ df |>
   as.data.frame() |>
   round(2)
 
+
+df |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
+    N = n()
+  ) |>
+  as.data.frame() |>
+  round(2)
+
+df |>
+  group_by(K) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
+    N = n()
+  ) |>
+  as.data.frame() |>
+  round(2)
+
+
 prop.table(table(df$MAXIMUM_RESTRICTION, df$K, df$N > 50), margin = c(2, 3)) |> round(2) #!!!!!!
 # probability of duplicates increases with K and decreases with N (small group sizes lead to duplicates)
 
 # if there is only one unique input partition, VANILLA is better than RESTRICTED,
 # but otherwise not!
   
-# Descriptives without bias, only Extended versions
-df |>
-  group_by(K) |>
-  summarize(
-    E_1 = mean(DIV_E_1),
-    E_ALL = mean(DIV_E_ALL),
-    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED)
-  )
 
 tt <- df[df$VANILLA_FOUND_OPTIMUM, ] # slight bias in favor of VANILLA, in particular for K = 6, K = 7
 
 t.test(tt$DIV_VANILLA, tt$DIV_E_1, paired = TRUE)
 t.test(tt$DIV_VANILLA, tt$DIV_E_ALL, paired = TRUE)
 t.test(tt$DIV_VANILLA, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
-t.test(tt$DIV_E_1, tt$DIV_E_ALL, paired = TRUE)
-t.test(tt$DIV_E_1, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
-t.test(tt$DIV_E_ALL, tt$DIV_E_ALL_RESTRICTED, paired = TRUE)
+t.test(df$DIV_E_1, df$DIV_E_ALL, paired = TRUE)
+t.test(df$DIV_E_1, df$DIV_E_ALL_RESTRICTED, paired = TRUE)
+t.test(df$DIV_E_ALL, df$DIV_E_ALL_RESTRICTED, paired = TRUE)
+t.test(df$DIV_E_ALL_RESTRICTED, df$DIV_E_ALL_RESTRICTED_ALT, paired = TRUE)
+t.test(df$DIV_E_ALL_RESTRICTED_ALT, df$DIV_LCW, paired = TRUE)
 
 # Important take aways (preliminary)
 
