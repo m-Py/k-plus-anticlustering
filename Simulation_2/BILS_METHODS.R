@@ -86,7 +86,7 @@ LCW_RESTRICTED_ALT <- function(data, K, RUNS, cannot_link) {
   
   half_runs <- RUNS/2
   
-  GROUPS_LCW <- LCW_RESTRICTED_ALT(
+  GROUPS_LCW <- anticlustering(
     data, 
     K = K, 
     method = "local-maximum",
@@ -102,5 +102,5 @@ LCW_RESTRICTED_ALT <- function(data, K, RUNS, cannot_link) {
     W = 1
   )
   
-  PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = dispersion_distances)), ]
+  PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = data)), ]
 }
