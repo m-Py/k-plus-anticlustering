@@ -1,37 +1,34 @@
 ## Functions for simulation
 
-BILS_VANILLA <- function(data, K, RUNS_MBPI, dispersion_distances = dist(data)) {
+BILS_VANILLA <- function(data, K, RUNS_MBPI) {
   PARTITIONS <- bicriterion_anticlustering(
     data, 
     K = K, 
-    R = c(RUNS_MBPI, 0),
-    dispersion_distances = dispersion_distances # not really VANILLA, but closely
+    R = c(RUNS_MBPI, 0)
   )
   PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = dispersion_distances)), ]
 }
 
-BILS_E_1 <- function(data, init_partition, RUNS_MBPI, dispersion_distances = dist(data)) {
+BILS_E_1 <- function(data, init_partition, RUNS_MBPI) {
   PARTITIONS <- bicriterion_anticlustering(
     data, 
     K = init_partition, 
-    R = c(RUNS_MBPI, 0),
-    dispersion_distances = dispersion_distances
+    R = c(RUNS_MBPI, 0)
   )
-  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = dispersion_distances)), ]
+  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = data)), ]
 }
 
-BILS_E_ALL <- function(data, init_partitions, dispersion_distances = dist(data)) {
+BILS_E_ALL <- function(data, init_partitions) {
   PARTITIONS <- bicriterion_anticlustering(
     data, 
     K = init_partitions[1, ], # mostly irrelevant if `init_partitions` is passed
     R = c(nrow(init_partitions), 0),
-    init_partitions = init_partitions,
-    dispersion_distances = dispersion_distances
+    init_partitions = init_partitions
   )
-  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = dispersion_distances)), ]
+  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = data)), ]
 }
 
-BILS_E_ALL_RESTRICTED <- function(data, init_partitions, cannot_link, dispersion_distances = dist(data)) {
+BILS_E_ALL_RESTRICTED <- function(data, init_partitions, cannot_link) {
   distances <- as.matrix(dist(data))
   
   # set cannot-link distances to large negative value so they cannot be linked
@@ -43,15 +40,14 @@ BILS_E_ALL_RESTRICTED <- function(data, init_partitions, cannot_link, dispersion
     distances, 
     K = init_partitions[1, ], # mostly irrelevant if `init_partitions` is passed
     R = c(nrow(init_partitions), 0),
-    init_partitions = init_partitions,
-    dispersion_distances = dispersion_distances
+    init_partitions = init_partitions
   )
-  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = dispersion_distances)), ]
+  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = data)), ]
 }
 
 
 # this one uses one half for MBPI, other half for ILS
-BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, dispersion_distances = dist(data)) {
+BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link) {
   distances <- as.matrix(dist(data))
   
   copy_distances <- distances
@@ -63,8 +59,7 @@ BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, disper
     distances, 
     K = init_partitions[1, ], # mostly irrelevant if `init_partitions` is passed
     R = c(half_runs, 0),
-    init_partitions = init_partitions[1:half_runs, ],
-    dispersion_distances = dispersion_distances
+    init_partitions = init_partitions[1:half_runs, ]
   )
   
   # rerun with ILS, using pareto set of first phase as input
@@ -72,12 +67,10 @@ BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, disper
     copy_distances, 
     K = PARTITIONS[1,], # 
     R = c(nrow(PARTITIONS), half_runs),
-    init_partitions = PARTITIONS,
-    W = 1,
-    dispersion_distances = dispersion_distances
+    init_partitions = PARTITIONS
   )
   
-  PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = dispersion_distances)), ]
+  PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = data)), ]
 }
 
 
@@ -98,8 +91,7 @@ LCW_RESTRICTED_ALT <- function(data, K, RUNS, cannot_link) {
   PARTITIONS2 <- bicriterion_anticlustering(
     data, 
     K = GROUPS_LCW, # 
-    R = c(1, half_runs),
-    W = 1
+    R = c(1, half_runs)
   )
   
   PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = data)), ]
