@@ -6,7 +6,7 @@ BILS_VANILLA <- function(data, K, RUNS_MBPI) {
     K = K, 
     R = c(RUNS_MBPI, 0)
   )
-  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = dispersion_distances)), ]
+  PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = data)), ]
 }
 
 BILS_E_1 <- function(data, init_partition, RUNS_MBPI) {

@@ -6,7 +6,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 RUNS_MBPI <- 100
-BATCH_SIZE_SIMULATION <- 5
+BATCH_SIZE_SIMULATION <- 500
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
 
@@ -49,7 +49,7 @@ for (K in 2:7) {
     GROUPS_BILS_E_1 <- BILS_E_1(
       data, 
       init_partition = opt$groups[1, ], 
-      RUNS_MBPI = RUNS_MBPI,
+      RUNS_MBPI = RUNS_MBPI
     )
     cat("   Running E_ALL with", RUNS_MBPI, "repetitions\n")
     GROUPS_BILS_E_ALL <- BILS_E_ALL(
