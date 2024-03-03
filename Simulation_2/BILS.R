@@ -128,6 +128,16 @@ for (K in 2:7) {
         cannot_link = opt$edges
       )
       end_lcw <- Sys.time()
+      cat("   Running LCW_RESTRICTED_ALT with", RUNS_TILL_OPTIMUM, "repetitions\n")
+      start_lcw <- Sys.time()
+      GROUPS_LCW <- LCW_RESTRICTED_ALT(
+        data, 
+        K = K, 
+        method = "local-maximum",
+        repetitions = max(RUNS_TILL_OPTIMUM, RUNS_MBPI),
+        cannot_link = opt$edges
+      )
+      end_lcw <- Sys.time()
       
       # store data associated with simulation run
       assign(paste0("df", separate_dispersion_distances), data.frame(
@@ -143,12 +153,14 @@ for (K in 2:7) {
         DISP_E_ALL_RESTRICTED = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL_RESTRICTED),
         DISP_E_ALL_RESTRICTED_ALT = dispersion_objective(dispersion_distances, GROUPS_BILS_E_ALL_RESTRICTED_ALT),
         DISP_LCW = dispersion_objective(dispersion_distances, GROUPS_LCW),
+        DISP_LCW_ALT = dispersion_objective(dispersion_distances, GROUPS_LCW_ALT),
         DIV_VANILLA = diversity_objective(data, GROUPS_BILS_VANILLA),
         DIV_E_1 = diversity_objective(data, GROUPS_BILS_E_1),
         DIV_E_ALL = diversity_objective(data, GROUPS_BILS_E_ALL),
         DIV_E_ALL_RESTRICTED = diversity_objective(data, GROUPS_BILS_E_ALL_RESTRICTED),
         DIV_E_ALL_RESTRICTED_ALT = diversity_objective(data, GROUPS_BILS_E_ALL_RESTRICTED_ALT),
         DIV_LCW = diversity_objective(data, GROUPS_LCW),
+        DIV_LCW_ALT = diversity_objective(data, GROUPS_LCW_ALT),
         RUNS_BILS_VANILLA = RUNS_TILL_OPTIMUM,
         time_optimal_s = as.numeric(difftime(end, start, units = "s")),
         time_vanilla_s = as.numeric(difftime(end_vanilla, start_vanilla, units = "s")),

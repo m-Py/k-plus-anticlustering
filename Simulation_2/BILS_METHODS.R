@@ -37,7 +37,7 @@ BILS_E_ALL_RESTRICTED <- function(data, init_partitions, cannot_link, dispersion
   # set cannot-link distances to large negative value so they cannot be linked
   # during the local maximum search (no exchanges will be conducted that put
   # these into the same group)
-  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1) * 999999999
+  distances[rbind(cannot_link, t(apply(cannot_link, 1, rev)))] <- -(sum(distances) + 1)
   
   PARTITIONS <- bicriterion_anticlustering(
     distances, 
@@ -73,7 +73,33 @@ BILS_E_ALL_RESTRICTED_ALT <- function(data, init_partitions, cannot_link, disper
     K = PARTITIONS[1,], # 
     R = c(nrow(PARTITIONS), half_runs),
     init_partitions = PARTITIONS,
+    W = 1,
     dispersion_distances = dispersion_distances
+  )
+  
+  PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = dispersion_distances)), ]
+}
+
+
+# this one uses one half for MBPI, other half for ILS
+LCW_RESTRICTED_ALT <- function(data, K, RUNS, cannot_link) {
+  
+  half_runs <- RUNS/2
+  
+  GROUPS_LCW <- LCW_RESTRICTED_ALT(
+    data, 
+    K = K, 
+    method = "local-maximum",
+    repetitions = half_runs,
+    cannot_link = cannot_link
+  )
+
+  # rerun with ILS, using pareto set of first phase as input
+  PARTITIONS2 <- bicriterion_anticlustering(
+    data, 
+    K = GROUPS_LCW, # 
+    R = c(1, half_runs),
+    W = 1
   )
   
   PARTITIONS2[which.max(apply(PARTITIONS2, 1, dispersion_objective, x = dispersion_distances)), ]
