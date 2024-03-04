@@ -31,7 +31,7 @@ authornote: |
   
 abstract: |
 
-    When assigning stimuli to experimental conditions, researchers strive for high similarity between stimulus sets and high pairwise dissimilarity of stimuli within sets. Because stimulus assignment is usually inadequate when done manually, automated algorithmic approaches are preferred. Brusco et al. (2020) proposed a bicriterion algorithm (BILS) to obtain stimulus partitionings that simultaneously satisfy two anticlustering criteria: the diversity, corresponding to between-set similarity, and the dispersion, corresponding to pairwise within-set dissimilarity. As a heuristic, however, the BILS does not necessarily identify globally optimal criterion values. We present a novel exact algorithm that returns (multiple) globally optimal partitions with regard to the dispersion. Despite its theoretical computational hardness, our method scales to rather large data sets and can be applied to solve most real-world use cases. In a simulation study, we evaluate several options to combine our optimal approach with the BILS heuristic, which -- due to its bicriterion approach -- naturally lends itself to providing high diversity on top of an optimal dispersion. We also provide two further extensions to the BILS: First, the dispersion and the diversity can be optimized on the basis of different dissimilarity matrices. Second, we allow that other anticlustering objectives of between-group similarity -- such as the k-means or k-plus objectives -- can be optimized instead of only the diversity. The original BILS as well as our extensions are freely available via the free and open source R package `anticlust`. Practical examples are included to illustrate their application.
+    When assigning stimuli to experimental conditions, researchers strive for high similarity between stimulus sets and high pairwise dissimilarity of stimuli within sets. Because stimulus assignment is usually inadequate when done manually, automated algorithmic approaches are preferred. Brusco et al. (2020) proposed a bicriterion algorithm (BILS) to obtain stimulus partitionings that simultaneously satisfy two anticlustering criteria: the diversity, corresponding to between-set similarity, and the dispersion, corresponding to pairwise within-set dissimilarity. As a heuristic, however, the BILS does not necessarily identify globally optimal criterion values. We present a novel exact algorithm that returns (multiple) globally optimal partitions with regard to the dispersion. Despite its theoretical computational hardness, our method scales to rather large data sets and can be applied to solve most real-world use cases. In a simulation study, we evaluate several options to combine our optimal approach with the BILS heuristic, which -- due to its bicriterion approach -- naturally lends itself to providing high diversity on top of an optimal dispersion. We also provide two further extensions to the BILS. First, we allow that the dispersion and the diversity can be optimized on the basis of different dissimilarity matrices. Second, we allow that other anticlustering objectives of between-group similarity -- such as the k-means or k-plus objectives -- can be optimized instead of only the diversity. The original BILS as well as our extensions are freely available via the free and open source R package `anticlust`. Practical examples are included to illustrate their application.
   
 bibliography      : ["lit.bib"]
   
@@ -102,9 +102,9 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
 - Start with use case: Stimulus assignment in within-subjects experiments (and stick with it throughout the paper, only briefly mention other use cases)
   * Needed: high similarity between stimulus set to reduce variance in responses attributed to other factors than the experimental manipulation. This is possible using `anticlust`, which has been applied many times since its introduction in @papenberg2020 (cite references)
   * Also needed (point of this paper!): High pairwise dissimilarity of stimuli in the same set. 
-- Simultaneous optimization of between-set similarity and pairwise within-set dissimilarity was introduced by Brusco et al.'s alogrithm, which is also available in `anticlust` since 2021 (version 0.6.0)
-- Here, we provide researchers with a practical introduction to their method and also present several extensions, which allow it to cover more use cases
-  (1) Always return optimal solution
+- Simultaneous optimization of between-set similarity and pairwise within-set dissimilarity was introduced by Brusco et al.'s algorithm, which is also available in `anticlust` since 2021 (version 0.6.0)
+- Here, we provide researchers with a practical introduction to their method and also present several extensions
+  (1) Always return optimal solution and combine optimal dispersion with maximum diversity (BILS, LCW, optimal ILP)
   (2) Use different distance matrix for dispersion and diversity (if different information is needed for both criteria, or to induce custom cannot-link constraints)
   (3) Extend the BILS's capacities towards other measures of between-group similarity (k-means / k-plus)
 - Technical introduction to "vanilla" BILS
@@ -112,13 +112,15 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
   * Optimal dispersion method: Basic algorithm + graph coloring ILP
     * How to maintain optimal dispersion while the BILS runs? Outline three approaches!
   * Different distance matrices: does not change algorithm, just computation / implementation
-  * Extend towards k-means: Use squared Euclidean distance (not really extension, just different input); compute "average" diversity if group sizes are unequal (k-plus is basically the same, but do not use the additional k-plus variables for the dispersion distance matrix)
+  * Extend towards k-means: Use squared Euclidean distance + "average diversity" (k-plus is basically the same, but do not use the additional k-plus variables for the dispersion distance matrix)
 - Simulation Study
   (1) How often does vanilla BILS find optimal solutions
-  (2) Which of the three extension is best for optimizing between-group similarity while maintaining optimal dispersion?
+  (2) Which of the alternatives is best for optimizing between-group similarity while maintaining optimal dispersion?
 - Application (presenting R code)
   * Optimize k-plus criterion using norming data; dispersion is based on pairwise orthographic dissimilarity between words
 - Discussion
+  * Future extensions: Graph coloring returns several solutions, LCW as first phase in BILS
+  
 
 ## Introduction
 
