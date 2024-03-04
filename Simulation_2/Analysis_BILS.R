@@ -9,7 +9,8 @@ nrow(df)
 
 length(unique(df$file)) # number of simulation runs / files
 
-table(table(df$file)) # all 2!
+table(table(df$file)) 
+table(df$K)
 
 # All optimal dispersion methods have optimal solution?
 sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
@@ -19,7 +20,7 @@ sum(df$DISP_LCW != df$DISP_E_ALL) # =)
 # Time to solve optimally
 max(df$time_optimal_s)
 max(df$time_vanilla_s)
-max(df$time_lcw_s)
+max(df$time_lcw_s) # useless metric as it also contains the graph coloring problem
 tapply(df$time_optimal_s, list(df$K), median) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), median) |> round(2)
 tapply(df$time_lcw_s, list(df$K), median) |> round(2)
@@ -43,7 +44,65 @@ tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean)
 table(df$N_DUPLICATE_PARTITIONS)
 
 
-# Descriptives:
+# Descriptives without VANILLA (unbiased)
+df |>
+  group_by(K) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
+    LCW_ALT = mean(DIV_LCW_ALT),
+    N = n()
+  ) |>
+  as.data.frame() |>
+  round(2)
+
+# What happens in maximally restricted data sets?
+
+# What happens in maximally restricted data sets? (with VANILLA, biased)
+df$MAXIMUM_RESTRICTION <- as.numeric(df$N_DUPLICATE_PARTITIONS == 99)
+
+table(df$MAXIMUM_RESTRICTION)
+table(df$MAXIMUM_RESTRICTION, df$K)
+
+df |>
+  group_by(K, MAXIMUM_RESTRICTION) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
+    LCW_ALT = mean(DIV_LCW_ALT),
+    N = n()
+  ) |>
+  as.data.frame() |>
+  round(2)
+
+# In maximally restricted data sets, using ILS on top of MBPI or LCW improves results!
+# LCW is better than MBPI, this should be part of the paper.  (at least for this restricted
+# version, VANILLA is still very good)
+
+df |>
+  filter(VANILLA_FOUND_OPTIMUM == 1) |> 
+  group_by(K, MAXIMUM_RESTRICTION) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    LCW = mean(DIV_LCW),
+    LCW_ALT = mean(DIV_LCW_ALT),
+    VANILLA = mean(DIV_VANILLA),
+    N = n()
+  ) |>
+  as.data.frame() |>
+  round(2)
+
+
+# Descriptives with  VANILLA (biased!)
 df |>
   filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
   group_by(K) |>
@@ -62,8 +121,6 @@ df |>
 
 table(df$N_DUPLICATE_PARTITIONS > 0, df$K) # also check out results in dependence of duplicate partitions!
 
-df$MAXIMUM_RESTRICTION <- as.numeric(df$N_DUPLICATE_PARTITIONS == (df$RUNS_BILS_VANILLA - 1))
-
 df |>
   filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
   group_by(K, MAXIMUM_RESTRICTION) |>
@@ -81,20 +138,6 @@ df |>
 
 
 df |>
-  summarize(
-    E_1 = mean(DIV_E_1),
-    E_ALL = mean(DIV_E_ALL),
-    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
-    LCW = mean(DIV_LCW),
-    LCW_ALT = mean(DIV_LCW_ALT),
-    N = n()
-  ) |>
-  as.data.frame() |>
-  round(2)
-
-df |>
-  group_by(K) |>
   summarize(
     E_1 = mean(DIV_E_1),
     E_ALL = mean(DIV_E_ALL),
