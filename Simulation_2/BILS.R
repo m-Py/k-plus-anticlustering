@@ -6,11 +6,11 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 TOTAL_REPETITIONS_HEURISTICS <- 100
-BATCH_SIZE_SIMULATION <- 3
+BATCH_SIZE_SIMULATION <- 50
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
 
-for (K in 2:7) {
+for (K in 7:2) {
   files <- list.files(paste0("./datasets/K", K, "/"), full.names = FALSE)
   # Do not replicate previous files:
   if (file.exists("results_bils.csv")) {
