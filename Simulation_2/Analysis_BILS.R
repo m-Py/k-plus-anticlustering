@@ -13,11 +13,7 @@ table(table(df$file))
 table(df$K)
 
 # All optimal dispersion methods have optimal solution?
-sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
-sum(df$DISP_E_1 != df$DISP_E_ALL_RESTRICTED)
-sum(df$DISP_E_1 != df$DISP_E_ALL_ILS) # =)
-sum(df$DISP_E_1 != df$DISP_LCW) # =)
-sum(df$DISP_E_1 != df$DISP_LCW_ILS) # =)
+sum(df$DISP_E_1 != df[, grepl("DISP_E|DISP_LCW", colnames(df))]) # !
 
 # Time to solve optimally
 max(df$time_optimal_s)
