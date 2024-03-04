@@ -42,6 +42,16 @@ tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean)
 
 table(df$N_DUPLICATE_PARTITIONS)
 
+# Display global results across all conditions
+GLOBAL_RESULTS <- data.frame(Diversity = colMeans(df[, grepl("DIV_E|DIV_LCW", colnames(df))]))
+GLOBAL_RESULTS[order(GLOBAL_RESULTS$Diversity), , drop = FALSE] |> round(2)
+
+# (TODO: I really need the data in long format for better descriptives...)
+
+# There seems to be a clear order in the results: 3 groups of performers: 
+# E_1 and E_1_ILS are worst (E_1 is particularly bad for some reason)
+# Then the non-ILS variants come: E_ALL, E_ALL_RESTRICTED, LCW
+# Then the ILS variants come: E_ALL_ILS, E_ALL_RESTRICTED_ILS, LCW_ILS
 
 # Descriptives without VANILLA (unbiased)
 df |>
