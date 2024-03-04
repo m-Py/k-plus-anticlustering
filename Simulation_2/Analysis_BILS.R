@@ -98,7 +98,7 @@ df |>
 
 # Just group by RESTRICTION
 
-df |>
+(results_by_restriction <- df |>
   group_by(RESTRICTION) |>
   summarize(
     E_1 = mean(DIV_E_1),
@@ -111,7 +111,10 @@ df |>
     LCW_ILS = mean(DIV_LCW_ILS),
     N = n()
   ) |> 
-  as.data.frame()  # Tibble wtf you doing with decimals
+  as.data.frame())  # Tibble wtf you doing with decimals
+
+results_only <- subset(results_by_restriction, select = -c(RESTRICTION, N))
+(best_by_restriction <- colnames(results_only)[apply(results_only, 1, which.max)])
 
 ## E_ALL_ILS best for maximally restricted data sets!!
 
@@ -125,8 +128,9 @@ df |>
 #    (i.e., E_ALL_RESTRICTED and LCW_RESTRICTED are best).
 # 2. If the problem is somewhat restricted, restricting the search space slighly
 #    is best (LCW_ILS + E_ALL_RESTRICTED_ILS are best).
-# 3. If the problem is maximally restricted, E_ALL_ILS is best. 
-# -> This case differentiation can actually be implemented in the `anticlust` interface! 
+# 3. If the problem is maximally restricted, E_ALL_ILS is best (LCW_ILS + E_ALL_RESTRICTED_ILS still good)
+# -> This case differentiation can actually be implemented in the `anticlust` interface because
+#    the degree of restriction is known!
 # (depending on the input method; give a warning when using LCW with a maximally restricted data set!) 
 
 df |>
