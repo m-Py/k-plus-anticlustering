@@ -18,13 +18,14 @@ sum(df$DISP_E_1 != df[, grepl("DISP_E|DISP_LCW", colnames(df))]) # !
 # Time to solve optimally
 max(df$time_optimal_s)
 max(df$time_vanilla_s)
-max(df$time_lcw_s) # useless metric as it also contains the graph coloring problem
+max(df$time_lcw_s) # not entirely useful metric as it also contains solving a graph coloring problem
 tapply(df$time_optimal_s, list(df$K), median) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), median) |> round(2)
 tapply(df$time_lcw_s, list(df$K), median) |> round(2)
 
 tapply(df$time_optimal_s, list(df$K), max) |> round(2)
 tapply(df$time_vanilla_s, list(df$K), max) |> round(2)
+tapply(df$time_lcw_s, list(df$K), max) |> round(2)
 
 # plot(tapply(df$time_vanilla_s, list(df$N), median))
 df$N_Category <- santoku::chop(df$N, breaks = c(20, 60, 100))
