@@ -15,7 +15,9 @@ table(df$K)
 # All optimal dispersion methods have optimal solution?
 sum(df$DISP_E_1 != df$DISP_E_ALL) # =)
 sum(df$DISP_E_1 != df$DISP_E_ALL_RESTRICTED)
-sum(df$DISP_LCW != df$DISP_E_ALL) # =)
+sum(df$DISP_E_1 != df$DISP_E_ALL_ILS) # =)
+sum(df$DISP_E_1 != df$DISP_LCW) # =)
+sum(df$DISP_E_1 != df$DISP_LCW_ILS) # =)
 
 # Time to solve optimally
 max(df$time_optimal_s)
@@ -49,11 +51,13 @@ df |>
   group_by(K) |>
   summarize(
     E_1 = mean(DIV_E_1),
+    E_1_ILS = mean(DIV_E_1_ILS),
     E_ALL = mean(DIV_E_ALL),
+    E_ALL_ILS = mean(DIV_E_ALL_ILS),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT = mean(DIV_LCW_ALT),
+    LCW_ALT_ILS = mean(DIV_LCW_ILS),
     N = n()
   ) |>
   as.data.frame() |>
@@ -71,11 +75,13 @@ df |>
   group_by(K, MAXIMUM_RESTRICTION) |>
   summarize(
     E_1 = mean(DIV_E_1),
+    E_1_ILS = mean(DIV_E_1_ILS),
     E_ALL = mean(DIV_E_ALL),
+    E_ALL_ILS = mean(DIV_E_ALL_ILS),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT = mean(DIV_LCW_ALT),
+    LCW_ALT_ILS = mean(DIV_LCW_ILS),
     N = n()
   ) |>
   as.data.frame() |>
@@ -90,11 +96,13 @@ df |>
   group_by(K, MAXIMUM_RESTRICTION) |>
   summarize(
     E_1 = mean(DIV_E_1),
+    E_1_ILS = mean(DIV_E_1_ILS),
     E_ALL = mean(DIV_E_ALL),
+    E_ALL_ILS = mean(DIV_E_ALL_ILS),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT = mean(DIV_LCW_ALT),
+    LCW_ALT_ILS = mean(DIV_LCW_ILS),
     VANILLA = mean(DIV_VANILLA),
     N = n()
   ) |>
@@ -108,11 +116,13 @@ df |>
   group_by(K) |>
   summarize(
     E_1 = mean(DIV_E_1),
+    E_1_ILS = mean(DIV_E_1_ILS),
     E_ALL = mean(DIV_E_ALL),
+    E_ALL_ILS = mean(DIV_E_ALL_ILS),
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
+    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT = mean(DIV_LCW_ALT),
+    LCW_ALT_ILS = mean(DIV_LCW_ILS),
     VANILLA = mean(DIV_VANILLA), # also add N per row to illustrate bias!
     N = n()
   ) |>
@@ -120,36 +130,6 @@ df |>
   round(2)
 
 table(df$N_DUPLICATE_PARTITIONS > 0, df$K) # also check out results in dependence of duplicate partitions!
-
-df |>
-  filter(VANILLA_FOUND_OPTIMUM == 1) |> # this actually introduces a bias
-  group_by(K, MAXIMUM_RESTRICTION) |>
-  summarize(
-    E_1 = mean(DIV_E_1),
-    E_ALL = mean(DIV_E_ALL),
-    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
-    LCW = mean(DIV_LCW),
-    VANILLA = mean(DIV_VANILLA),
-    N = n()
-  ) |>
-  as.data.frame() |>
-  round(2)
-
-
-df |>
-  summarize(
-    E_1 = mean(DIV_E_1),
-    E_ALL = mean(DIV_E_ALL),
-    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ALT = mean(DIV_E_ALL_RESTRICTED_ALT),
-    LCW = mean(DIV_LCW),
-    LCW_ALT = mean(DIV_LCW_ALT),
-    N = n()
-  ) |>
-  as.data.frame() |>
-  round(2)
-
 
 prop.table(table(df$MAXIMUM_RESTRICTION, df$K, df$N > 50), margin = c(2, 3)) |> round(2) #!!!!!!
 # probability of duplicates increases with K and decreases with N (small group sizes lead to duplicates)
