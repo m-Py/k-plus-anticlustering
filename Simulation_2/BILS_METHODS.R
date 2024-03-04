@@ -4,7 +4,7 @@ BILS_VANILLA <- function(data, K, RUNS_MBPI) {
   PARTITIONS <- bicriterion_anticlustering(
     data, 
     K = K, 
-    R = c(RUNS_MBPI, 0)
+    R = c(RUNS_MBPI/2, RUNS_MBPI/2)
   )
   PARTITIONS[which.max(apply(PARTITIONS, 1, dispersion_objective, x = data)), ]
 }
