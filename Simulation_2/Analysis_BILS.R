@@ -33,8 +33,8 @@ df$N_Category <- santoku::chop(df$N, breaks = c(20, 60, 100))
 tapply(df$time_optimal_s, list(df$K, df$N_Category), median) |> round(2)
 
 
-plot(tapply(df$time_optimal_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
-plot(tapply(df$time_vanilla_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
+# plot(tapply(df$time_optimal_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
+# plot(tapply(df$time_vanilla_s, santoku::chop(df$N, breaks = c(20, 40, 60, 80, 100)), median) |> round(2), xlab = "N", ylab = "Time (s)")
 
 
 df$VANILLA_FOUND_OPTIMUM <- df$DISP_VANILLA == df$DISP_E_1
@@ -73,13 +73,17 @@ df |>
 # What happens in maximally restricted data sets?
 
 # What happens in maximally restricted data sets? (with VANILLA, biased)
-df$MAXIMUM_RESTRICTION <- as.numeric(df$N_DUPLICATE_PARTITIONS == 99)
+df$RESTRICTION <- "none" 
+df$RESTRICTION[df$N_DUPLICATE_PARTITIONS == 99] <- "maximal"
+df$RESTRICTION[df$N_DUPLICATE_PARTITIONS > 0 & df$N_DUPLICATE_PARTITIONS < 99] <- "some"
+df$RESTRICTION <- ordered(df$RESTRICTION, levels = c("none", "some", "maximal"))
 
-table(df$MAXIMUM_RESTRICTION)
-table(df$MAXIMUM_RESTRICTION, df$K)
+
+table(df$RESTRICTION)
+table(df$RESTRICTION, df$K)
 
 df |>
-  group_by(K, MAXIMUM_RESTRICTION) |>
+  group_by(K, RESTRICTION) |>
   summarize(
     E_1 = mean(DIV_E_1),
     E_1_ILS = mean(DIV_E_1_ILS),
@@ -88,15 +92,42 @@ df |>
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
     E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT_ILS = mean(DIV_LCW_ILS),
+    LCW_ILS = mean(DIV_LCW_ILS),
     N = n()
-  ) |>
-  as.data.frame() |>
-  round(2)
+  )
+
+# Just group by RESTRICTION
+
+df |>
+  group_by(RESTRICTION) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_1_ILS = mean(DIV_E_1_ILS),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_ILS = mean(DIV_E_ALL_ILS),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
+    LCW = mean(DIV_LCW),
+    LCW_ILS = mean(DIV_LCW_ILS),
+    N = n()
+  ) |> 
+  as.data.frame()  # Tibble wtf you doing with decimals
+
+## E_ALL_ILS best for maximally restricted data sets!!
 
 # In maximally restricted data sets, using ILS on top of MBPI or LCW improves results!
 # LCW is better than MBPI, this should be part of the paper.  (at least for this restricted
 # version, VANILLA is still very good)
+
+# Results: The more restricted the problem gets through the maximum dispersion constraint,
+# the less constrained the search space should be (but restriction in general is good).
+# 1. If the problem is not restricted, restricting the search space maximally is best
+#    (i.e., E_ALL_RESTRICTED and LCW_RESTRICTED are best).
+# 2. If the problem is somewhat restricted, restricting the search space slighly
+#    is best (LCW_ILS + E_ALL_RESTRICTED_ILS are best).
+# 3. If the problem is maximally restricted, E_ALL_ILS is best. 
+# -> This case differentiation can actually be implemented in the `anticlust` interface! 
+# (depending on the input method; give a warning when using LCW with a maximally restricted data set!) 
 
 df |>
   filter(VANILLA_FOUND_OPTIMUM == 1) |> 
@@ -109,7 +140,7 @@ df |>
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
     E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT_ILS = mean(DIV_LCW_ILS),
+    LCW_ILS = mean(DIV_LCW_ILS),
     VANILLA = mean(DIV_VANILLA),
     N = n()
   ) |>
@@ -129,7 +160,7 @@ df |>
     E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
     E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
     LCW = mean(DIV_LCW),
-    LCW_ALT_ILS = mean(DIV_LCW_ILS),
+    LCW_ILS = mean(DIV_LCW_ILS),
     VANILLA = mean(DIV_VANILLA), # also add N per row to illustrate bias!
     N = n()
   ) |>
@@ -138,7 +169,7 @@ df |>
 
 table(df$N_DUPLICATE_PARTITIONS > 0, df$K) # also check out results in dependence of duplicate partitions!
 
-prop.table(table(df$MAXIMUM_RESTRICTION, df$K, df$N > 50), margin = c(2, 3)) |> round(2) #!!!!!!
+prop.table(table(df$RESTRICTION, df$K, df$N > 50), margin = c(2, 3)) |> round(2) #!!!!!!
 # probability of duplicates increases with K and decreases with N (small group sizes lead to duplicates)
 
 # if there is only one unique input partition, VANILLA is better than RESTRICTED,
