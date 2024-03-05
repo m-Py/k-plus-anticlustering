@@ -1,6 +1,6 @@
 ---
-title             : "An optimal anticlustering method to maximize stimulus dispersion in experiments"
-shorttitle        : "Maximum stimulus dispersion"
+title             : "Extending the Bicriterion Approach for Anticlustering: Optimal and Heuristic Approaches"
+shorttitle        : "Extending the Bicriterion Approach for Anticlustering"
 
 author:
   - name          : "Martin Papenberg"
