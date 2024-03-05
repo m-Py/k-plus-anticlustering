@@ -82,6 +82,30 @@ df$RESTRICTION <- ordered(df$RESTRICTION, levels = c("none", "some", "maximal"))
 table(df$RESTRICTION)
 table(df$RESTRICTION, df$K)
 
+# Just group by RESTRICTION
+
+(results_by_restriction <- df |>
+    group_by(RESTRICTION) |>
+    summarize(
+      N = n(),
+      E_1 = mean(DIV_E_1),
+      E_1_ILS = mean(DIV_E_1_ILS),
+      E_ALL = mean(DIV_E_ALL),
+      E_ALL_ILS = mean(DIV_E_ALL_ILS),
+      E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+      E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
+      LCW = mean(DIV_LCW),
+      LCW_ILS = mean(DIV_LCW_ILS)
+    ) |> 
+    as.data.frame())  # Tibble wtf you doing with decimals
+
+results_only <- subset(results_by_restriction, select = -c(RESTRICTION, N))
+results_by_restriction$Best_Performer <- colnames(results_only)[apply(results_only, 1, which.max)]
+results_by_restriction[, 3:10] <- round(results_by_restriction[, 3:10], 2)
+results_by_restriction
+
+# Group by restriction and K
+
 df |>
   group_by(K, RESTRICTION) |>
   summarize(
@@ -96,37 +120,20 @@ df |>
     N = n()
   )
 
-# Just group by RESTRICTION
-
-(results_by_restriction <- df |>
-  group_by(RESTRICTION) |>
-  summarize(
-    E_1 = mean(DIV_E_1),
-    E_1_ILS = mean(DIV_E_1_ILS),
-    E_ALL = mean(DIV_E_ALL),
-    E_ALL_ILS = mean(DIV_E_ALL_ILS),
-    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
-    LCW = mean(DIV_LCW),
-    LCW_ILS = mean(DIV_LCW_ILS),
-    N = n()
-  ) |> 
-  as.data.frame())  # Tibble wtf you doing with decimals
-
-results_only <- subset(results_by_restriction, select = -c(RESTRICTION, N))
-(best_by_restriction <- colnames(results_only)[apply(results_only, 1, which.max)])
-
 ## E_ALL_ILS best for maximally restricted data sets!!
 
 # In maximally restricted data sets, using ILS on top of MBPI or LCW improves results!
 # LCW is better than MBPI, this should be part of the paper.  (at least for this restricted
 # version, VANILLA is still very good)
 
-# Results: The more restricted the problem gets through the maximum dispersion constraint,
+# Primary results: Best diversity results are obtained when inducing multiple partitions that already have optimal dispersion.
+# For this reason it is useful that our optimal algorithm can return multiple partitions (cf. E_ALL_ILS performing best for 
+# maximally restricted problems).
+# Some nuance: The more restricted the problem gets through the maximum dispersion constraint,
 # the less constrained the search space should be (but restriction in general is good).
 # 1. If the problem is not restricted, restricting the search space maximally is best
 #    (i.e., E_ALL_RESTRICTED and LCW_RESTRICTED are best).
-# 2. If the problem is somewhat restricted, restricting the search space slighly
+# 2. If the problem is somewhat restricted, restricting the search space slightly
 #    is best (LCW_ILS + E_ALL_RESTRICTED_ILS are best).
 # 3. If the problem is maximally restricted, E_ALL_ILS is best (LCW_ILS + E_ALL_RESTRICTED_ILS still good)
 # -> This case differentiation can actually be implemented in the `anticlust` interface because
