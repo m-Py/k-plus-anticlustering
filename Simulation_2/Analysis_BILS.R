@@ -2,6 +2,8 @@ library(anticlust)
 library(tidyr)
 library(dplyr)
 library(santoku)
+library(afex)
+library(emmeans)
 
 df <- read.csv("results_bils.csv", sep = ";")
 sum(!complete.cases(df)) # =)
@@ -46,12 +48,70 @@ table(df$N_DUPLICATE_PARTITIONS)
 GLOBAL_RESULTS <- data.frame(Diversity = colMeans(df[, grepl("DIV_E|DIV_LCW", colnames(df))]))
 GLOBAL_RESULTS[order(GLOBAL_RESULTS$Diversity), , drop = FALSE] |> round(2)
 
+df$RESTRICTION <- "none" 
+df$RESTRICTION[df$N_DUPLICATE_PARTITIONS == 99] <- "maximal"
+df$RESTRICTION[df$N_DUPLICATE_PARTITIONS > 0 & df$N_DUPLICATE_PARTITIONS < 99] <- "some"
+df$RESTRICTION <- ordered(df$RESTRICTION, levels = c("none", "some", "maximal"))
+
+
+table(df$RESTRICTION)
+table(df$RESTRICTION, df$K)
+
 # (TODO: I really need the data in long format for better descriptives...)
 
 # There seems to be a clear order in the results: 3 groups of performers: 
 # E_1 and E_1_ILS are worst (E_1 is particularly bad for some reason)
 # Then the non-ILS variants come: E_ALL, E_ALL_RESTRICTED, LCW
 # Then the ILS variants come: E_ALL_ILS, E_ALL_RESTRICTED_ILS, LCW_ILS
+
+# Convert to long format 
+df$M_centered <- df$M - mean(df$M)
+df$N_centered <- df$N - mean(df$N)
+df$K_centered <- df$K - mean(df$K)
+dfw <- select(df, file, N_centered, M_centered, K_centered, RESTRICTION, starts_with("DIV"), -DIV_VANILLA)
+dfl <- pivot_longer(dfw, cols = starts_with("DIV"), names_to = "Method", values_to = "Diversity")
+dfl$ILS <- factor(ifelse(grepl("ILS", dfl$Method), "ILS", "NON-ILS"))
+dfl$Method <- factor(gsub("_ILS", "", dfl$Method))
+
+dfl$RESTRICTION <- factor(dfl$RESTRICTION)
+dfl$file <- factor(dfl$file)
+dfl$Log_div <- log(dfl$Diversity)
+
+# Some inference statistics ...
+m1 <- aov_ez(
+  id = "file",
+  dv = "Log_div",
+  between = c("N_centered", "K_centered", "M_centered", "RESTRICTION"), 
+  within = c("Method", "ILS"), 
+  data = dfl,
+  observed = "RESTRICTION",
+  covariate = c("N_centered", "K_centered", "M_centered"),
+  factorize = FALSE,
+  anova_table = list(es = "pes") # ges is useless here
+)
+m1
+
+aov_tab <- m1$anova_table
+aov_tab <- aov_tab[aov_tab$pes > .004 & aov_tab$`Pr(>F)` < .001, ]
+nice(aov_tab[order(aov_tab$pes, decreasing = TRUE), ])
+
+pairs(emmeans(m1, specs = "Method"))
+pairs(emmeans(m1, specs = "ILS"))
+pairs(emmeans(m1, ~ ILS * Method))
+pairs(emmeans(m1, ~ ILS | Method))
+pairs(emmeans(m1, ~ Method | RESTRICTION))
+pairs(emmeans(m1, ~ Method | N_centered, cov.reduce = function(x) quantile(x, c(0.25, 0.75))))
+pairs(emmeans(m1, ~ Method | N_centered + M_centered, cov.reduce = function(x) quantile(x, c(0.25, 0.75))))
+pairs(emmeans(m1, ~ Method | M_centered, cov.reduce = function(x) quantile(x, c(0.25, 0.75))))
+
+pairs(emmeans(m1, ~ Method | N_centered + K_centered, cov.reduce = function(x) quantile(x, c(0.25, 0.75))))
+
+# Interactions with N are driven by E_1 method: It can be good for low N, 
+# especially when M is high (but for large M it very much sucks when N increases)
+# three-way interaction N*M*method: Low M = No strong discrepancy for E_1 across N; High M = Very strong discrepancy.
+
+# Interactions with N, M and K are all driven by E_1... it gets increasingly bad when 
+# the problem size increases, and this seems to multiply with the different factors (N, M, K).
 
 # Descriptives without VANILLA (unbiased)
 df |>
@@ -70,18 +130,7 @@ df |>
   as.data.frame() |>
   round(2)
 
-# What happens in maximally restricted data sets?
-
 # What happens in maximally restricted data sets? (with VANILLA, biased)
-df$RESTRICTION <- "none" 
-df$RESTRICTION[df$N_DUPLICATE_PARTITIONS == 99] <- "maximal"
-df$RESTRICTION[df$N_DUPLICATE_PARTITIONS > 0 & df$N_DUPLICATE_PARTITIONS < 99] <- "some"
-df$RESTRICTION <- ordered(df$RESTRICTION, levels = c("none", "some", "maximal"))
-
-
-table(df$RESTRICTION)
-table(df$RESTRICTION, df$K)
-
 # Just group by RESTRICTION
 
 (results_by_restriction <- df |>
@@ -120,6 +169,21 @@ df |>
     N = n()
   )
 
+df |>
+  group_by(N_Category) |>
+  summarize(
+    E_1 = mean(DIV_E_1),
+    E_1_ILS = mean(DIV_E_1_ILS),
+    E_ALL = mean(DIV_E_ALL),
+    E_ALL_ILS = mean(DIV_E_ALL_ILS),
+    E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
+    E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
+    LCW = mean(DIV_LCW),
+    LCW_ILS = mean(DIV_LCW_ILS),
+    N = n()
+  ) |> 
+  as.data.frame()
+
 ## E_ALL_ILS best for maximally restricted data sets!!
 
 # In maximally restricted data sets, using ILS on top of MBPI or LCW improves results!
@@ -132,13 +196,14 @@ df |>
 # Some nuance: The more restricted the problem gets through the maximum dispersion constraint,
 # the less constrained the search space should be (but restriction in general is good).
 # 1. If the problem is not restricted, restricting the search space maximally is best
-#    (i.e., E_ALL_RESTRICTED and LCW_RESTRICTED are best).
-# 2. If the problem is somewhat restricted, restricting the search space slightly
+#    (i.e., E_ALL_RESTRICTED and LCW_RESTRICTED are best, and the non-ILS methods outperform
+#    their ILS counterpart).
+# 2. When restrictions are induced, the ILS methods begin to outperform the non-ILS methods. 
+# 2. If the problem is slightly but not maximally restricted, restricting the search space slightly
 #    is best (LCW_ILS + E_ALL_RESTRICTED_ILS are best).
-# 3. If the problem is maximally restricted, E_ALL_ILS is best (LCW_ILS + E_ALL_RESTRICTED_ILS still good)
+# 3. If the problem is maximally restricted, E_ALL_ILS is best (LCW_ILS is also still very strong)
 # -> This case differentiation can actually be implemented in the `anticlust` interface because
 #    the degree of restriction is known!
-# (depending on the input method; give a warning when using LCW with a maximally restricted data set!) 
 
 df |>
   filter(VANILLA_FOUND_OPTIMUM == 1) |> 
