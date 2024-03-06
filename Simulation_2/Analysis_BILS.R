@@ -44,8 +44,14 @@ tapply(df$VANILLA_FOUND_OPTIMUM, df$K, mean)
 
 table(df$N_DUPLICATE_PARTITIONS)
 
+colMedian <- function(df) {
+  apply(df, 2, median)
+}
+
+FUN <- colMedian
+
 # Display global results across all conditions
-GLOBAL_RESULTS <- data.frame(Diversity = colMeans(df[, grepl("DIV_E|DIV_LCW", colnames(df))]))
+GLOBAL_RESULTS <- data.frame(Diversity = FUN(df[, grepl("DIV_E|DIV_LCW", colnames(df))]))
 GLOBAL_RESULTS[order(GLOBAL_RESULTS$Diversity), , drop = FALSE] |> round(2)
 
 df$RESTRICTION <- "none" 
@@ -56,8 +62,6 @@ df$RESTRICTION <- ordered(df$RESTRICTION, levels = c("none", "some", "maximal"))
 
 table(df$RESTRICTION)
 table(df$RESTRICTION, df$K)
-
-# (TODO: I really need the data in long format for better descriptives...)
 
 # There seems to be a clear order in the results: 3 groups of performers: 
 # E_1 and E_1_ILS are worst (E_1 is particularly bad for some reason)
@@ -92,7 +96,7 @@ m1 <- aov_ez(
 m1
 
 aov_tab <- m1$anova_table
-aov_tab <- aov_tab[aov_tab$pes > .004 & aov_tab$`Pr(>F)` < .001, ]
+aov_tab <- aov_tab[aov_tab$pes > .0035 & aov_tab$`Pr(>F)` < .001, ]
 nice(aov_tab[order(aov_tab$pes, decreasing = TRUE), ])
 
 pairs(emmeans(m1, specs = "Method"))
@@ -113,8 +117,30 @@ pairs(emmeans(m1, ~ Method | N_centered + K_centered, cov.reduce = function(x) q
 # Interactions with N, M and K are all driven by E_1... it gets increasingly bad when 
 # the problem size increases, and this seems to multiply with the different factors (N, M, K).
 
+# Do not use E_1 in ANOVA, it seems to produce several interactions ...
+# Some inference statistics ...
+no_e1 <- dfl |> filter(!grepl("E_1", Method))
+m2 <- aov_ez(
+  id = "file",
+  dv = "Log_div",
+  between = c("N_centered", "K_centered", "M_centered", "RESTRICTION"), 
+  within = c("Method", "ILS"), 
+  data = no_e1,
+  observed = "RESTRICTION",
+  covariate = c("N_centered", "K_centered", "M_centered"),
+  factorize = FALSE,
+  anova_table = list(es = "pes") # ges is useless here
+)
+m2
+
+aov_tab2 <- m2$anova_table
+aov_tab2 <- aov_tab2[aov_tab2$pes > .0035 & aov_tab2$`Pr(>F)` < .001, ]
+nice(aov_tab2[order(aov_tab2$pes, decreasing = TRUE), ])
+
+pairs(emmeans(m2, ~ ILS | N_centered, cov.reduce = function(x) quantile(x, c(0.25, 0.75))))
+
 # Descriptives without VANILLA (unbiased)
-df |>
+df |> 
   group_by(K) |>
   summarize(
     E_1 = mean(DIV_E_1),
@@ -133,18 +159,20 @@ df |>
 # What happens in maximally restricted data sets? (with VANILLA, biased)
 # Just group by RESTRICTION
 
+DESC_FUN <- mean # using median can change the results
+
 (results_by_restriction <- df |>
     group_by(RESTRICTION) |>
     summarize(
       N = n(),
-      E_1 = mean(DIV_E_1),
-      E_1_ILS = mean(DIV_E_1_ILS),
-      E_ALL = mean(DIV_E_ALL),
-      E_ALL_ILS = mean(DIV_E_ALL_ILS),
-      E_ALL_RESTRICTED = mean(DIV_E_ALL_RESTRICTED),
-      E_ALL_RESTRICTED_ILS = mean(DIV_E_ALL_RESTRICTED_ILS),
-      LCW = mean(DIV_LCW),
-      LCW_ILS = mean(DIV_LCW_ILS)
+      E_1 = DESC_FUN(DIV_E_1),
+      E_1_ILS = DESC_FUN(DIV_E_1_ILS),
+      E_ALL = DESC_FUN(DIV_E_ALL),
+      E_ALL_ILS = DESC_FUN(DIV_E_ALL_ILS),
+      E_ALL_RESTRICTED = DESC_FUN(DIV_E_ALL_RESTRICTED),
+      E_ALL_RESTRICTED_ILS = DESC_FUN(DIV_E_ALL_RESTRICTED_ILS),
+      LCW = DESC_FUN(DIV_LCW),
+      LCW_ILS = DESC_FUN(DIV_LCW_ILS)
     ) |> 
     as.data.frame())  # Tibble wtf you doing with decimals
 
@@ -152,6 +180,9 @@ results_only <- subset(results_by_restriction, select = -c(RESTRICTION, N))
 results_by_restriction$Best_Performer <- colnames(results_only)[apply(results_only, 1, which.max)]
 results_by_restriction[, 3:10] <- round(results_by_restriction[, 3:10], 2)
 results_by_restriction
+
+write.table(results_by_restriction, "aggr-results-div-restriction.csv", sep = ",", quote = FALSE, row.names = FALSE)
+
 
 # Group by restriction and K
 
