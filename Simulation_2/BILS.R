@@ -6,7 +6,7 @@ library(anticlust)
 source("BILS_METHODS.R")
 
 TOTAL_REPETITIONS_HEURISTICS <- 100
-BATCH_SIZE_SIMULATION <- 50
+BATCH_SIZE_SIMULATION <- 1000 # full simulation at once with batch size = 1000 (i.e., per K)
 
 # Do not do the entire simulation in a single R session and adjust BATCH_SIZE_SIMULATION accordingly
 
