@@ -1,5 +1,17 @@
 # ANALYSIS_BILS_VANILLA.R
 
+df <- read.csv("results_bils.csv", sep = ";")
+df$VANILLA_FOUND_OPTIMUM <- df$DISP_VANILLA == df$DISP_E_1
+df$RESTRICTION <- "none" 
+df$RESTRICTION[df$N_DUPLICATE_PARTITIONS == 99] <- "maximal"
+df$RESTRICTION[df$N_DUPLICATE_PARTITIONS > 0 & df$N_DUPLICATE_PARTITIONS < 99] <- "some"
+df$RESTRICTION <- factor(df$RESTRICTION, levels = c("none", "some", "maximal"))
+
+m1 <- glm(VANILLA_FOUND_OPTIMUM ~ N + K + M + RESTRICTION, data = df, family = binomial(link = "logit"))
+summary(m1)
+m2 <- glm(VANILLA_FOUND_OPTIMUM ~ N + K + M + relevel(RESTRICTION, ref = 2), data = df, family = binomial(link = "logit"))
+summary(m2)
+
 
 table(df$RUNS_BILS_VANILLA)
 table(df$RUNS_BILS_VANILLA, df$K)

@@ -30,6 +30,22 @@ df$RESTRICTION[df$N_DUPLICATE_PARTITIONS > 0 & df$N_DUPLICATE_PARTITIONS < 99] <
 df$RESTRICTION <- ordered(df$RESTRICTION, levels = c("none", "some", "maximal"))
 
 sort(colMeans(df[df$VANILLA_FOUND_OPTIMUM == 1, grepl("DIV", colnames(df))])) # global results including VANILLA
+# THE ALL_ILS adaptations perform better than VANILLA even when VANILLA found optimum (which is a biased analysis!):
+t.test(
+  df$DIV_VANILLA[df$VANILLA_FOUND_OPTIMUM == 1], 
+  df$DIV_E_ALL_ILS[df$VANILLA_FOUND_OPTIMUM == 1], 
+  paired = TRUE
+)
+t.test(
+  df$DIV_VANILLA[df$VANILLA_FOUND_OPTIMUM == 1], 
+  df$DIV_E_ALL_RESTRICTED_ILS[df$VANILLA_FOUND_OPTIMUM == 1], 
+  paired = TRUE
+)
+t.test(
+  df$DIV_VANILLA[df$VANILLA_FOUND_OPTIMUM == 1], 
+  df$DIV_LCW_ILS[df$VANILLA_FOUND_OPTIMUM == 1], 
+  paired = TRUE
+)
 
 # Did Vanilla find optimum? Depending on Restriction
 prop.table(table(df$RESTRICTION, c("NO OPTIMUM", "FOUND OPTIMUM")[df$VANILLA_FOUND_OPTIMUM+1]), margin = 2) |> round(2)
