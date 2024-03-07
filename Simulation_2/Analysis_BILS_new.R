@@ -130,6 +130,10 @@ dflD |>
   add_discrepancy() |> 
   add_best_method()
 
+# For no restriction: Small difference between E_ALL variants and LCW variants, E_1 bad. Slight advantage for non-ILS variants.
+# When restriction increases: ILS becomes more important.
+# For maximum restriction, ILS is crucial. Interestingly: E_1 is good for small data sets with maximum restriction.
+
 # E_1 may actually be good for small data sets + maximum restriction
 # (but I would still prefer a different method due to the danger of "serious fails")
 
