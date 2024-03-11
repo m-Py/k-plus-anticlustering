@@ -97,9 +97,9 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
 ```
 
 
-Partitioning data sets via anticlustering has uses in many research fields including psychology [@brusco2019; @schaper2023], test assessment [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network transmission [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeinity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which partitions data sets via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986]
+Partitioning data sets via anticlustering has uses in many research fields including psychology [@brusco2019; @schaper2023], test assessment [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network systems [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeneity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which partitions data sets via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986].
 
-More formally, anticlustering is used to partition $N$ objects into $K$ groups $C = (C_1, \ldots, C_K)$, where $C_k$ is the set of $n_k$ objects in the $k^{th}$ group, and $K$ and $n_k$ are predetermined by the application. In many anticlustering applications, equal-sized groups are required, i.e., $n_k = \frac{N}{K}$ [@schulz2022; @gallego2013]. The partitioning is characterized by assignment to exhaustive and mutually exclusive subgroups:
+Formally, anticlustering is used to partition $N$ objects into $K$ groups $C = (C_1, \ldots, C_K)$, where $C_k$ is the set of $n_k$ objects in the $k^{th}$ group, and $K$ and $n_k$ are predetermined by the application. In many anticlustering applications, equal-sized groups are required, i.e., $n_k = \frac{N}{K}$ [@schulz2022; @gallego2013]. The partitioning is characterized by assignment to exhaustive and mutually exclusive subgroups:
 
 \begin{align}
 \bigcup\limits_{k = 1}^{K} C_k = X \label{formalization:1} \\
@@ -107,10 +107,10 @@ C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k\label
 \vert C_k \vert = n_k, \; \forall k \in \{1, \ldots, K\} \label{formalization:3}
 \end{align}
 
-We assume that a data matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ is available where the $M$ columns contain numeric measurements on the $N$ objects. The partitioning is obtained by maximizing a clustering criterion $f_i(C, \mathbf{X})$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
+We assume that a data matrix $\mathbf{Z}$ is used as input for computing the anticlustering criterion. $\mathbf{Z}$ is either a feature matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ where the $M$ columns contain numeric measurements on the $N$ objects, or a symmetric matrix $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$ of pairwise dissimilarity measurements. The partitioning is obtained by maximizing a clustering criterion $f_i(C, \mathbf{Z})$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
 
 $$
-f_1(C, \mathbf{X}_{N \times M}) = 
+f_1(C, \mathbf{X}_{N \times M}) =
   \sum\limits_{j=1}^{M} 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
@@ -123,25 +123,46 @@ $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. Because the approach can be reduced to an augmentation of the data set, *k*-plus anticlustering leaves the original *k*-means criterion $f_1$ unchanged. For example, to equate means and variances, we define a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$. Then, the *k*-plus criterion is computed as 
+Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible [@spath1986]. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. Because the approach can be reduced to an augmentation of the data set, *k*-plus anticlustering leaves the original *k*-means criterion $f_1$ unchanged. For example, to equate means and variances, we define a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$ and augment the original matrix with it. Then, the *k*-plus criterion is computed as
 
 $$
-f_1^*(C, \mathbf{(X | Y)}_{N \times 2M}) = 
+f_2(C, \mathbf{(X | Y)_{N \times 2M}}) =
   \sum\limits_{j=1}^{M} 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
   (x_{ij} - \overline{x}_j ^{(k)})^2 + (y_{ij} - \overline{y}_j ^{(k)})^2
 $$
 
-Other anticlustering criteria usually use as input a matrix $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$ of pairwise dissimilarity measurements. The *diversity* criterion is the most important criterion of this kind. It is computed as the within-group sum of pairwise dissimilarities [@brusco2019; @papenberg2020; @feo1990]:
+Another important anticlustering criterion is the *diversity*, which uses a dissimilarity matrix $\mathbf{D}_{N \times N}$ as input. It is computed as the within-group sum of pairwise dissimilarities across all clusters [@brusco2019; @papenberg2020; @feo1990]:
  
 $$
-f_2(C) = \sum_{(i < j) \in C_k} d_{ij}
+f_3(C, \mathbf{D}_{N \times N}) = \sum_{(i < j) \in C_k} d_{ij}
 $$
 
-Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances. However, most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. 
+Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances. However, most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. If $\mathbf{D}_{N \times N}$ is computed via the squared Euclidean distances, we note an important equivalence between the k-means criterion and the diversity. The k-means criterion can also be expressed using the pairwise squared Euclidean distances between data points (Brusco, 2006; Späth, 1980). Based on $\mathbf{D}_{N \times N}$, the k-means criterion is then computed as
 
-Unlike $f_1$ and $f_2$, the *dispersion* criterion does not represent between-group similarity, but is a pure measure of within-group heterogeneity. It is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
+$$
+f_1(C, \mathbf{X}_{N \times M}) =
+f_4(C, \mathbf{D}_{N \times N}) = \sum\limits_{k = 1}^{K}\left( \frac{1}{n_k} \sum_{(i<j)\in C_k} d_{ij} \right)
+$$
+
+That is, "the sum of squared distances of a collection of points from the centroid associated with those points is equal to the sum of the pairwise squared distances between those points divided by the size (number of objects) of the collection" (Brusco, 2006, p. 350).
+
+An important special case of anticlustering applications is that all groups are equal-sized, i.e., $n_k = \frac{N}{K}$ ($k = 1, \dots K$). Here, we obtain
+
+$$
+\mathit{SSE} = \frac{N}{K} \sum\limits_{k = 1}^{K} \sum_{(i<j)\in C_k} d_{ij}
+$$
+
+In this case, the normalizing factor $\frac{N}{K}$ can be ignored when maximizing $f_1$. Thus, the criterion reduces to the sum of the (squared) distances between elements in the same cluster:
+
+$$
+\mathit{SSE_{Diversity}} = \sum\limits_{k = 1}^{K}\sum_{(i<j)\in C_k} d_{ij}
+$$
+
+This term corresponds to the standard diversity $f_2$, with the distances $d_{ij}$ representing squared Euclidean distances. We denote $f_4$ as the *average diversity criterion*, which maintain unconditional equivalence between k-means and the diversity.
+
+Unlike $f_1$, $f_2$, $f_3$, and $f_4$, the *dispersion* criterion does not represent between-group similarity, but is a pure measure of within-group heterogeneity. It is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
 
 $$
 f_3(C) = \textrm{min}_{(i < j) \in C_k} d_{ij}
@@ -166,49 +187,6 @@ Traditionally, assigning stimuli to experimental conditions was done manually [e
 For example, in tasks of recognition memory, participants commonly have to decide if a target stimuli (e.g., a word) has been presented in an earlier phase of the experiment. In this case, words that are orthographically similar to a target word should serve as distractors. 
 
 The BILS algorithm has been available in the anticlust package since 2021, but we assume that many researchers do not yet know about its potential, also given that the introduction by @brusco2019 was rather technical in nature. For now, users seem to rely on the unicriterion methods focusing on between-set similarity only. Therefore, we provide readers with an application-focused introduction and extend BILS with parameters that may be useful when designing experiments. 
-
---- 
-
-**OLD**
-
-Anticlustering refers to the process of partitioning elements into disjoint groups with the goal of obtaining high between-group similarity and high within-group heterogeneity [@brusco2019; @spath1986; @valev1998; @valev1983]. Anticlustering thereby reverses the logic of its better known twin---cluster analysis---which seeks homogeneity within clusters and separation between clusters [@rokach2005]. Anticlustering has many applications in research psychology [@steinley2006; @brusco2019; @papenberg2020]. Examples include splitting tests into parts of equal difficulty [@gierl2017], assigning students to work groups [@baker2002], and assigning stimuli to different, but parallel experimental conditions [@lahl2006]. Solving anticlustering problems "by hand" is a tedious and time-consuming task, and the quality of manual partitioning is usually subpar. Fortunately, anticlustering problems can be formalized as mathematical optimization problems [e.g., @baker2002; @brusco2019; @spath1986; @fernandez2013] and accessible open source software solutions to tackling these problems exist [@papenberg2020]. 
-
-Anticlustering methods are characterized by (a) an objective function that quantifies between-group similarity and/or within-group heterogeneity, and (b) an algorithm that determines how elements are assigned to groups to maximize the objective function. Several anticlustering objective functions use pairwise dissimilarity ratings such as the Euclidean distance as input. The most prominent criterion of this kind is the *diversity*, which is the total sum of pairwise dissimilarities between elements within the same group [@brusco2019; @gallego2013]. By considering pairwise dissimilarities between elements in the same group, the diversity criterion reflects the total degree of within-group heterogeneity. High within-group diversity simultaneously ensures high between-group similarity.[^equalsizedgroups] Another important anticlustering criterion based on the information in a dissimilarity matrix is the *dispersion*, which is the minimum dissimilarity between any two elements within the same group [@fernandez2013]. Maximizing the dispersion increases within-group heterogeneity by ensuring that any two elements in the same group are as dissimilar from each other as possible. @brusco2019 convincingly argued that anticlustering applications striving for within-group heterogeneity should incorporate both dispersion and diversity, and they presented a bicriterion algorithm to approximate the Pareto efficient set of solutions according to both criteria. 
-
-[^equalsizedgroups]: As will be shown later, the diversity objective only strictly equalizes within-group heterogeneity and between-group similarity when groups are equal-sized.
-
-Oftentimes, partitioning applications in psychology are focused on between-group similarity rather than within-group heterogeneity, even though both goals usually coincide. High between-group similarity is for example desirable when designing experimental conditions using different stimulus sets that should be as similar as possible with regard to response-relevant attributes [@lahl2006]. Such stimulus selection tasks are usually conducted on the basis of attribute data and not on pairwise (dis)similarity ratings. That is, individual stimuli are numerically coded on relevant dimensions [@dry2009]. For stimuli in psycholinguistic experiments, attributes may consist of ratings for imagery and concreteness, as well as orthographic variables [@friendly1982]. In other cases, attributes are binary and may represent the presence or absence of a feature [@tversky1977]. When attribute values are available, anticlustering approaches that do not require a dissimilarity matrix[^dissimilarityfromfeatures] can be used to partition the data. K-means is probably the best-known clustering objective that can directly be computed on attribute values. In k-means clustering, the sum of the squared Euclidean distances between data points and their cluster centers is minimized, usually using the k-means heuristic [@jain2010; @steinley2006; @brusco2006branch]. Minimizing the k-means criterion simultaneously maximizes between-cluster separation and within-cluster homogeneity [@aloise2009np]. Reversing the k-means objective function---using maximization instead of minimization---has been recognized as a useful approach when aiming for high between-group similarity [@spath1986; @valev1998; @valev1983]. Specifically, as @spath1986 noted, k-means anticlustering minimizes differences with regard to the means of the numeric attributes across clusters. However, other distribution characteristics---such as the variance---are not targeted. @papenberg2020 showed that k-means anticlustering tends to over-optimize between-group similarity with regard to the mean at the cost of similarity in variance. However, when aiming for overall between-group similarity, neglecting all distribution characteristics other than the mean is misguided; similar means can be obtained even when the underlying distributions are clearly different [e.g., @anscombe1973]. 
-
-[^dissimilarityfromfeatures]: It is still possible to convert the attribute data into a dissimilarity matrix, e.g. by computing all pairwise Euclidean distances, and then optimize a distance-based anticlustering criterion to obtain a partitioning. For Likert scale data or binary attributes, the Manhattan distance may be preferred over the Euclidean distance; for mixed-type attributes, it is even possible to compute a combined distance metric [@rokach2005].
-
-To optimize overall between-group similarity---and hence to overcome the limitations of k-means anticlustering---this paper introduces k-plus anticlustering. K-plus is an extension of the k-means objective that quantifies between-group similarity as discrepancy with regard to several distribution characteristics instead of only the mean. Specifically, k-plus offers the possibility to minimize differences with regard to the variance and higher order moments such as skewness and kurtosis. After formally introducing the k-plus objective, two simulation studies show that k-plus anticlustering is well-suited to create groups having minimal differences according to multiple distribution characteristics, significantly outperforming traditional criteria such as the diversity and the k-means objective. Practical examples illustrate how readers can easily apply k-plus anticlustering using the free and open source software package `anticlust` [@papenberg2020; @R-anticlust], an extension to the popular statistical programming language R [@R-base].
-
-# Evaluation
-
-Two simulation studies were conducted to evaluate the new k-plus objective for anticlustering. Simulation 1 compared a selected number of weighting schemes for the k-plus criterion $\mathit{SSE_{kplusGeneralized}}$. The results of this initial test determined the benchmark implementation of k-plus anticlustering that was used as contestant in the follow-up simulation. Simulation 2 was a large scale comparison of the k-plus objective and the most important traditional anticlustering objectives striving for between-group similarity: the diversity and the k-means objective. 
-
-The simulation studies were implemented using the statistical programming language R [Version 4.2, @R-base]. The R package `anticlust` [Version 0.6.1, @R-anticlust; @papenberg2020] was used to optimize the anticlustering objectives. The R package `faux` [Version 1.1.0, @R-faux] was used to generate the multivariate normal data sets that were processed during Simulation 2. The R packages `dplyr` [Version 1.0.7, @R-dplyr], `ggplot2` [Version 3.3.5, @R-ggplot2], `papaja` [Version 0.1.1.9001, @R-papaja], `tidyr` [Version 1.1.3, @R-tidyr], `fossil` [Version 0.4.0, @R-fossil], and `DescTools` [Version 0.99.45, @R-desctools] were used for data analysis and result presentation. The simulation study is fully reproducible via code and data that has been made accessible in an accompanying OSF repository [@osf2023].
-
-## Optimization algorithm
-
-In both simulation studies, the same local maximum search was applied to optimize the competing anticlustering objectives [Method LCW, @weitz1998]. Building on an initial random allocation, the algorithm proceeds by swapping elements between groups in such a way that each swap improves the objective criterion by the largest possible margin. That is, it starts with the first element and simulates all exchanges with elements that are currently assigned to a different group. After each exchange has been evaluated, the one exchange is realized that improves the objective function the most. No exchange is realized if no improvement is possible. The exchange process is repeated for each element. After that, the procedure restarts at the beginning and is repeated until an iteration through the entire data set no longer yields an improvement. To obtain better results, this local maximum search may be initialized multiple times [@spath1986]. In the simulation studies, five repetitions were used. Note that the local maximum search can be performed on the basis of any arbitrary initial grouping. In particular, the initial grouping determines the sizes of the anticlusters, because the exchange procedure following the set-up never changes the sizes of the groups. While the data sets in the simulation studies were always partitioned into equal-sized groups, it would also be possible to ensure that the group sizes differ by 1 at most if an even split is not possible; even different-sized groups can be requested if required by the application.
-
-## Conditions
-
-For Simulation 2, I generated 10,000 data sets following a normal distribution. The data sets were subsequently processed by the competing methods. The following properties were determined randomly for each data set: (a) the sample size $N$ varied between 24 and 300 with intermediate steps of 12 so that each data set could be split evenly into $K = 2$, $3$, and $4$ groups; (b) the number of features varied between 2 and 5; (c) the standard deviation of all features was set to 1, 2 or 3 (the mean was always zero); (d) the correlation between all features was $r = 0$, $r = .1$, $r = .2$, $r = .3$, $r = .4$ or $r = .5$. All anticlustering methods were applied to each of the 10,000 data sets using $K = 2$, $K = 3$ and $K = 4$ (i.e., each method was applied 30,000 times). Groups sizes were always equal. 
-
-## Evaluation criteria
-
-
-## Results
-
-## Example Application II: Small data set ($N = 96$)
-
-The simulation study indicated that k-plus may show decreased performance for smaller group sizes. Therefore, a second application illustrates that k-plus anticlustering yields satisfactory results in practice even when group sizes are smaller. I make use of a norming data set of 96 word stimuli that was contributed to the `anticlust` package by Marie L. Schaper [@schaper2019metacognitive; @schaper2019metamory]. After loading the `anticlust` package, the data set can be accessed as follows: 
-
-```{r, echo = TRUE}
-data(schaper2019)
-```
 
 # Discussion
 
