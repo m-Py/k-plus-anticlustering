@@ -107,7 +107,7 @@ C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k\label
 \vert C_k \vert = n_k, \; \forall k \in \{1, \ldots, K\} \label{formalization:3}
 \end{align}
 
-We assume that a data matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ is available where the $M$ columns contain numeric measurements on the $N$ objects. The partitioning is obtained by maximizing a clustering criterion $f_i$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares ($\mathit{SSE}$), i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
+We assume that a data matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ is available where the $M$ columns contain numeric measurements on the $N$ objects. The partitioning is obtained by maximizing a clustering criterion $f_i(C)$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
 
 $$
 f_1(C) = 
@@ -117,29 +117,31 @@ f_1(C) =
   (x_{ij} - \overline{x}_j ^{(k)})^2
 $$
 
-The *diversity* is another important anticlustering criterion representing between-group similarity. It is computed as the within-group sum of pairwise dissimilarities [@brusco2019; @papenberg2020; @feo1990]:
+The $k^{th}$ cluster center $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ contains the mean values of the $M$ variables computed across all observations belonging to the  $k^{th}$ group:
+
+$$
+\overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
+$$
+
+Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. Because the approach can be reduced to an augmentation of the data set, *k*-plus anticlustering leaves the original *k*-means criterion $f_1$ unchanged. 
+
+Other anticlustering criteria usually use as input a matrix $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$ of pairwise dissimilarity measurements. The *diversity* criterion is the most important criterion of this kind. It is computed as the within-group sum of pairwise dissimilarities [@brusco2019; @papenberg2020; @feo1990]:
  
 $$
-f_2(C) = \sum_{i < j) \in C_k} d_{ij}
+f_2(C) = \sum_{(i < j) \in C_k} d_{ij}
 $$
 
-The diversity can for example be computed by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$, where 
+Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances. However, most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. 
 
-$$
-d_{ij} = \sqrt{\sum\limits_{m = 1}^{M}(x_{im} - x_{jm})^2}
-$$
-
-However, note that most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. 
-
-Unlike $f_1$ and $f_2$, the *dispersion* criterion is not a sum, but it is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
+Unlike $f_1$ and $f_2$, the *dispersion* criterion does not represent between-group similarity, but is a pure measure of within-group heterogeneity. It is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
 
 $$
 f_3(C) = \textrm{min}_{(i < j) \in C_k} d_{ij}
 $$
 
-The dispersion does not represent between-group similarity, but instead it is measure of the worst-case pairwise dissimilarity. Maximizing the dispersion ensures that any two objects in the same group are as dissimilar from each other as possible. 
+The dispersion is a measure of the worst-case pairwise dissimilarity. Maximizing the dispersion ensures that any two objects in the same group are as dissimilar from each other as possible. 
 
-@brusco2019 outlined the importance of simultaneously considering multiple criteria when tackling anticlustering problems and introduced the bicriterion optimization model for anticlustering. In particular, they argued that anticlustering algorithms should incorporate an objective of between-group similarity---such as the diversity---and pairwise within-group dissimilarity---i.e., the dispersion---at the same time.
+@brusco2019 outlined the importance of simultaneously considering multiple criteria when tackling anticlustering problems. In particular, they argued that anticlustering algorithms should incorporate an objective of between-group similarity---such as the diversity---and pairwise within-group dissimilarity---i.e., the dispersion---at the same time.
 
 ## Algorithms for anticlustering
 
