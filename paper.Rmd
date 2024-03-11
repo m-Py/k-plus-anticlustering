@@ -97,7 +97,7 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
 ```
 
 
-Anticlustering problems arise in many research fields including psychology [@brusco2019; @schaper2023], test assessment [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network transmission [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeinity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which conducts partitioning via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986]
+Partitioning data sets via anticlustering has uses in many research fields including psychology [@brusco2019; @schaper2023], test assessment [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network transmission [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeinity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which partitions data sets via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986]
 
 More formally, anticlustering is used to partition $N$ objects into $K$ groups $C = (C_1, \ldots, C_K)$, where $C_k$ is the set of $n_k$ objects in the $k^{th}$ group, and $K$ and $n_k$ are predetermined by the application. In many anticlustering applications, equal-sized groups are required, i.e., $n_k = \frac{N}{K}$ [@schulz2022; @gallego2013]. The partitioning is characterized by assignment to exhaustive and mutually exclusive subgroups:
 
@@ -107,10 +107,10 @@ C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k\label
 \vert C_k \vert = n_k, \; \forall k \in \{1, \ldots, K\} \label{formalization:3}
 \end{align}
 
-We assume that a data matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ is available where the $M$ columns contain numeric measurements on the $N$ objects. The partitioning is obtained by maximizing a clustering criterion $f_i(C)$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
+We assume that a data matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ is available where the $M$ columns contain numeric measurements on the $N$ objects. The partitioning is obtained by maximizing a clustering criterion $f_i(C, \mathbf{X})$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
 
 $$
-f_1(C) = 
+f_1(C, \mathbf{X}_{N \times M}) = 
   \sum\limits_{j=1}^{M} 
   \sum\limits_{k=1}^{K} 
   \sum\limits_{i \in C_k}
@@ -123,7 +123,15 @@ $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. Because the approach can be reduced to an augmentation of the data set, *k*-plus anticlustering leaves the original *k*-means criterion $f_1$ unchanged. 
+Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. Because the approach can be reduced to an augmentation of the data set, *k*-plus anticlustering leaves the original *k*-means criterion $f_1$ unchanged. For example, to equate means and variances, we define a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$. Then, the *k*-plus criterion is computed as 
+
+$$
+f_1^*(C, \mathbf{(X | Y)}_{N \times 2M}) = 
+  \sum\limits_{j=1}^{M} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (x_{ij} - \overline{x}_j ^{(k)})^2 + (y_{ij} - \overline{y}_j ^{(k)})^2
+$$
 
 Other anticlustering criteria usually use as input a matrix $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$ of pairwise dissimilarity measurements. The *diversity* criterion is the most important criterion of this kind. It is computed as the within-group sum of pairwise dissimilarities [@brusco2019; @papenberg2020; @feo1990]:
  
