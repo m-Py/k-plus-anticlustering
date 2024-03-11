@@ -123,7 +123,7 @@ $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible [@spath1986]. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. Because the approach can be reduced to an augmentation of the data set, *k*-plus anticlustering leaves the original *k*-means criterion $f_1$ unchanged. For example, to equate means and variances, we define a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$ and augment the original matrix with it. Then, the *k*-plus criterion is computed as
+Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible [@spath1986]. The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. For example, to equate means and variances, we define a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$ and augment the original matrix with it. Then, the *k*-plus criterion is computed as
 
 $$
 f_2(C, \mathbf{(X | Y)_{N \times 2M}}) =
@@ -136,41 +136,38 @@ $$
 Another important anticlustering criterion is the *diversity*, which uses a dissimilarity matrix $\mathbf{D}_{N \times N}$ as input. It is computed as the within-group sum of pairwise dissimilarities across all clusters [@brusco2019; @papenberg2020; @feo1990]:
  
 $$
-f_3(C, \mathbf{D}_{N \times N}) = \sum_{(i < j) \in C_k} d_{ij}
+f_3(C, \mathbf{D}_{N \times N}) = \sum\limits_{k = 1}^{K} \sum_{(i < j) \in C_k} d_{ij}
 $$
 
-Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances. However, most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. If $\mathbf{D}_{N \times N}$ is computed via the squared Euclidean distances, we note an important equivalence between the k-means criterion and the diversity. The k-means criterion can also be expressed using the pairwise squared Euclidean distances between data points (Brusco, 2006; Späth, 1980). Based on $\mathbf{D}_{N \times N}$, the k-means criterion is then computed as
+Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances. However, most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. 
+
+If $\mathbf{D}_{N \times N}$ is computed via the squared Euclidean distances, we note an important equivalence between the k-means criterion and the diversity. The k-means criterion can be expressed using the pairwise squared Euclidean distances between data points (Brusco, 2006; Späth, 1980). Based on $\mathbf{D}_{N \times N}$, the k-means criterion is then computed as
 
 $$
-f_1(C, \mathbf{X}_{N \times M}) =
-f_4(C, \mathbf{D}_{N \times N}) = \sum\limits_{k = 1}^{K}\left( \frac{1}{n_k} \sum_{(i<j)\in C_k} d_{ij} \right)
+f_4(C, \mathbf{D}_{N \times N}) = \sum\limits_{k = 1}^{K}\left( \frac{1}{n_k} \sum_{(i<j)\in C_k} d_{ij} \right) = f_1(C, \mathbf{X}_{N \times M})
 $$
 
-That is, "the sum of squared distances of a collection of points from the centroid associated with those points is equal to the sum of the pairwise squared distances between those points divided by the size (number of objects) of the collection" (Brusco, 2006, p. 350).
-
-An important special case of anticlustering applications is that all groups are equal-sized, i.e., $n_k = \frac{N}{K}$ ($k = 1, \dots K$). Here, we obtain
+That is, "the sum of squared distances of a collection of points from the centroid associated with those points is equal to the sum of the pairwise squared distances between those points divided by the size (number of objects) of the collection" (Brusco, 2006, p. 350). For arbitrary measures of dissimilarity (and not just the squared Euclidean distance), we denote $f_4$ as the *average diversity criterion*, which  represents between-group similarity regardless of group sizes. However, an important special case of anticlustering applications is that all groups are equal-sized, i.e., $n_k = \frac{N}{K}$ ($k = 1, \dots K$). Here, we obtain
 
 $$
-\mathit{SSE} = \frac{N}{K} \sum\limits_{k = 1}^{K} \sum_{(i<j)\in C_k} d_{ij}
+f_4(C, \mathbf{D}_{N \times N}) = \frac{N}{K} \sum\limits_{k = 1}^{K} \sum_{(i<j)\in C_k} d_{ij}
 $$
 
-In this case, the normalizing factor $\frac{N}{K}$ can be ignored when maximizing $f_1$. Thus, the criterion reduces to the sum of the (squared) distances between elements in the same cluster:
-
-$$
-\mathit{SSE_{Diversity}} = \sum\limits_{k = 1}^{K}\sum_{(i<j)\in C_k} d_{ij}
-$$
-
-This term corresponds to the standard diversity $f_2$, with the distances $d_{ij}$ representing squared Euclidean distances. We denote $f_4$ as the *average diversity criterion*, which maintain unconditional equivalence between k-means and the diversity.
+In this case, the normalizing factor $\frac{N}{K}$ can be ignored when maximizing $f_4$. Thus, the criterion reduces to the sum of the (squared) distances between elements in the same cluster. Thus, for equal-sized groups, $f_4$ is reduced to the standard diversity $f_3$---at least in of the partitionings that are obtained via maximization. Moreover, if the $d_{ij}$ are squared Euclidean distances, $f_4$ is equivalent to the k-means objective $f_1$. Hence, for equal-sized groups, the diversity anticlustering criterion $f_3$ is equivalent to the k-means criterion $f_1$.
 
 Unlike $f_1$, $f_2$, $f_3$, and $f_4$, the *dispersion* criterion does not represent between-group similarity, but is a pure measure of within-group heterogeneity. It is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
 
 $$
-f_3(C) = \textrm{min}_{(i < j) \in C_k} d_{ij}
+f_5(C) = \textrm{min}_{(i < j) \in C_k} d_{ij}
 $$
 
 The dispersion is a measure of the worst-case pairwise dissimilarity. Maximizing the dispersion ensures that any two objects in the same group are as dissimilar from each other as possible. 
 
-@brusco2019 outlined the importance of simultaneously considering multiple criteria when tackling anticlustering problems. In particular, they argued that anticlustering algorithms should incorporate an objective of between-group similarity---such as the diversity---and pairwise within-group dissimilarity---i.e., the dispersion---at the same time.
+@brusco2019 outlined the importance of simultaneously considering multiple criteria when tackling anticlustering problems. In particular, they argued that anticlustering algorithms should incorporate an objective of between-group similarity---such as the diversity---and pairwise within-group dissimilarity---i.e., the dispersion---at the same time. To this end, @brusco2019 presented a bicriterion algorithm that simultaneously maximizes the diversity $f_3$ and the dispersion $f_5$. (**say some general stuff about the BILS before explaining it in detail later...**)
+
+We endorse Brusco et al.'s bicriterion approach for anticlustering, and advance it in several ways in the current paper. Specifically, we offer several contributions: First, we allow that not only the standard diversity $f_3$ can be optimized alongside the dispersion, but instead we allow that the k-means, k-plus or the average diversity can be used as measures of between-group similarity (i.e., the criteria $f_1$, $f_2$ and $f_4$). Second, we allow that the dispersion and $f_1$ -- $f_4$ can be optimized using different dissimilarity matrices. This is useful if both criteria should be based on different information, or to induce custom cannot-link constraints, as we will show. As out most important contribution, we combine a novel exact algorithm for maximum dispersion with the BILS heuristic to obtain high diversity on top of an optimal dispersion. Despite its theoretical computational hardness, our optimal method scales to rather large data sets. It generates multiple partitions that we use as initializations of the BILS's local search, thus guaranteeing that the BILS also returns a partition with optimal dispersion. In a simulation study, we compared several adaptations of the BILS.
+
+## The BILS
 
 ## Algorithms for anticlustering
 
