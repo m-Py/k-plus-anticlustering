@@ -31,8 +31,8 @@ authornote: |
   
 abstract: |
 
-    Numerous applications in psychological research require that a data set is partitioned via the maximization---instead of the more common minimization---of a clustering criterion. Such anticlustering seeks for high similarity between groups (i.e., maximum diversity) or high pairwise dissimilarity within groups (i.e., maximum dispersion). Brusco et al. (2020) proposed a powerful bicriterion algorithm (BILS) that simultaneously seeks for maximum diversity and dispersion, introducing the bicriterion approach for anticlustering. Here, we advance the bicriterion approach in several ways. As our main contribution, we combine a novel exact algorithm for maximum dispersion with the BILS heuristic to obtain high diversity on top of an optimal dispersion. Despite its theoretical computational hardness, our optimal method scales to rather large data sets. It generates multiple partitions that we use as initializations of the BILS's local search, thus guaranteeing that the BILS also returns a partition having optimal dispersion. In a simulation study, we compared several adaptations of the BILS. To obtain high diversity, initializing the BILS with multiple optimal partitions is preferable to using only one. Moreover, in data sets where the constraint of optimal dispersion severely restricts the search for feasible partitions, the iterated local search phase of the BILS is crucial to obtain high diversity. While the original BILS oftentimes finds optimal dispersion values, our simulation illustrates conditions when it does not. The optimal dispersion algorithm and the BILS including our extensions are available via the free and open source R package `anticlust`. Practical examples are included to illustrate their application.
-  
+    Numerous applications in psychological research require that a data set is partitioned via the maximization---instead of the more common minimization---of a clustering criterion. Such anticlustering seeks for high similarity between groups (i.e., maximum diversity) or high pairwise dissimilarity within groups (i.e., maximum dispersion). Brusco et al. (2020) proposed a powerful bicriterion algorithm (BILS) that simultaneously seeks for maximum diversity and dispersion, introducing the bicriterion approach for anticlustering. Here, we advance the bicriterion approach in several ways. As our main contribution, we combine a novel exact algorithm for maximum dispersion with the BILS heuristic to obtain high diversity on top of an optimal dispersion. Despite its theoretical computational hardness, our optimal method scales to rather large data sets. It generates multiple partitions that we use as initializations of the BILS's local search, thus guaranteeing that the BILS also returns a partition with optimal dispersion. In a simulation study, we compared several adaptations of the BILS. To obtain high diversity, initializing the BILS with multiple optimal partitions is preferable to using only one. Moreover, in data sets where maintaining optimal dispersion severely restricts the search for feasible partitions, the iterated local search phase of the BILS is crucial to obtain high diversity. While the original BILS oftentimes finds optimal dispersion values, our simulation illustrates conditions when it does not. The optimal dispersion algorithm and the BILS including our extensions are available via the free and open source R package `anticlust`. Practical examples are included to illustrate their application.
+
 bibliography      : ["lit.bib"]
   
 keywords          : "Anticlustering, maximum dispersion, optimal algorithm, bicriterion optimization"
@@ -97,36 +97,53 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
 ```
 
 
-## Outline
+Anticlustering problems arise in many research fields including psychology [@brusco2019; @schaper2023], test assessment [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network transmission [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeinity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which conducts partitioning via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986]
 
-- Start with use case: Stimulus assignment in within-subjects experiments (and stick with it throughout the paper, only briefly mention other use cases)
-  * Needed: high similarity between stimulus set to reduce variance in responses attributed to other factors than the experimental manipulation. This is possible using `anticlust`, which has been applied many times since its introduction in @papenberg2020 (cite references)
-  * Also needed (point of this paper!): High pairwise dissimilarity of stimuli in the same set. 
-- Simultaneous optimization of between-set similarity and pairwise within-set dissimilarity was introduced by Brusco et al.'s algorithm, which is also available in `anticlust` since 2021 (version 0.6.0)
-- Outline: 
-  * Here, we present several alternatives of a bicriterion optimization that are based on optimally solving the max dispersion problem before maximizing the diversity, and we compare them to "vanilla" BILS
-    (1) Always return optimal solution and combine optimal dispersion with maximum diversity (BILS, LCW, optimal ILP)
-    (2) Use different distance matrix for dispersion and diversity (if different information is needed for both criteria, or to induce custom cannot-link constraints)
-    (3) Extend the BILS's capacities towards other measures of between-group similarity (k-means / k-plus)
-  * Simulation study as evaluation of the different bicriterion approaches
-- Technical introduction to "vanilla" BILS
-- Technical introduction to our extensions
-  * Optimal dispersion method: Basic algorithm + graph coloring ILP
-    * Computational Feasibility
-    * How to maintain optimal dispersion while the BILS runs? (Optimal ILP, BILS, LCW)
-    * Obtaining an (optimal) Pareto set
-  * Different distance matrices: does not change algorithm, just computation / implementation
-  * Extend towards k-means: Use squared Euclidean distance + "average diversity" (k-plus is basically the same, but do not use the additional k-plus variables for the dispersion distance matrix)
-- Simulation Study
-  (1) How often does vanilla BILS find optimal solutions
-  (2) Which of the alternatives is best for optimizing between-group similarity while maintaining optimal dispersion?
-- Application (presenting R code)
-  * Optimize k-plus criterion using norming data; dispersion is based on pairwise orthographic dissimilarity between words
-- Discussion
-  * Future extensions: Graph coloring returns several solutions, LCW as first phase in BILS
-  
+More formally, anticlustering is used to partition $N$ objects into $K$ groups $C = (C_1, \ldots, C_K)$, where $C_k$ is the set of $n_k$ objects in the $k^{th}$ group, and $K$ and $n_k$ are predetermined by the application. In many anticlustering applications, equal-sized groups are required, i.e., $n_k = \frac{N}{K}$ [@schulz2022; @gallego2013]. The partitioning is characterized by assignment to exhaustive and mutually exclusive subgroups:
 
-## Introduction
+\begin{align}
+\bigcup\limits_{k = 1}^{K} C_k = X \label{formalization:1} \\
+C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k\label{formalization:2} \\
+\vert C_k \vert = n_k, \; \forall k \in \{1, \ldots, K\} \label{formalization:3}
+\end{align}
+
+We assume that a data matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ is available where the $M$ columns contain numeric measurements on the $N$ objects. The partitioning is obtained by maximizing a clustering criterion $f_i$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares ($\mathit{SSE}$), i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
+
+$$
+f_1(C) = 
+  \sum\limits_{j=1}^{M} 
+  \sum\limits_{k=1}^{K} 
+  \sum\limits_{i \in C_k}
+  (x_{ij} - \overline{x}_j ^{(k)})^2
+$$
+
+The *diversity* is another important anticlustering criterion representing between-group similarity. It is computed as the within-group sum of pairwise dissimilarities [@brusco2019; @papenberg2020; @feo1990]:
+ 
+$$
+f_2(C) = \sum_{i < j) \in C_k} d_{ij}
+$$
+
+The diversity can for example be computed by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$, where 
+
+$$
+d_{ij} = \sqrt{\sum\limits_{m = 1}^{M}(x_{im} - x_{jm})^2}
+$$
+
+However, note that most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. 
+
+Unlike $f_1$ and $f_2$, the *dispersion* criterion is not a sum, but it is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
+
+$$
+f_3(C) = \textrm{min}_{(i < j) \in C_k} d_{ij}
+$$
+
+The dispersion does not represent between-group similarity, but instead it is measure of the worst-case pairwise dissimilarity. Maximizing the dispersion ensures that any two objects in the same group are as dissimilar from each other as possible. 
+
+@brusco2019 outlined the importance of simultaneously considering multiple criteria when tackling anticlustering problems and introduced the bicriterion optimization model for anticlustering. In particular, they argued that anticlustering algorithms should incorporate an objective of between-group similarity---such as the diversity---and pairwise within-group dissimilarity---i.e., the dispersion---at the same time.
+
+## Algorithms for anticlustering
+
+Heuristics dominate (local maximum search @spath1986; @weitz1998, multiple repetitions robust for k-means @steinley2007, ILS @brusco2017, VARIABLE NEIGHBORHOOD SEARCH @urovsevic2014; tabu search @gallego2013; multiple improvement phases based on initial local maximum search @yang2022). Exact algorithms for diversity [@papenberg2020; @schulz2022] and for the dispersion [@fernandez2013; @gliesch2021; @brucker1978]. Exact algorithms for diversity perform much worse than for the reversed clustering problems, where many hundred elements can often be processed. Maximum diversity can be achieved with much better success. Our novel contribution is to combine optimal maximum dispersion with high diversity. We present a novel algorithm for maximum diversity that is similar to the approaches by @fernandez2013 and @gliesch2021 and is based on the logic that was already introduced by @brucker1978. It scales to hundreds or even thousands of data points and therefore can be used to solve most real-world applications we have in mind. We then proceed to discuss how on top of an optimal dispersion, we can implement high diversity. A logical next step is to obtain optimal maximum diversity as well, which is however only limited to rather small data sets, as we show. Due to its bicriterion nature, the BILS by @brusco2019 is naturally suited to maintain optimum dispersion while optimizing diversity. We discuss several adaptations of the BILS, which are compared in a simulation study. 
 
 In within-subjects experiments, participants are presented with several stimulus sets that are affiliated with the different experimental conditions. Due to carry-over effects, showing the same stimuli in different conditions is oftentimes prohibited. This is evident in studies on memory, where studying a list of words in one conditions necessarily makes it impossible to repeat their study without being influenced by the earlier study phase; memory cannot be erased after an experimental block has been completed [@lahl2006]. While the experimental logic dictates that different lists must be used, the lists should be as parallel as possible with regard to variables that affect the response variable. @lintz2021 gave two reasons as to why it is important that study participants should be confronted with balanced lists: (a) if lists are not sufficiently parallel, the variance of within-subjects effect sizes due to the experimental manipulation will be inflated, reducing statistical power---if there is no proper statistical control of the stimulus materials, which is often the case [@judd2012]; (b) highly unbalanced sets may introduce secondary effects beyond the influence of the intrinsic stimulus features. For example, highly biased lists may induce a strategic behavior shift between experimental blocks, possibly due to suspicion, boredom or frustration. These effects invalidate any observed differences between conditions and importantly, this bias cannot be accounted for via statistical techniques.
 
