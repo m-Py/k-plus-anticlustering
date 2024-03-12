@@ -97,17 +97,19 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE, echo = FALSE, dev = "cairo
 ```
 
 
-Partitioning data sets via anticlustering has uses in many research fields including psychology [@brusco2019; @schaper2023], test assessment [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network systems [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeneity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which partitions data sets via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986].
+Partitioning data sets via anticlustering has uses in many research fields including psychology [@brusco2019; @schaper2023], test assembly [@gierl2017], education [@krauss2013; @baker2002], artificial intelligence [@steghofer2013], machine learning [@mauri2023], network systems [@mohebi2022], and operations research [e.g. @gallego2013; @gliesch2021]. Anticlustering seeks for similarity between groups and heterogeneity within groups by maximizing a clustering objective criterion. Thus, anticlustering is the logical and mathematical opposite of classical clustering, which partitions data sets via minimization of the same criteria [@steinley2006; @brusco2019; @spath1986].
 
-Formally, anticlustering is used to partition $N$ objects into $K$ groups $C = (C_1, \ldots, C_K)$, where $C_k$ is the set of $n_k$ objects in the $k^{th}$ group, and $K$ and $n_k$ are predetermined by the application. In many anticlustering applications, equal-sized groups are required, i.e., $n_k = \frac{N}{K}$ [@schulz2022; @gallego2013]. The partitioning is characterized by assignment to exhaustive and mutually exclusive subgroups:
+Formally, anticlustering is used to partition $N$ objects into $K$ exhaustive and mutually exclusive subgroups $C = (C_1, \ldots, C_K)$. The partitioning restrictions are formalized as follows: 
 
 \begin{align}
-\bigcup\limits_{k = 1}^{K} C_k = X \label{formalization:1} \\
-C_j \cap C_k = \emptyset, \; \forall j, k \in \{1, \ldots, K\}, \; j \ne k\label{formalization:2} \\
-\vert C_k \vert = n_k, \; \forall k \in \{1, \ldots, K\} \label{formalization:3}
+\vert C_k \vert = n_k, \; (k = 1, \ldots, K) \label{formalization:1} \\
+\sum_{k = 1}^{K} n_k = N \label{formalization:2} \\
+C_j \cap C_k = \emptyset (j, k = 1, \ldots, K), \; j \ne k\label{formalization:3} \\
 \end{align}
 
-We assume that a data matrix $\mathbf{Z}$ is used as input for computing the anticlustering criterion. $\mathbf{Z}$ is either a feature matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ where the $M$ columns contain numeric measurements on the $N$ objects, or a symmetric matrix $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$ of pairwise dissimilarity measurements. The partitioning is obtained by maximizing a clustering criterion $f_i(C, \mathbf{Z})$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
+$C_k$ is the set of $n_k$ objects in the $k^{th}$ group, and $K$ and $n_k$ are predetermined by the application. We will refer to the subsets $C_k$ ($k = 1, \ldots, K$), as anticlusters, sets, or groups interchangeably, and to the collection $C$ as the anticlustering partitioning. In many anticlustering applications, equal-sized groups are required, i.e., $n_k = \frac{N}{K}$ ($k = 1, \ldots, K$) [@schulz2022; @gallego2013]. 
+
+We assume that a data matrix $\mathbf{Z}$ is used as input for computing the anticlustering criterion on the basis of a partitioning $C$. $\mathbf{Z}$ is either a feature matrix $\mathbf{X}_{N \times M} = \{x_{ij}\}_{N \times M}$ where the $M$ columns contain numeric measurements on the $N$ objects, or a symmetric matrix $\mathbf{D}_{N \times N} = \{d_{ij}\}_{N \times N}$ of pairwise dissimilarity measurements. The partitioning is obtained by maximizing a clustering criterion $f_i(C, \mathbf{Z})$. For example, *k*-means anticlustering aims to maximize between-group similarity by maximizing the error sum of squares, i.e., the sum the squared distances between each object and its cluster center [@spath1986; @papenberg2024]:
 
 $$
 f_1(C, \mathbf{X}_{N \times M}) =
@@ -117,13 +119,11 @@ f_1(C, \mathbf{X}_{N \times M}) =
   (x_{ij} - \overline{x}_j ^{(k)})^2
 $$
 
-The $k^{th}$ cluster center $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ contains the mean values of the $M$ variables computed across all observations belonging to the  $k^{th}$ group:
-
 $$
 \overline{x}_j ^{(k)} = \frac{1}{n_k} \sum\limits_{i \in C_k} x_{ij}
 $$
 
-Maximizing $f_1$ ensures that the cluster centers, i.e., the mean values of the $M$ measurements, are as close to each other as possible [@spath1986]. 
+The $k^{th}$ cluster center $\overline{\mathbf{x}}^{(k)} = (\overline{x}_1^{(k)}, \overline{x}_2^{(k)} \ldots, \overline{x}_P^{(k)})$ contains the mean values of the $M$ variables computed across all observations belonging to the $k^{th}$ group. Maximizing $f_1$ ensures that the cluster centers are as close to each other as possible [@spath1986]. 
 
 The *k*-plus criterion is an extension of the $k$-means criterion for anticlustering that can be implemented by adding fictitious to the data matrix $\mathbf{X}_{N \times M}$ [@papenberg2024]. *K*-plus anticlustering is used to equate not only means between clusters, but higher order moments such as the variance or skewness as well. For example, to equate means and variances, we define a new data matrix $\mathbf{Y}_{N \times P} = \{y_{ij}\}_{N \times P}$ with $y_{ij} = (x_{ij} - \overline{x}_j)^2$ and augment the original matrix with it. Then, the *k*-plus criterion is computed as
 
@@ -143,19 +143,19 @@ $$
 
 Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances. However, most anticlustering algorithms that use a dissimilarity matrix as input are agnostic as to how it was was generated [@brusco2019; cf. @schulz2022]. 
 
-If $\mathbf{D}_{N \times N}$ is computed via the squared Euclidean distances, we note an important equivalence between the k-means criterion and the diversity. The k-means criterion can be expressed using the pairwise squared Euclidean distances between data points (Brusco, 2006; Späth, 1980). Based on $\mathbf{D}_{N \times N}$, the k-means criterion is then computed as
+If $\mathbf{D}_{N \times N}$ is computed via the squared Euclidean distances, we note an important equivalence between the k-means criterion $f_1$ and the diversity $f_3$. The k-means criterion can be expressed using the pairwise squared Euclidean distances between data points (Brusco, 2006; Späth, 1980). If we let $\mathbf{D'}_{N \times N}$ = \{$d'_{ij}$\} representing the squared Euclidean distance, i.e., $d'_{ij} = \sum\limits_{m = 1}^{M}(x_{im} - x_{jm})^2$, the k-means criterion is given as
 
 $$
-f_4(C, \mathbf{D}_{N \times N}) = \sum\limits_{k = 1}^{K}\left( \frac{1}{n_k} \sum_{(i<j)\in C_k} d_{ij} \right) = f_1(C, \mathbf{X}_{N \times M})
+f_4(C, \mathbf{D'}_{N \times N}) = \sum\limits_{k = 1}^{K}\left( \frac{1}{n_k} \sum_{(i<j)\in C_k} d'_{ij} \right) = f_1(C, \mathbf{X}_{N \times M}).
 $$
 
-That is, "the sum of squared distances of a collection of points from the centroid associated with those points is equal to the sum of the pairwise squared distances between those points divided by the size (number of objects) of the collection" (Brusco, 2006, p. 350). For arbitrary measures of dissimilarity (and not just the squared Euclidean distance), we denote $f_4$ as the *average diversity criterion*, which  represents between-group similarity regardless of group sizes. However, an important special case of anticlustering applications is that all groups are equal-sized, i.e., $n_k = \frac{N}{K}$ ($k = 1, \dots K$). Here, we obtain
+That is, "the sum of squared distances of a collection of points from the centroid associated with those points is equal to the sum of the pairwise squared distances between those points divided by the size (number of objects) of the collection" (Brusco, 2006, p. 350). For arbitrary measures of dissimilarity (and not just the squared Euclidean distance), we denote $f_4$ as the *average diversity criterion*. An important special case of anticlustering applications is that all groups are equal-sized, i.e., $n_k = \frac{N}{K}$ ($k = 1, \dots K$). In this context, $f_4$ can be simplified to 
 
 $$
-f_4(C, \mathbf{D}_{N \times N}) = \frac{N}{K} \sum\limits_{k = 1}^{K} \sum_{(i<j)\in C_k} d_{ij}
+f_4^*(C, \mathbf{D'}_{N \times N}) = \frac{N}{K} \sum\limits_{k = 1}^{K} \sum_{(i<j)\in C_k} d_{ij}
 $$
 
-In this case, the normalizing factor $\frac{N}{K}$ can be ignored when maximizing $f_4$. Thus, the criterion reduces to the sum of the (squared) distances between elements in the same cluster. Thus, for equal-sized groups, $f_4$ is reduced to the standard diversity $f_3$---at least in of the partitionings that are obtained via maximization. Moreover, if the $d_{ij}$ are squared Euclidean distances, $f_4$ is equivalent to the k-means objective $f_1$. Hence, for equal-sized groups, the diversity anticlustering criterion $f_3$ is equivalent to the k-means criterion $f_1$.
+In the context of maximization, the normalizing factor $\frac{N}{K}$ can be ignored because it does not depend on the partitioning $C$. Thus, the criterion reduces to the sum of the (squared) distances between elements in the same cluster, i.e., the standard diversity $f_3$. Therefore, for equal-sized groups, the diversity anticlustering criterion $f_3$ is equivalent to the k-means criterion $f_1$, if the diversity is computed via the squared Euclidean distance. We will use this insight later when we apply algorithms for maximum diversity to $k$-means and $k$-plus anticlustering. 
 
 Unlike $f_1$, $f_2$, $f_3$, and $f_4$, the *dispersion* criterion does not represent between-group similarity, but is a pure measure of within-group heterogeneity. It is defined as the minimum dissimilarity across any two objects that are part of the same group [@brusco2019; @fernandez2013]:
 
