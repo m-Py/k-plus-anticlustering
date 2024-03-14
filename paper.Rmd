@@ -141,7 +141,7 @@ $$
 f_3(C, \mathbf{D}_{N \times N}) = \sum\limits_{k = 1}^{K} \sum_{(i < j) \in C_k} d_{ij}
 $$
 
-Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal. 
+Maximizing the diversity simultaneously minimizes the sum of distances between objects not in the same group. Therefore, the diversity represents within-group heterogeneity as well as between-group similarity [@feo1990]. Being a sum instead of an average, however, it no longer adequately captures between-group similarity if group sizes are not equal [@papenberg2024]. 
 
 The diversity is oftentimes obtained by first converting the data matrix $\mathbf{X}_{N \times M}$ into a matrix of pairwise Euclidean distances [@brusco2019; @papenberg2020; @papenberg2024; @gallego2013]. If $\mathbf{D}_{N \times N}$ is obtained by using the squared pairwise Euclidean distances instead, we note an important equivalence between the k-means criterion $f_1$ and the diversity $f_3$. Traditionally, the k-means criterion is denoted via a sum of squared distances between data points and cluster centroids. However, it can also be expressed using the pairwise squared Euclidean distances between data points (Brusco, 2006; Späth, 1980). If we let $\mathbf{D'}_{N \times N}$ = \{$d'_{ij}$\} represent the squared Euclidean distance, i.e., $d'_{ij} = \sum\limits_{m = 1}^{M}(x_{im} - x_{jm})^2$, the k-means criterion can be expressed as as
 
